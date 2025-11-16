@@ -56,3 +56,4 @@ dkms.conf
 
 # No _darcs
 **/_darcs
+**/.project_config
