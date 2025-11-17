@@ -46,7 +46,6 @@ vim sweep.params        # Set CASE_START, CASE_END, sweep variables
 ## Repository Structure
 
 ```
-Drop-Impact/
 ├── src-local/          Modular header files
 │   ├── params.h        Parameter structures and parsing
 │   ├── geometry.h      Drop geometry and initialization
