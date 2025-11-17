@@ -63,6 +63,20 @@ echo "Modules loaded successfully"
 echo ""
 
 # ============================================================
+# Setup Basilisk Environment
+# ============================================================
+echo "Setting up Basilisk environment..."
+if [ -f "${SCRIPT_DIR}/.project_config" ]; then
+    source "${SCRIPT_DIR}/.project_config"
+    echo "Basilisk environment loaded from .project_config"
+    echo "BASILISK: $BASILISK"
+else
+    echo "ERROR: .project_config not found" >&2
+    exit 1
+fi
+echo ""
+
+# ============================================================
 # Validate Environment
 # ============================================================
 # Source parameter parsing library
@@ -246,7 +260,7 @@ generate_combinations() {
         echo "DEBUG: All sweep values overridden" >&2
 
         CASE_FILES+=("$case_file")
-        ((COMBINATION_COUNT++))
+        ((COMBINATION_COUNT++)) || true
 
         # Print summary
         echo "Case $CASE_NUM:"
@@ -255,7 +269,7 @@ generate_combinations() {
         done
         echo ""
 
-        ((CASE_NUM++))
+        ((CASE_NUM++)) || true
         return
     fi
 
@@ -316,7 +330,7 @@ for param_file in "${CASE_FILES[@]}"; do
         continue
     fi
 
-    CASE_DIR="simulationCases/${CASE_NO}"
+    CASE_DIR="${SCRIPT_DIR}/simulationCases/${CASE_NO}"
 
     echo "========================================="
     echo "Case $CASE_NO ($(date))"
@@ -335,7 +349,7 @@ for param_file in "${CASE_FILES[@]}"; do
     echo "Parameter file copied to case directory"
 
     # Copy source file to case directory
-    SRC_FILE_ORIG="dropImpact.c"
+    SRC_FILE_ORIG="${SCRIPT_DIR}/simulationCases/dropImpact.c"
     SRC_FILE_LOCAL="$CASE_DIR/dropImpact.c"
     EXECUTABLE="$CASE_DIR/dropImpact"
 
@@ -360,7 +374,7 @@ for param_file in "${CASE_FILES[@]}"; do
     else
         echo "ERROR: Compilation failed for case $CASE_NO" >&2
         ((FAILED_CASES++))
-        cd ../..
+        cd "$SCRIPT_DIR"
         continue
     fi
 
@@ -386,7 +400,7 @@ for param_file in "${CASE_FILES[@]}"; do
     fi
 
     # Return to root directory
-    cd ../..
+    cd "$SCRIPT_DIR"
     echo ""
 done
 
