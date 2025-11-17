@@ -81,6 +81,7 @@ slurm-*.err
 # postProcessing specific
 **/getData*
 **/getFacet*
+**/getFootPrint
 **/Video
 
 # always add .c and .h
