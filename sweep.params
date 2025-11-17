@@ -1,0 +1,43 @@
+# Parameter Sweep Configuration
+# This file defines a parameter sweep for batch simulations
+
+# ============================================================
+# Base Configuration
+# ============================================================
+# Start from this parameter file and override sweep variables
+BASE_CONFIG=default.params
+
+# ============================================================
+# Case Number Range
+# ============================================================
+# Starting case number (4-digit: 1000-9999)
+# Each parameter combination gets auto-incremented CaseNo
+CASE_START=1000
+
+# Ending case number (inclusive)
+# Number of combinations should equal CASE_END - CASE_START + 1
+# For this sweep: 4 We × 3 Oh = 12 combinations, so CASE_END = 1011
+CASE_END=1011
+
+# ============================================================
+# Sweep Variables
+# ============================================================
+# Format: SWEEP_<variable>=value1,value2,value3,...
+# The sweep will generate all combinations (cartesian product)
+
+# Sweep Weber number (vary impact velocity / surface tension)
+SWEEP_We=10.0
+
+# Sweep Ohnesorge number (vary viscosity)
+SWEEP_Ohd=1.0e-3,3e-3,1.0e-2,3e-2,1.0e-1,3e-1,1e0
+
+# Optional: sweep other parameters
+# SWEEP_MAXlevel=9,10,11
+# SWEEP_Ldomain=6.0,8.0,10.0
+
+# ============================================================
+# Output Configuration
+# ============================================================
+# Output folders are created in simulationCases/<CaseNo>/
+# CaseNo auto-increments from CASE_START for each parameter combination
+# Cases run sequentially (one at a time)
