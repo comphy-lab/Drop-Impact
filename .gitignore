@@ -89,3 +89,6 @@ docs/
 **/__pycache__/
 **/*.pyc
 .github/assets/js/search_db.json
+
+# Timestamped CSS backups
+**/custom_styles_backup_*.css
