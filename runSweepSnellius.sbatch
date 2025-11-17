@@ -326,7 +326,7 @@ for param_file in "${CASE_FILES[@]}"; do
 
     if [ -z "$CASE_NO" ]; then
         echo "ERROR: CaseNo not found in $param_file" >&2
-        ((FAILED_CASES++))
+        ((FAILED_CASES++)) || true
         continue
     fi
 
@@ -355,7 +355,7 @@ for param_file in "${CASE_FILES[@]}"; do
 
     if [ ! -f "$SRC_FILE_ORIG" ]; then
         echo "ERROR: Source file $SRC_FILE_ORIG not found" >&2
-        ((FAILED_CASES++))
+        ((FAILED_CASES++)) || true
         continue
     fi
 
@@ -373,7 +373,7 @@ for param_file in "${CASE_FILES[@]}"; do
         echo "Compilation successful"
     else
         echo "ERROR: Compilation failed for case $CASE_NO" >&2
-        ((FAILED_CASES++))
+        ((FAILED_CASES++)) || true
         cd "$SCRIPT_DIR"
         continue
     fi
@@ -391,12 +391,12 @@ for param_file in "${CASE_FILES[@]}"; do
     if srun -n ${SLURM_NTASKS} ./dropImpact case.params; then
         echo ""
         echo "Case $CASE_NO completed successfully"
-        ((SUCCESSFUL_CASES++))
+        ((SUCCESSFUL_CASES++)) || true
     else
         EXIT_CODE=$?
         echo ""
         echo "ERROR: Case $CASE_NO failed with exit code $EXIT_CODE" >&2
-        ((FAILED_CASES++))
+        ((FAILED_CASES++)) || true
     fi
 
     # Return to root directory
