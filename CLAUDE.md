@@ -35,7 +35,7 @@ Drop-Impact/
 ├── default.params          # Single-case configuration (edit this)
 ├── sweep.params            # Sweep configuration (edit this)
 │
-└── SimulationCases/
+└── simulationCases/
     ├── dropImpact.c       # Main simulation (refactored with markdown docs)
     ├── dropImpact_legacy.c # Original version (archived)
     └── 1000/              # Case folders created by scripts
@@ -50,7 +50,7 @@ Drop-Impact/
 ### Key Improvements
 
 1. **Case-Based Organization** (`CaseNo` system):
-   - Each simulation runs in `SimulationCases/<CaseNo>/` folder
+   - Each simulation runs in `simulationCases/<CaseNo>/` folder
    - CaseNo is a 4-digit number (1000-9999) set in parameter files
    - Auto-incrementing CaseNo for parameter sweeps
    - Restart-aware (continues from checkpoint if folder exists)
@@ -58,7 +58,7 @@ Drop-Impact/
 2. **Root-Level Execution**:
    - All scripts run from project root
    - Edit `default.params` or `sweep.params` at root
-   - Output folders automatically created in `SimulationCases/`
+   - Output folders automatically created in `simulationCases/`
 
 3. **Parameter Management** (`src-local/params.h`):
    - Added `CaseNo` field for folder naming

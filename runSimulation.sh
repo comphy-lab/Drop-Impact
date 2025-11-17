@@ -1,6 +1,6 @@
 #!/bin/bash
 # runSimulation.sh - Run single drop impact simulation from root directory
-# Creates case folder in SimulationCases/<CaseNo>/ and runs simulation there
+# Creates case folder in simulationCases/<CaseNo>/ and runs simulation there
 
 set -e  # Exit on error
 
@@ -33,7 +33,7 @@ usage() {
 Usage: $0 [OPTIONS] [params_file]
 
 Run single drop impact simulation from root directory.
-Creates case folder in SimulationCases/<CaseNo>/ based on parameter file.
+Creates case folder in simulationCases/<CaseNo>/ based on parameter file.
 
 Options:
     -c, --compile-only    Compile but don't run simulation
@@ -170,7 +170,7 @@ if ! [[ "$CASE_NO" =~ ^[0-9]{4}$ ]] || [ "$CASE_NO" -lt 1000 ] || [ "$CASE_NO" -
     exit 1
 fi
 
-CASE_DIR="SimulationCases/${CASE_NO}"
+CASE_DIR="simulationCases/${CASE_NO}"
 
 echo "========================================="
 echo "Drop Impact Simulation - Single Case"

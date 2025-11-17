@@ -38,6 +38,6 @@ SWEEP_Ohd=1.0e-3,1.0e-2,1.0e-1
 # ============================================================
 # Output Configuration
 # ============================================================
-# Output folders are created in SimulationCases/<CaseNo>/
+# Output folders are created in simulationCases/<CaseNo>/
 # CaseNo auto-increments from CASE_START for each parameter combination
 # Cases run sequentially (one at a time)

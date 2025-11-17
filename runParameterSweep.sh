@@ -1,6 +1,6 @@
 #!/bin/bash
 # runParameterSweep.sh - Run parameter sweep with auto-incrementing CaseNo
-# Generates parameter combinations and runs simulations in SimulationCases/<CaseNo>/
+# Generates parameter combinations and runs simulations in simulationCases/<CaseNo>/
 
 set -e  # Exit on error
 
@@ -25,7 +25,7 @@ usage() {
 Usage: $0 [OPTIONS] [sweep_file]
 
 Run parameter sweep with auto-incrementing CaseNo.
-Creates case folders in SimulationCases/<CaseNo>/ for each parameter combination.
+Creates case folders in simulationCases/<CaseNo>/ for each parameter combination.
 Cases run sequentially (one at a time).
 
 Options:
@@ -341,5 +341,5 @@ echo "Parameter Sweep Complete"
 echo "========================================="
 echo "Total cases: $COMBINATION_COUNT"
 echo "Case range: $CASE_START to $((CASE_START + COMBINATION_COUNT - 1))"
-echo "Output location: SimulationCases/"
+echo "Output location: simulationCases/"
 echo ""
