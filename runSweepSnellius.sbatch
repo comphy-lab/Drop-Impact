@@ -3,7 +3,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=48
 #SBATCH --cpus-per-task=1
-#SBATCH --time=1:00:00
+#SBATCH --time=100:00:00
 #SBATCH --partition=genoa
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=vatsal.sanjay@comphy-lab.org
