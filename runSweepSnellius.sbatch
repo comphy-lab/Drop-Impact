@@ -208,7 +208,7 @@ generate_combinations() {
         echo "DEBUG: Overriding CaseNo to ${CASE_NUM}..." >&2
         if grep -q "^CaseNo=" "$case_file"; then
             echo "DEBUG: CaseNo found, using sed to replace..." >&2
-            sed -i.bak "s|^CaseNo=.*|CaseNo=${CASE_NUM}|" "$case_file" || {
+            sed -i'.bak' "s|^CaseNo=.*|CaseNo=${CASE_NUM}|" "$case_file" || {
                 echo "ERROR: sed failed" >&2
                 exit 1
             }
@@ -230,7 +230,7 @@ generate_combinations() {
 
             if grep -q "^${var}=" "$case_file"; then
                 echo "DEBUG: Found $var in file, replacing with sed..." >&2
-                sed -i.bak "s|^${var}=.*|${var}=${val}|" "$case_file" || {
+                sed -i'.bak' "s|^${var}=.*|${var}=${val}|" "$case_file" || {
                     echo "ERROR: sed failed for $var" >&2
                     exit 1
                 }
