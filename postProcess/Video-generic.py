@@ -33,6 +33,7 @@ import os
 import subprocess as sp
 from dataclasses import dataclass
 from functools import partial
+from datetime import datetime
 from typing import Sequence, Tuple
 
 import matplotlib
@@ -152,6 +153,12 @@ class FieldData:
 
 
 PLOT_STYLE = PlotStyle()
+
+
+def log_status(message: str, *, level: str = "INFO") -> None:
+    """Print timestamped status messages for long-running CLI workflows."""
+    timestamp = datetime.now().strftime("%H:%M:%S")
+    print(f"[{timestamp}] [{level}] {message}", flush=True)
 
 
 def parse_arguments() -> RuntimeConfig:
@@ -353,7 +360,7 @@ def get_field(filename: str, zmin: float, zmax: float, rmax: float, nr: int) -> 
     vel = np.asarray(veltemp)
     nz = int(len(Z) / nr)
 
-    print("nz is %d" % nz)
+    log_status(f"{filename}: nz = {nz}")
 
     R.resize((nz, nr))
     Z.resize((nz, nr))
@@ -515,7 +522,7 @@ def plot_snapshot(
     ax.set_aspect("equal")
     ax.set_xlim(bounds.rmin, bounds.rmax)
     ax.set_ylim(bounds.zmin, bounds.zmax)
-    ax.set_title(f"$t/\\tau_\\gamma$ = {snapshot.time:4.3f}", fontsize=style.tick_label_size)
+    ax.set_title(f"$t/\\tau_0$ = {snapshot.time:4.3f}", fontsize=style.tick_label_size)
     ax.axis("off")
 
     add_colorbar(
@@ -552,16 +559,28 @@ def process_timestep(index: int, config: RuntimeConfig, style: PlotStyle) -> Non
     """
     snapshot = build_snapshot_info(index, config)
     if not os.path.exists(snapshot.source):
-        print(f"{snapshot.source} File not found!")
+        log_status(f"Missing snapshot: {snapshot.source}", level="WARN")
         return
     if os.path.exists(snapshot.target):
-        print(f"{snapshot.target} Image present!")
+        log_status(f"Frame already exists, skipping: {snapshot.target}")
         return
 
-    facets = get_facets(snapshot.source)
-    nr = int(config.grids_per_r * config.rmax)
-    field_data = get_field(snapshot.source, config.zmin, config.zmax, config.rmax, nr)
-    plot_snapshot(field_data, facets, config.bounds, snapshot, style)
+    log_status(f"Processing snapshot index={snapshot.index}, t={snapshot.time:.4f}")
+
+    try:
+        facets = get_facets(snapshot.source)
+        nr = int(config.grids_per_r * config.rmax)
+        field_data = get_field(
+            snapshot.source, config.zmin, config.zmax, config.rmax, nr
+        )
+        plot_snapshot(field_data, facets, config.bounds, snapshot, style)
+    except Exception as err:
+        log_status(
+            f"Error while processing {snapshot.source}: {err}", level="ERROR"
+        )
+        raise
+
+    log_status(f"Saved frame: {snapshot.target}")
 
 
 def main():

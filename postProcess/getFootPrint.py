@@ -191,6 +191,10 @@ def process_snapshot(
         return None
 
     helper_time, rf_val = parse_rf_line(lines[-1])
+    print(
+        f"x_cutoff={x_cutoff:.4g} :: t={helper_time:.6f}, rf={rf_val:.6g}",
+        flush=True,
+    )
     return helper_time, rf_val
 
 
@@ -211,10 +215,10 @@ def evaluate_cutoff_series(
 
 def cutoff_label(value: float) -> str:
     """Format cutoff for filenames, keeping readable scientific notation."""
-    if value >= 1 or value == 0:
-        return f"{value:g}"
-    # For sub-unit radii prefer consistent decimals (up to 4 significant digits)
-    return f"{value:.4g}"
+    if value < 1:
+        return f"{value:.4f}"
+    label = f"{value:.4f}"
+    return label.rstrip("0").rstrip(".")
 
 
 def write_series(
