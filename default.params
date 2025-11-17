@@ -53,11 +53,11 @@ impact_velocity=-1.0
 # Maximum refinement level (2^MAXlevel cells at finest resolution)
 # Level 10 → 1024 cells, Level 11 → 2048 cells, etc.
 # Higher = more accurate but slower
-MAXlevel=10
+MAXlevel=12
 
 # Minimum refinement level (coarsest allowed)
 # Typically 4-5 for axisymmetric simulations
-MINlevel=4
+MINlevel=6
 
 # Initial grid level (before adaptation)
 # Start coarse, adaptation will refine where needed
@@ -69,7 +69,7 @@ fErr=1.0e-3
 
 # Curvature error tolerance
 # Important for surface tension accuracy
-KErr=1.0e-6
+KErr=1.0e-4
 
 # Velocity error tolerance
 # Controls resolution of flow features
@@ -80,7 +80,7 @@ VelErr=1.0e-2
 # ============================================================
 # Maximum simulation time (in dimensionless time units)
 # Typical impact time scale: R/U = 1
-tmax=0.02
+tmax=1e1
 
 # Snapshot interval for dump files
 # Balance between temporal resolution and storage
