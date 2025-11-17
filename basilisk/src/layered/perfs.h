@@ -33,7 +33,7 @@ displayed and updated at regular intervals (10 seconds as defined in
 event perf_plot (i = 10) {
   if (getenv ("DISPLAY"))
     popen ("gnuplot -e 'set term x11 noraise title perfs' "
-	   "$BASILISK/layered/perfs.plot "
+	   "$BASILISK/layered/perfs.plot 2> /dev/null "
 	   "& read dummy; kill $!", "w");
 }
 

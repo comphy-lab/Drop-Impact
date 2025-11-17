@@ -166,7 +166,7 @@ void dphidt (scalar phi, scalar dphi, scalar phi0, double cfl)
 	    double dx = Delta;
 	    double phixx = minmod3 (phi0[2*j] + phi0[] - 2.*phi0[j],
 				    phi0[1] + phi0[-1] - 2.*phi0[]);
-	    if (fabs(phixx) > 1./HUGE) {
+	    if (fabs(phixx) > 1e-6*dx) {
 	      double D = sq(phixx/2. - phi0[] - phi0[j]) - 4.*phi0[]*phi0[j];
 	      dx *= 1/2. + (phi0[] - phi0[j] - sign2(phi0[] - phi0[j])*sqrt(D))/phixx;
 	    }
