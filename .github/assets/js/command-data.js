@@ -308,7 +308,13 @@
   
   // Use the shared search database function from search-helper.js
   window.searchDatabaseForCommandPalette = async function(query) {
-    return window.searchHelper.searchDatabaseForCommandPalette(query);
+    const helper = window.searchHelper;
+    const searchFn = helper && helper.searchDatabaseForCommandPalette;
+    if (typeof searchFn !== 'function') {
+      console.warn('searchHelper.searchDatabaseForCommandPalette unavailable; returning empty result.');
+      return [];
+    }
+    return searchFn.call(helper, query);
   };
   
   // Add page-specific command function

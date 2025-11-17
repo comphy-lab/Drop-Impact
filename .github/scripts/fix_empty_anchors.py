@@ -38,6 +38,14 @@ import re
 import os
 import glob
 import argparse
+from typing import NamedTuple
+
+
+class FixResult(NamedTuple):
+    """Represents the outcome of processing a single HTML file."""
+
+    replacements: int
+    failed: bool
 
 # Try to import shared patterns, fall back to local patterns if not available
 try:
@@ -89,7 +97,8 @@ def fix_html_file(file_path, verbose=False, dry_run=False):
         dry_run: If True, shows changes without writing to file
 
     Returns:
-        int: Number of replacements made
+        FixResult: Tuple containing the approximate number of replacements and
+            whether the file processing failed due to an OSError
     """
     try:
         # Read the file
@@ -136,11 +145,11 @@ def fix_html_file(file_path, verbose=False, dry_run=False):
         elif verbose:
             print(f"  No empty anchors found in {file_path}")
         
-        return replacements
+        return FixResult(replacements=replacements, failed=False)
         
-    except Exception as e:
-        print(f"Error fixing {file_path}: {e}")
-        return 0
+    except OSError as e:
+        print(f"I/O error fixing {file_path}: {e}")
+        return FixResult(replacements=0, failed=True)
 
 def main():
     # Set up argument parser
@@ -175,7 +184,9 @@ def main():
 
     if os.path.isfile(path):
         # Fix a single file
-        fix_html_file(path, verbose=verbose, dry_run=dry_run)
+        result = fix_html_file(path, verbose=verbose, dry_run=dry_run)
+        if result.failed:
+            sys.exit(1)
     elif os.path.isdir(path):
         # Fix all HTML files in the directory and subdirectories
         if verbose:
@@ -189,15 +200,24 @@ def main():
 
         fixed_files = 0
         total_replacements = 0
+        failed_files = 0
 
         for file in html_files:
-            replacements = fix_html_file(file, verbose=verbose, dry_run=dry_run)
+            result = fix_html_file(file, verbose=verbose, dry_run=dry_run)
+            if result.failed:
+                failed_files += 1
+                continue
+
+            replacements = result.replacements
             if replacements > 0:
                 fixed_files += 1
                 total_replacements += replacements
 
         action = "Would fix" if dry_run else "Fixed"
         print(f"\nSummary: {action} {fixed_files} out of {total_files} files, removing approximately {total_replacements} empty anchor tags")
+        if failed_files > 0:
+            print(f"{failed_files} files failed due to I/O errors")
+            sys.exit(1)
     else:
         print(f"Error: {path} is not a valid file or directory")
         sys.exit(1)
