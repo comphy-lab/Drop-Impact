@@ -259,7 +259,7 @@ def find_source_files(root_dir: Path, source_dirs: List[str]) -> List[Path]:
     """
     Finds all supported source files in the specified directories and root directory.
     
-    Searches recursively within each source directory and non-recursively in the root directory for files with supported extensions (.c, .h, .py, .sh, .ipynb) or named 'Makefile', excluding files ending with '.dat'.
+    Searches recursively within each source directory and non-recursively in the root directory for files with supported extensions (.c, .h, .py, .sh, .ipynb, .params) or named 'Makefile', excluding files ending with '.dat'.
     
     Args:
         root_dir: The root directory to search for source files.
@@ -268,7 +268,7 @@ def find_source_files(root_dir: Path, source_dirs: List[str]) -> List[Path]:
     Returns:
         A sorted list of Paths to the discovered source files.
     """
-    valid_exts = {'.c', '.h', '.py', '.sh', '.ipynb'}
+    valid_exts = {'.c', '.h', '.py', '.sh', '.ipynb', '.params'}
     valid_names = {'Makefile'}
     files = set()
 
@@ -313,6 +313,20 @@ def process_shell_file(file_path: Path) -> str:
         content = content.replace("=true", "=\\true")
         content = content.replace("=false", "=\\false")
         return f"# {file_path.name}\n\n```bash\n{content}\n```"
+
+def process_params_file(file_path: Path) -> str:
+    """
+    Reads a parameter configuration file and returns its content as a Markdown-formatted INI code block.
+
+    Parameter files (.params) use key=value syntax with # for comments, similar to INI or shell configuration files.
+    This format is used for simulation parameters in the Drop Impact project.
+    """
+    with open(file_path, 'r', encoding='utf-8') as f:
+        content = f.read()
+        # Escape any potential variables that could conflict with Pandoc
+        content = content.replace("$", "\\$")
+        # Use 'ini' syntax highlighting for key=value configuration files
+        return f"# {file_path.name}\n\n```ini\n{content}\n```"
 
 def process_jupyter_notebook(file_path: Path) -> str:
     """
@@ -769,7 +783,7 @@ def prepare_pandoc_input(file_path: Path, literate_c_script: Path) -> str:
     """
     Prepares the content of a source file for Pandoc conversion based on its type.
     
-    Selects the appropriate processing function for the given file, converting it to Markdown or HTML as needed for Pandoc input. Supports Markdown, Python, shell scripts, Jupyter notebooks, Makefiles, and C/C++ files.
+    Selects the appropriate processing function for the given file, converting it to Markdown or HTML as needed for Pandoc input. Supports Markdown, Python, shell scripts, parameter files (.params), Jupyter notebooks, Makefiles, and C/C++ files.
     """
     file_suffix = file_path.suffix.lower()
     file_name = file_path.name
@@ -780,6 +794,8 @@ def prepare_pandoc_input(file_path: Path, literate_c_script: Path) -> str:
         return process_python_file(file_path)
     elif file_suffix == '.sh':
         return process_shell_file(file_path)
+    elif file_suffix == '.params':
+        return process_params_file(file_path)
     elif file_suffix == '.ipynb':
         return process_jupyter_notebook(file_path)
     elif file_name == 'Makefile':
@@ -824,6 +840,8 @@ def run_pandoc(pandoc_input: str, output_html_path: Path, template_path: Path,
         '-f', 'markdown+smart+raw_html+tex_math_dollars',
         '-t', 'html5',
         '--standalone',
+        '--toc',
+        '--toc-depth=3',
         '--mathjax',
         '--template', str(template_path),
         '-V', f'base={base_url}',
@@ -1417,10 +1435,11 @@ def process_file_with_page2html_logic(file_path: Path, output_html_path: Path, r
         # Determine file type for post-processing
         is_python_file = file_path.suffix.lower() == '.py'
         is_shell_file = file_path.suffix.lower() == '.sh'
+        is_params_file = file_path.suffix.lower() == '.params'
         is_markdown_file = file_path.suffix.lower() == '.md'
-        
+
         # Apply appropriate post-processing
-        if is_python_file or is_shell_file or is_markdown_file or is_jupyter_notebook:
+        if is_python_file or is_shell_file or is_params_file or is_markdown_file or is_jupyter_notebook:
             with open(output_html_path, 'r', encoding='utf-8') as f:
                 html_content = f.read()
             
