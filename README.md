@@ -46,16 +46,23 @@ vim sweep.params        # Set CASE_START, CASE_END, sweep variables
 ## Repository Structure
 
 ```
-├── src-local/          Modular header files
-│   ├── params.h        Parameter structures and parsing
-│   ├── geometry.h      Drop geometry and initialization
-│   └── diagnostics.h   Statistics and output handling
-├── simulationCases/    Case-based simulation outputs
-│   └── dropImpact.c    Main simulation case
-├── runSimulation.sh    Single case runner
-├── runParameterSweep.sh    Parameter sweep runner
-├── default.params          Single-case configuration
-└── sweep.params            Sweep configuration
+├── src-local/              Modular header files
+│   ├── params.h           Parameter structures and parsing
+│   ├── geometry.h         Drop geometry and initialization
+│   └── diagnostics.h      Statistics and output handling
+├── postProcess/           Post-processing tools and visualization
+│   ├── getData-generic.c  Field extraction on structured grids
+│   ├── getFacet.c        Interface geometry extraction
+│   ├── getFootPrint.c    Footprint height analysis
+│   ├── getFootPrint.py   Multi-cutoff footprint time-series
+│   ├── plotFootPrint.py  Publication-quality footprint plots
+│   └── Video-generic.py  Frame-by-frame visualization pipeline
+├── simulationCases/       Case-based simulation outputs
+│   └── dropImpact.c      Main simulation case
+├── runSimulation.sh       Single case runner
+├── runParameterSweep.sh   Parameter sweep runner
+├── default.params         Single-case configuration
+└── sweep.params           Sweep configuration
 ```
 
 ## Key Parameters
