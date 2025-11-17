@@ -57,3 +57,15 @@ dkms.conf
 # No _darcs
 **/_darcs
 **/.project_config
+
+# Cases
+**/dropImpact
+
+# Case folders (4-digit case numbers: 1000-9999)
+SimulationCases/[0-9][0-9][0-9][0-9]/
+
+# always add .c and .h
+!.c 
+!.h 
+!.sh 
+!.sbatch

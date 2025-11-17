@@ -1,0 +1,109 @@
+# Drop Impact Simulation - Default Parameters
+# Format: key=value (one per line, # for comments)
+# This file provides a typical water-air drop impact configuration
+
+# ============================================================
+# Case Identification
+# ============================================================
+# Case number for folder naming (4-digit: 1000-9999)
+# Output will be created in SimulationCases/<CaseNo>/
+CaseNo=1000
+
+# ============================================================
+# Physical Parameters (Dimensionless Numbers)
+# ============================================================
+# Weber number: We = ρU²R/σ (inertia vs surface tension)
+We=10.0
+
+# Ohnesorge number (drop): Oh = μ/√(ρσR) (viscous vs surface tension)
+Ohd=1.0e-3
+
+# Ohnesorge number (surrounding gas)
+Ohs=1.0e-5
+
+# Density ratio: ρ_gas/ρ_drop (air-water ≈ 1e-3)
+rho_ratio=1.0e-3
+
+# Computed Reynolds number: Re = √We/Oh ≈ 100
+
+# ============================================================
+# Geometry Configuration
+# ============================================================
+# Domain size in drop radii (must be >> drop radius to avoid boundary effects)
+Ldomain=8.0
+
+# Initial drop center position (radial coordinate, in drop radii)
+# Should be > 0 to avoid axis, and > drop_radius to avoid overlap with surface
+drop_x=1.05
+
+# Initial drop center position (axial coordinate, height above surface)
+# Set to drop_radius for drop just touching surface at t=0
+drop_y=1.0
+
+# Drop radius (normalized, typically 1.0)
+drop_radius=1.0
+
+# Initial impact velocity (negative = downward toward surface)
+# Magnitude of 1.0 corresponds to unit Weber number scaling
+impact_velocity=-1.0
+
+# ============================================================
+# Numerical Parameters (Mesh Adaptation)
+# ============================================================
+# Maximum refinement level (2^MAXlevel cells at finest resolution)
+# Level 10 → 1024 cells, Level 11 → 2048 cells, etc.
+# Higher = more accurate but slower
+MAXlevel=10
+
+# Minimum refinement level (coarsest allowed)
+# Typically 4-5 for axisymmetric simulations
+MINlevel=4
+
+# Initial grid level (before adaptation)
+# Start coarse, adaptation will refine where needed
+init_grid_level=6
+
+# VOF field error tolerance
+# Controls interface resolution (smaller = finer mesh at interface)
+fErr=1.0e-3
+
+# Curvature error tolerance
+# Important for surface tension accuracy
+KErr=1.0e-6
+
+# Velocity error tolerance
+# Controls resolution of flow features
+VelErr=1.0e-2
+
+# ============================================================
+# Time Control
+# ============================================================
+# Maximum simulation time (in dimensionless time units)
+# Typical impact time scale: R/U = 1
+tmax=4.0
+
+# Snapshot interval for dump files
+# Balance between temporal resolution and storage
+tsnap=0.01
+
+# ============================================================
+# Output Configuration
+# ============================================================
+# Output directory name
+# Will be created if it doesn't exist
+output_dir=results
+
+# Statistics logging interval (iterations)
+# Write log entry every N timesteps (1 = every step)
+log_interval=1
+
+# ============================================================
+# Advanced: Outflow Boundary Control
+# ============================================================
+# Unrefine mesh if x > outflow_x_frac * Ldomain
+# Prevents wasted resolution far from drop
+outflow_x_frac=0.95
+
+# Unrefine mesh if y > outflow_y_max
+# Far-field boundary where solution should be simple
+outflow_y_max=4.0
