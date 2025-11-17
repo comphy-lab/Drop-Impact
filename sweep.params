@@ -26,10 +26,10 @@ CASE_END=1011
 # The sweep will generate all combinations (cartesian product)
 
 # Sweep Weber number (vary impact velocity / surface tension)
-SWEEP_We=1.0,10.0,100.0,1000.0
+SWEEP_We=10.0
 
 # Sweep Ohnesorge number (vary viscosity)
-SWEEP_Ohd=1.0e-3,1.0e-2,1.0e-1
+SWEEP_Ohd=1.0e-3,3e-3,1.0e-2,3e-2,1.0e-1,3e-1,1e0
 
 # Optional: sweep other parameters
 # SWEEP_MAXlevel=9,10,11
