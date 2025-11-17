@@ -70,6 +70,14 @@ simulationCases/[0-9][0-9][0-9][0-9]/
 # bview file
 **/display.html
 
+# SLURM output files
+*.err
+slurm-*.out
+slurm-*.err
+
+# Temporary sweep directories
+.sweep_tmp_*
+
 # always add .c and .h
 !.c
 !.h
