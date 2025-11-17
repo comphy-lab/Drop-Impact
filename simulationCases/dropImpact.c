@@ -80,7 +80,7 @@ qcc -I../src-local -O2 -Wall -disable-dimensions dropImpact.c -o dropImpact -lm
 
 ## See Also
 
-- Basilisk: http://basilisk.fr
+- Basilisk: https://basilisk.fr
 - [Sanjay & Lohse (2025)](https://doi.org/10.1103/PhysRevLett.134.104003) - Unifying theory of scaling in drop impact
 - [Josserand & Thoroddsen (2016)](http://dx.doi.org/10.1146/annurev-fluid-122414-034401) - Drop impact review
 - [Yarin (2006)](http://dx.doi.org/10.1146/annurev.fluid.38.050304.092144) - Drop impact dynamics
