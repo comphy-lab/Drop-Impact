@@ -17,9 +17,9 @@ Provide any relevant context about your question:
 - Any relevant code snippets or configuration
 
 **System Information (if relevant):**
- - OS: [e.g. MacOS]
- - Compiler Version:
- - Other relevant details:
+- OS: [e.g. macOS]
+- Compiler Version:
+- Other relevant details:
 
 **Additional Information**
 Add any other context or screenshots about your question here.

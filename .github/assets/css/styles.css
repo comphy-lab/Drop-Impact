@@ -184,7 +184,6 @@ h2 {
   position: relative;
   font-size: 2.2rem;
   font-weight: 600;
-  color: var(--color-text);
   padding-bottom: 0.5rem;
   margin: 1.5rem 0 1rem;
   background: linear-gradient(to right, var(--h2-gradient-start), var(--h2-gradient-end));
@@ -610,7 +609,6 @@ img.youtube-stats-dark {
 
 .s-intro__title {
   font-size: 5rem;
-  font-weight: bold;
   margin-bottom: 3rem;
   opacity: 0;
   animation: fadeInUp 1s ease forwards;

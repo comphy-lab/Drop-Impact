@@ -30,9 +30,9 @@ jobs:
         name: Check if should skip
         run: |
           if git log -1 --pretty=%B | grep -q "\[skip-deploy\]"; then
-            echo "should_skip=true" >> $GITHUB_OUTPUT
+            echo "should_skip=true" >> "$GITHUB_OUTPUT"
           else
-            echo "should_skip=false" >> $GITHUB_OUTPUT
+            echo "should_skip=false" >> "$GITHUB_OUTPUT"
           fi
 
   deploy:

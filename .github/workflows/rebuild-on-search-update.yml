@@ -11,9 +11,9 @@ permissions:
   pages: write
   id-token: write
 
-# Allow only one concurrent deployment per workflow
+# Allow only one concurrent deployment across Pages workflows
 concurrency:
-  group: "pages-${{ github.workflow }}"
+  group: "pages"
   cancel-in-progress: true
 
 jobs:

@@ -2,9 +2,9 @@
 
 ## Sitemap
 
-```
+```plaintext
 .github/
-├── README.md                  # This file
+├── Website-generator-readme.md    # This file
 ├── assets/                    # Website assets
 │   ├── css/                   # CSS stylesheets
 │   │   ├── academicons-1.7.0/ # Academic icons

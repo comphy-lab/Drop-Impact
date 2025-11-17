@@ -79,10 +79,10 @@ slurm-*.err
 .sweep_tmp_*
 
 # always add .c and .h
-!.c
-!.h
-!.sh
-!.sbatch
+!*.c
+!*.h
+!*.sh
+!*.sbatch
 
 # Documentation generation artifacts
 docs/
