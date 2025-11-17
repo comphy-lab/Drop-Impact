@@ -6,7 +6,7 @@
 # Case Identification
 # ============================================================
 # Case number for folder naming (4-digit: 1000-9999)
-# Output will be created in SimulationCases/<CaseNo>/
+# Output will be created in simulationCases/<CaseNo>/
 CaseNo=1000
 
 # ============================================================
