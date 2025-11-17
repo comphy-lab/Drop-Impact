@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This repository contains computational fluid dynamics simulations for drop impact studies using the Basilisk C framework. The project focuses on axisymmetric two-phase flow simulations with adaptive mesh refinement.
 
-**Recent Update (2025)**: The codebase has been refactored for improved maintainability, modularity, and HPC compatibility. See [Modular Structure](#modular-structure) below.
+**Recent Update (2025)**: The codebase has been refactored for improved maintainability, modularity, and HPC compatibility. See [Modular Structure](#modular-structure-2025-restructuring) below.
 
 ## Purpose
 
@@ -18,7 +18,7 @@ The code has been completely reorganized with case-based folder management and r
 
 ### Directory Structure
 
-```
+```text
 Drop-Impact/
 ├── .project_config          # Basilisk environment setup
 ├── CLAUDE.md               # This file
@@ -102,7 +102,7 @@ vim sweep.params        # Set CASE_START, CASE_END, sweep variables
 
 - **Indentation**: 2 spaces (no tabs).
 - **Line Length**: Maximum 80 characters per line.
-- **Comments**: Use markdown in comments starting with `/**`; avoid bare `*` in comments.
+- **Comments**: Use Markdown in comments starting with `/**`; avoid bare `*` in comments.
 - **Spacing**: Include spaces after commas and around operators (`+`, `-`).
 - **File Organization**:
   - Place core functionality in `.h` headers
@@ -406,9 +406,9 @@ This rule provides guidance for maintaining and generating documentation for cod
 
 ### Documentation Guidelines
 
-- Read `.github/Website-generator-readme.md` for the website generation process.
-- Do not auto-deploy the website; generating HTML is permitted using `.github/scripts/build.sh`.
-- Avoid editing HTML files directly; they are generated using `.github/scripts/build.sh`, which utilizes `.github/scripts/generate_docs.py`.
+- Read the GitHub `.github/Website-generator-readme.md` for the website generation process.
+- Do not auto-deploy the website; generating HTML is permitted using the GitHub `.github/scripts/build.sh`.
+- Avoid editing HTML files directly; they are generated using the GitHub `.github/scripts/build.sh`, which utilizes the GitHub `.github/scripts/generate_docs.py`.
 - The website is deployed at `https://comphy-lab.org/repositoryName`; refer to the `CNAME` file for configuration. Update if not done already.
 
 ### Process Details
