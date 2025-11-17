@@ -2410,14 +2410,14 @@ img.youtube-stats-dark {
 }
 
 /* Style tags */
-.featured-paper tags {
+.featured-paper .tags {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
     margin: 1rem 0;
 }
 
-.featured-paper tags span {
+.featured-paper .tags span {
     display: inline-block;
     padding: 0.4rem 0.8rem;
     background: rgba(76, 110, 245, 0.1);
@@ -2429,7 +2429,7 @@ img.youtube-stats-dark {
     text-decoration: none;
 }
 
-.featured-paper tags span:hover {
+.featured-paper .tags span:hover {
     background: rgba(76, 110, 245, 0.2);
     transform: translateY(-2px);
 }
