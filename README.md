@@ -45,18 +45,18 @@ vim sweep.params        # Set CASE_START, CASE_END, sweep variables
 
 ## Repository Structure
 
-```text
+```
 Drop-Impact/
-├── src-local/              # Modular header files
-│   ├── params.h           # Parameter structures and parsing
-│   ├── geometry.h         # Drop geometry and initialization
-│   └── diagnostics.h      # Statistics and output handling
-├── simulationCases/        # Case-based simulation outputs
-│   └── <CaseNo>/          # Individual case folders (e.g., 1000/)
-├── runSimulation.sh        # Single case runner
-├── runParameterSweep.sh    # Parameter sweep runner
-├── default.params          # Single-case configuration
-└── sweep.params            # Sweep configuration
+├── src-local/          Modular header files
+│   ├── params.h        Parameter structures and parsing
+│   ├── geometry.h      Drop geometry and initialization
+│   └── diagnostics.h   Statistics and output handling
+├── simulationCases/    Case-based simulation outputs
+│   └── dropImpact.c    Main simulation case
+├── runSimulation.sh    Single case runner
+├── runParameterSweep.sh    Parameter sweep runner
+├── default.params          Single-case configuration
+└── sweep.params            Sweep configuration
 ```
 
 ## Key Parameters
