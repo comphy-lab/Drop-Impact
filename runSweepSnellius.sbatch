@@ -1,14 +1,15 @@
 #!/bin/bash
 #SBATCH --job-name=dropImpactSweep
 #SBATCH --nodes=1
-#SBATCH --ntasks=192
+#SBATCH --ntasks=48
 #SBATCH --cpus-per-task=1
-#SBATCH --time=100:00:00
+#SBATCH --time=1:00:00
 #SBATCH --partition=genoa
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=vatsal.sanjay@comphy-lab.org
 #SBATCH --output=slurm-%j.out
 #SBATCH --error=slurm-%j.err
+#SBATCH --chdir=/gpfs/work2/0/nctt0620/vatsal/2025-11-17-DropImpact/Drop-Impact
 
 # ============================================================
 # Drop Impact - HPC Parameter Sweep Runner
@@ -33,7 +34,8 @@ set -e  # Exit on error (but we'll handle case failures gracefully)
 # ============================================================
 # Configuration
 # ============================================================
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}\")\" && pwd)"
+# Use SLURM_SUBMIT_DIR (directory where sbatch was called) as the project root
+SCRIPT_DIR="${SLURM_SUBMIT_DIR}"
 SWEEP_FILE="${SCRIPT_DIR}/sweep.params"
 
 # ============================================================
@@ -159,7 +161,9 @@ echo ""
 echo "Generating parameter combinations..."
 
 # Create temporary directory for generated parameter files
-TEMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/sweep.XXXXXX")
+# HPC note: Don't use /tmp - use local work directory instead
+TEMP_DIR="${SCRIPT_DIR}/.sweep_tmp_$$"
+mkdir -p "$TEMP_DIR"
 trap "rm -rf $TEMP_DIR" EXIT
 
 CASE_NUM=$CASE_START
