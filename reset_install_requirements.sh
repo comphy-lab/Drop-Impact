@@ -1,6 +1,6 @@
 #!/bin/zsh
 # tested on MacOS only. Let us know if you find issues running with Linux by opening an issue. 
-# modify using http://basilisk.fr/src/INSTALL 
+# modify using https://basilisk.fr/src/INSTALL 
 # ensures that we are always using the latest version of basilisk
 
 # Check if --hard flag is passed
@@ -103,7 +103,7 @@ check_prerequisites() {
 
 # Function to install basilisk
 install_basilisk() {
-    darcs clone http://basilisk.fr/basilisk
+    darcs clone https://basilisk.fr/basilisk
     cd basilisk
 
     # Apply comphy-lab patches (macOS only)
@@ -187,7 +187,7 @@ if ! qcc --version > /dev/null 2>&1; then
     echo "\033[0;31mError: qcc is not working properly.\033[0m"
     echo "Please ensure you have Xcode Command Line Tools installed."
     echo "You can install them by running: xcode-select --install"
-    echo "For more details, visit: http://basilisk.fr/src/INSTALL"
+    echo "For more details, visit: https://basilisk.fr/src/INSTALL"
     exit 1
 else
     echo "\033[0;32mqcc is properly installed.\033[0m"

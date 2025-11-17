@@ -397,7 +397,7 @@ This removes the entire simulation output directory.
 
 ### Software
 
-- **Basilisk**: Open-source CFD solver - [http://basilisk.fr](http://basilisk.fr)
+- **Basilisk**: Open-source CFD solver - [https://basilisk.fr](https://basilisk.fr)
 - **qcc**: Basilisk's C preprocessor with grid abstractions
 
 ## Documentation Generation

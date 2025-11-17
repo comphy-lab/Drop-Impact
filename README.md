@@ -69,7 +69,7 @@ Drop-Impact/
 
 ## Requirements
 
-- **Basilisk Framework**: Open-source CFD solver ([basilisk.fr](http://basilisk.fr))
+- **Basilisk Framework**: Open-source CFD solver ([basilisk.fr](https://basilisk.fr))
 - **MPI** (optional): For parallel execution
   - macOS: `brew install open-mpi`
   - Linux: `sudo apt-get install libopenmpi-dev`
