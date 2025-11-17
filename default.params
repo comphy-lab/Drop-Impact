@@ -38,7 +38,7 @@ drop_x=1.05
 
 # Initial drop center position (axial coordinate, height above surface)
 # Set to drop_radius for drop just touching surface at t=0
-drop_y=1.0
+drop_y=0.0
 
 # Drop radius (normalized, typically 1.0)
 drop_radius=1.0
