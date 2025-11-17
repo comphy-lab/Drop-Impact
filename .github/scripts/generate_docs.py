@@ -1148,7 +1148,7 @@ def post_process_c_html(html_content: str, file_path: Path,
                 link_url = target_html_path.as_uri()
             link_title = f"Link to local documentation for {filename}"
         else:
-            link_url = f"http://basilisk.fr/src/{filename}"
+            link_url = f"https://basilisk.fr/src/{filename}"
             link_title = f"Link to Basilisk source for {filename}"
         
         return f'{prefix}<a href="{link_url}" title="{link_title}">{original_span_tag}</a>'
@@ -1518,11 +1518,11 @@ def convert_directory_tree_to_html(readme_content: str) -> str:
             if full_dir_path == "basilisk/src" or full_dir_path.startswith("basilisk/src/"):
                 # For basilisk/src directories, link to basilisk.fr or just show as text
                 if full_dir_path == "basilisk/src":
-                    item_html += f"**[{path}](http://basilisk.fr/src/)** - {description}"
+                    item_html += f"**[{path}](https://basilisk.fr/src/)** - {description}"
                 else:
                     # Subdirectories under basilisk/src
                     basilisk_subpath = full_dir_path.replace('basilisk/src/', '')
-                    item_html += f"**[{path}](http://basilisk.fr/src/{basilisk_subpath})** - {description}"
+                    item_html += f"**[{path}](https://basilisk.fr/src/{basilisk_subpath})** - {description}"
             else:
                 item_html += f"**[{path}]({dir_name})** - {description}"
             
@@ -1540,7 +1540,7 @@ def convert_directory_tree_to_html(readme_content: str) -> str:
             if file_path.startswith('basilisk/src/'):
                 # Link to external Basilisk documentation
                 basilisk_path = file_path.replace('basilisk/src/', '')
-                item_html += f"**[{path}](http://basilisk.fr/src/{basilisk_path})** - {description}"
+                item_html += f"**[{path}](https://basilisk.fr/src/{basilisk_path})** - {description}"
             else:
                 # Link to local documentation
                 item_html += f"**[{path}]({file_path}.html)** - {description}"
