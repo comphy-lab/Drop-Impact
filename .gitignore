@@ -1,3 +1,9 @@
+# OS specific files
+**/.DS_Store
+**/Thumbs.db
+**/.Spotlight-V100
+**/.Trashes
+
 # Prerequisites
 *.d
 
@@ -58,11 +64,11 @@ dkms.conf
 **/_darcs
 **/.project_config
 
-# Cases
-**/dropImpact
-
 # Case folders (4-digit case numbers: 1000-9999)
 simulationCases/[0-9][0-9][0-9][0-9]/
+
+# bview file
+**/display.html
 
 # always add .c and .h
 !.c 
