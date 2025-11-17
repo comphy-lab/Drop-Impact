@@ -14,7 +14,7 @@ snapshots inside ``caseToProcess``, and writes sorted CSV files of
 
 Typical usage from the repository root:
 
-    python3 postProcess/getFootPrint.py --caseToProcess ../simulationCases/1000/results
+    python3 postProcess/getFootPrint.py --caseToProcess simulationCases/1000/results
 
 Each cutoff produces ``rFootvsTime_<cutoff>.csv`` in the case directory.
 """
@@ -89,13 +89,13 @@ def parse_arguments() -> Tuple[RuntimeConfig, Tuple[float, ...]]:
     parser.add_argument(
         "--caseToProcess",
         type=str,
-        default="../simulationCases/1000/results",
+        default="simulationCases/1000/results",
         help="Path to the simulation results folder housing intermediate/.",
     )
     parser.add_argument(
         "--binary",
         type=str,
-        default="./getFootPrint",
+        default="postProcess/getFootPrint",
         help="Path to the compiled getFootPrint helper executable.",
     )
     parser.add_argument(

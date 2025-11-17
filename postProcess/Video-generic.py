@@ -203,11 +203,11 @@ def parse_arguments() -> RuntimeConfig:
     parser.add_argument(
         "--caseToProcess",
         type=str,
-        default="../simulationCases/1000/results",
+        default="simulationCases/1000/results",
         help="Case to process",
     )
     parser.add_argument(
-        "--folderToSave", type=str, default="../simulationCases/1000/results/Video", help="Folder to save"
+        "--folderToSave", type=str, default="simulationCases/1000/results/Video", help="Folder to save"
     )
     args = parser.parse_args()
 
@@ -283,7 +283,7 @@ def get_facets(filename: str):
     See Also:
         plot_snapshot: Uses returned segments for LineCollection rendering
     """
-    temp2 = run_helper(["./getFacet", filename])
+    temp2 = run_helper(["postProcess/getFacet", filename])
     segs = []
     skip = False
     if len(temp2) > 1e2:
@@ -334,7 +334,7 @@ def get_field(filename: str, zmin: float, zmax: float, rmax: float, nr: int) -> 
     """
     temp2 = run_helper(
         [
-            "./getData-generic",
+            "postProcess/getData-generic",
             filename,
             str(zmin),
             str(0),
