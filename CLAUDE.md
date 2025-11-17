@@ -114,6 +114,8 @@ vim sweep.params        # Set CASE_START, CASE_END, sweep variables
 
 ## Build & Test Commands
 
+### Serial (Single-Core) Compilation
+
 **Standard Compilation**:
 
 ```bash
@@ -125,6 +127,36 @@ qcc -autolink file.c -o executable -lm
 ```bash
 qcc -I$PWD/src-local -autolink file.c -o executable -lm
 ```
+
+### MPI Parallel Compilation
+
+**macOS (Darwin)**:
+
+```bash
+CC99='mpicc -std=c99' qcc -I$PWD/src-local -Wall -O2 -D_MPI=1 -disable-dimensions file.c -o executable -lm
+```
+
+**Linux**:
+
+```bash
+CC99='mpicc -std=c99 -D_GNU_SOURCE=1' qcc -I$PWD/src-local -Wall -O2 -D_MPI=1 -disable-dimensions file.c -o executable -lm
+```
+
+**Execution with MPI**:
+
+```bash
+mpirun -np 4 ./executable params.file  # 4 cores (default)
+mpirun -np 8 ./executable params.file  # 8 cores
+```
+
+### MPI Requirements
+
+To use MPI parallel execution, you must have MPI tools installed:
+
+- **macOS**: `brew install open-mpi`
+- **Linux**: `sudo apt-get install libopenmpi-dev` (Ubuntu/Debian) or `sudo yum install openmpi-devel` (RHEL/CentOS)
+
+The scripts will automatically verify that `mpicc` and `mpirun` are available when `--mpi` flag is used.
 
 ## Best Practices
 
@@ -163,19 +195,50 @@ Run simulations from the project root directory:
 # Edit parameter file
 vim default.params          # Set CaseNo, We, Oh, etc.
 
-# Run single simulation
+# Run single simulation (serial)
 ./runSimulation.sh
+
+# Run single simulation (MPI parallel, 4 cores)
+./runSimulation.sh --mpi
+
+# Run with custom number of cores (8 cores)
+./runSimulation.sh --mpi --cores 8
 
 # Compile only (check for errors)
 ./runSimulation.sh --compile-only
 
+# Compile with MPI (no execution)
+./runSimulation.sh --mpi --compile-only
+
 # Debug mode
 ./runSimulation.sh --debug
 
-# Parameter sweep
+# Debug mode with MPI
+./runSimulation.sh --mpi --debug
+
+# Parameter sweep (serial)
 vim sweep.params           # Set CASE_START, CASE_END, sweep variables
 ./runParameterSweep.sh
+
+# Parameter sweep (MPI parallel, 4 cores per case)
+./runParameterSweep.sh --mpi
+
+# Parameter sweep with custom cores (8 cores per case)
+./runParameterSweep.sh --mpi --cores 8
 ```
+
+### Execution Modes
+
+**Serial (Default)**:
+- Single-core execution
+- No special requirements
+- Backward compatible with all existing workflows
+
+**MPI Parallel** (`--mpi` flag):
+- Multi-core execution using MPI
+- Requires OpenMPI or MPICH installed
+- Significant speedup for large simulations
+- Default: 4 cores (configurable with `--cores N`)
 
 ### Legacy Command-Line Mode (Still Supported)
 
@@ -193,16 +256,28 @@ For backward compatibility, you can still pass parameters directly:
 
 ### Compilation Details
 
-Simulations are compiled using:
+**Serial Compilation:**
 ```bash
-qcc -I${ORIG_DIR}/src-local -I${ORIG_DIR}/../src-local -O2 -Wall -disable-dimensions <file>.c -o <executable> -lm
+qcc -I../../src-local -O2 -Wall -disable-dimensions <file>.c -o <executable> -lm
+```
+
+**MPI Parallel Compilation (macOS):**
+```bash
+CC99='mpicc -std=c99' qcc -I../../src-local -Wall -O2 -D_MPI=1 -disable-dimensions <file>.c -o <executable> -lm
+```
+
+**MPI Parallel Compilation (Linux):**
+```bash
+CC99='mpicc -std=c99 -D_GNU_SOURCE=1' qcc -I../../src-local -Wall -O2 -D_MPI=1 -disable-dimensions <file>.c -o <executable> -lm
 ```
 
 Key flags:
-- `-I${ORIG_DIR}/src-local`: Include local header directory (if it exists)
+- `-I../../src-local`: Include local header directory (relative to case folder)
 - `-O2`: Optimization level 2
 - `-Wall`: All warnings
 - `-disable-dimensions`: Disable dimensional analysis (Basilisk feature)
+- `-D_MPI=1`: Enable MPI parallelization (MPI builds only)
+- `CC99='mpicc ...'`: Use MPI C compiler (MPI builds only)
 - `-lm`: Link math library
 
 ### Simulation Parameters

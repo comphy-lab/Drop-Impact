@@ -38,6 +38,8 @@ Creates case folder in SimulationCases/<CaseNo>/ based on parameter file.
 Options:
     -c, --compile-only    Compile but don't run simulation
     -d, --debug           Compile with debug flags (-g -DTRASH=1)
+    -m, --mpi             Enable MPI parallel execution
+    --cores N             Number of MPI cores (default: 4, requires --mpi)
     -v, --verbose         Verbose output
     -h, --help           Show this help message
 
@@ -50,11 +52,14 @@ Environment variables:
     QCC_FLAGS     Additional qcc compiler flags
 
 Examples:
-    # Run with default parameters
+    # Run with default parameters (serial)
     $0
 
-    # Run with custom parameter file
-    $0 default.params
+    # Run with MPI parallel execution (4 cores)
+    $0 --mpi
+
+    # Run with MPI using 8 cores
+    $0 --mpi --cores 8 default.params
 
     # Compile only (check for errors)
     $0 --compile-only
@@ -72,6 +77,8 @@ EOF
 COMPILE_ONLY=0
 DEBUG_FLAGS=""
 VERBOSE=0
+MPI_ENABLED=0
+MPI_CORES=4
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -82,6 +89,18 @@ while [[ $# -gt 0 ]]; do
         -d|--debug)
             DEBUG_FLAGS="-g -DTRASH=1"
             shift
+            ;;
+        -m|--mpi)
+            MPI_ENABLED=1
+            shift
+            ;;
+        --cores)
+            MPI_CORES="$2"
+            if ! [[ "$MPI_CORES" =~ ^[0-9]+$ ]] || [ "$MPI_CORES" -lt 1 ]; then
+                echo "ERROR: --cores requires a positive integer, got: $MPI_CORES" >&2
+                exit 1
+            fi
+            shift 2
             ;;
         -v|--verbose)
             VERBOSE=1
@@ -101,6 +120,25 @@ while [[ $# -gt 0 ]]; do
             ;;
     esac
 done
+
+# ============================================================
+# Detect OS and Verify MPI
+# ============================================================
+OS_TYPE=$(uname -s)
+
+# Verify MPI tools if MPI is enabled
+if [ $MPI_ENABLED -eq 1 ]; then
+    if ! command -v mpicc &> /dev/null; then
+        echo "ERROR: mpicc not found. MPI compilation requires mpicc (OpenMPI or MPICH)." >&2
+        echo "       Install MPI tools or run without --mpi flag for serial execution." >&2
+        exit 1
+    fi
+    if ! command -v mpirun &> /dev/null; then
+        echo "ERROR: mpirun not found. MPI execution requires mpirun (OpenMPI or MPICH)." >&2
+        echo "       Install MPI tools or run without --mpi flag for serial execution." >&2
+        exit 1
+    fi
+fi
 
 # ============================================================
 # Determine Parameter File
@@ -140,6 +178,11 @@ echo "========================================="
 echo "Case Number: $CASE_NO"
 echo "Case Directory: $CASE_DIR"
 echo "Parameter File: $PARAM_FILE"
+if [ $MPI_ENABLED -eq 1 ]; then
+    echo "Execution Mode: MPI Parallel ($MPI_CORES cores)"
+else
+    echo "Execution Mode: Serial"
+fi
 echo ""
 
 # ============================================================
@@ -184,14 +227,41 @@ echo "Copied source file to case directory"
 
 # Compile
 echo "Compiling $SRC_FILE_LOCAL..."
-[ $VERBOSE -eq 1 ] && echo "Compiler: qcc"
-[ $VERBOSE -eq 1 ] && echo "Include paths: -I../../src-local"
-[ $VERBOSE -eq 1 ] && echo "Flags: -O2 -Wall -disable-dimensions $DEBUG_FLAGS $QCC_FLAGS"
 
-qcc -I../../src-local \
-    -O2 -Wall -disable-dimensions \
-    $DEBUG_FLAGS $QCC_FLAGS \
-    "$SRC_FILE_LOCAL" -o "$EXECUTABLE" -lm
+if [ $MPI_ENABLED -eq 1 ]; then
+    # MPI parallel compilation
+    if [ "$OS_TYPE" = "Darwin" ]; then
+        # macOS
+        [ $VERBOSE -eq 1 ] && echo "Compiler: CC99='mpicc -std=c99' qcc"
+        [ $VERBOSE -eq 1 ] && echo "Include paths: -I../../src-local"
+        [ $VERBOSE -eq 1 ] && echo "Flags: -Wall -O2 -D_MPI=1 -disable-dimensions $DEBUG_FLAGS $QCC_FLAGS"
+
+        CC99='mpicc -std=c99' qcc -I../../src-local \
+            -Wall -O2 -D_MPI=1 -disable-dimensions \
+            $DEBUG_FLAGS $QCC_FLAGS \
+            "$SRC_FILE_LOCAL" -o "$EXECUTABLE" -lm
+    else
+        # Linux
+        [ $VERBOSE -eq 1 ] && echo "Compiler: CC99='mpicc -std=c99 -D_GNU_SOURCE=1' qcc"
+        [ $VERBOSE -eq 1 ] && echo "Include paths: -I../../src-local"
+        [ $VERBOSE -eq 1 ] && echo "Flags: -Wall -O2 -D_MPI=1 -disable-dimensions $DEBUG_FLAGS $QCC_FLAGS"
+
+        CC99='mpicc -std=c99 -D_GNU_SOURCE=1' qcc -I../../src-local \
+            -Wall -O2 -D_MPI=1 -disable-dimensions \
+            $DEBUG_FLAGS $QCC_FLAGS \
+            "$SRC_FILE_LOCAL" -o "$EXECUTABLE" -lm
+    fi
+else
+    # Serial compilation
+    [ $VERBOSE -eq 1 ] && echo "Compiler: qcc"
+    [ $VERBOSE -eq 1 ] && echo "Include paths: -I../../src-local"
+    [ $VERBOSE -eq 1 ] && echo "Flags: -O2 -Wall -disable-dimensions $DEBUG_FLAGS $QCC_FLAGS"
+
+    qcc -I../../src-local \
+        -O2 -Wall -disable-dimensions \
+        $DEBUG_FLAGS $QCC_FLAGS \
+        "$SRC_FILE_LOCAL" -o "$EXECUTABLE" -lm
+fi
 
 if [ $? -ne 0 ]; then
     echo "ERROR: Compilation failed" >&2
@@ -228,7 +298,13 @@ echo "Starting simulation..."
 echo "========================================="
 
 # Run simulation
-./dropImpact case.params
+if [ $MPI_ENABLED -eq 1 ]; then
+    [ $VERBOSE -eq 1 ] && echo "Command: mpirun -np $MPI_CORES ./dropImpact case.params"
+    mpirun -np $MPI_CORES ./dropImpact case.params
+else
+    [ $VERBOSE -eq 1 ] && echo "Command: ./dropImpact case.params"
+    ./dropImpact case.params
+fi
 
 EXIT_CODE=$?
 

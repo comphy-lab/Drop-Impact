@@ -32,6 +32,8 @@ Options:
     -n, --dry-run        Show parameter combinations without running
     -v, --verbose        Verbose output
     -c, --compile-only   Compile only, don't run simulations
+    -m, --mpi            Enable MPI parallel execution for all cases
+    --cores N            Number of MPI cores (default: 4, requires --mpi)
     -h, --help          Show this help message
 
 Parameter sweep file (default):
@@ -49,11 +51,17 @@ Sweep file format:
 CaseNo auto-increments from CASE_START for each parameter combination.
 
 Examples:
-    # Run sweep with default file
+    # Run sweep with default file (serial)
     $0
 
     # Dry run to see parameter combinations
     $0 --dry-run
+
+    # Run sweep with MPI parallel execution (4 cores per case)
+    $0 --mpi
+
+    # Run sweep with 8 cores per case
+    $0 --mpi --cores 8
 
     # Run custom sweep file
     $0 custom_sweep.params
@@ -68,6 +76,8 @@ EOF
 DRY_RUN=0
 VERBOSE=0
 COMPILE_ONLY=0
+MPI_ENABLED=0
+MPI_CORES=4
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -82,6 +92,18 @@ while [[ $# -gt 0 ]]; do
         -c|--compile-only)
             COMPILE_ONLY=1
             shift
+            ;;
+        -m|--mpi)
+            MPI_ENABLED=1
+            shift
+            ;;
+        --cores)
+            MPI_CORES="$2"
+            if ! [[ "$MPI_CORES" =~ ^[0-9]+$ ]] || [ "$MPI_CORES" -lt 1 ]; then
+                echo "ERROR: --cores requires a positive integer, got: $MPI_CORES" >&2
+                exit 1
+            fi
+            shift 2
             ;;
         -h|--help)
             usage
@@ -293,18 +315,24 @@ for case_file in "$TEMP_DIR"/case_*.params; do
     PARAM_FILES+=("$case_file")
 done
 
-# Determine compile-only flag
-COMPILE_FLAG=""
+# Build flags to pass to runSimulation.sh
+RUN_FLAGS=""
 if [ $COMPILE_ONLY -eq 1 ]; then
-    COMPILE_FLAG="--compile-only"
+    RUN_FLAGS="$RUN_FLAGS --compile-only"
+fi
+if [ $MPI_ENABLED -eq 1 ]; then
+    RUN_FLAGS="$RUN_FLAGS --mpi --cores $MPI_CORES"
 fi
 
 # Run simulations sequentially (one at a time)
 echo "Running $COMBINATION_COUNT simulations sequentially"
+if [ $MPI_ENABLED -eq 1 ]; then
+    echo "Each case will use MPI with $MPI_CORES cores"
+fi
 echo ""
 
 for param_file in "${PARAM_FILES[@]}"; do
-    ./runSimulation.sh $COMPILE_FLAG "$param_file"
+    ./runSimulation.sh $RUN_FLAGS "$param_file"
 done
 
 echo ""
