@@ -159,11 +159,20 @@ echo ""
 # Generate Parameter Combinations
 # ============================================================
 echo "Generating parameter combinations..."
+echo "DEBUG: SCRIPT_DIR = $SCRIPT_DIR"
+echo "DEBUG: Creating temp directory..."
 
 # Create temporary directory for generated parameter files
 # HPC note: Don't use /tmp - use local work directory instead
 TEMP_DIR="${SCRIPT_DIR}/.sweep_tmp_$$"
-mkdir -p "$TEMP_DIR"
+echo "DEBUG: TEMP_DIR = $TEMP_DIR"
+
+mkdir -p "$TEMP_DIR" || {
+    echo "ERROR: Failed to create temp directory: $TEMP_DIR" >&2
+    exit 1
+}
+echo "DEBUG: Temp directory created successfully"
+
 trap "rm -rf $TEMP_DIR" EXIT
 
 CASE_NUM=$CASE_START
@@ -172,37 +181,69 @@ CASE_FILES=()
 
 # Recursive function to generate all combinations
 generate_combinations() {
+    echo "DEBUG: generate_combinations called with depth=$1" >&2
     local depth=$1
     shift
     local current_values=("$@")
+    echo "DEBUG: depth=$depth, SWEEP_VARS array size=${#SWEEP_VARS[@]}" >&2
 
     if [ $depth -eq ${#SWEEP_VARS[@]} ]; then
+        echo "DEBUG: Base case reached, creating case file" >&2
         # Base case: all variables assigned, create parameter file
         local case_file="${TEMP_DIR}/case_$(printf "%04d" $CASE_NUM).params"
+        echo "DEBUG: case_file=$case_file" >&2
+        echo "DEBUG: BASE_CONFIG=$BASE_CONFIG" >&2
+        echo "DEBUG: Checking if BASE_CONFIG exists..." >&2
+        ls -la "$BASE_CONFIG" >&2 || echo "DEBUG: BASE_CONFIG file not found!" >&2
 
         # Copy base config
-        cp "$BASE_CONFIG" "$case_file"
+        echo "DEBUG: Copying base config..." >&2
+        cp "$BASE_CONFIG" "$case_file" || {
+            echo "ERROR: Failed to copy $BASE_CONFIG to $case_file" >&2
+            exit 1
+        }
+        echo "DEBUG: Copy successful" >&2
 
         # Override CaseNo
+        echo "DEBUG: Overriding CaseNo to ${CASE_NUM}..." >&2
         if grep -q "^CaseNo=" "$case_file"; then
-            sed -i.bak "s|^CaseNo=.*|CaseNo=${CASE_NUM}|" "$case_file"
+            echo "DEBUG: CaseNo found, using sed to replace..." >&2
+            sed -i.bak "s|^CaseNo=.*|CaseNo=${CASE_NUM}|" "$case_file" || {
+                echo "ERROR: sed failed" >&2
+                exit 1
+            }
+            echo "DEBUG: sed completed" >&2
         else
+            echo "DEBUG: CaseNo not found, appending..." >&2
             echo "CaseNo=${CASE_NUM}" >> "$case_file"
         fi
+        echo "DEBUG: Removing backup file..." >&2
         rm -f "${case_file}.bak"
+        echo "DEBUG: CaseNo override complete" >&2
 
         # Override with sweep values
+        echo "DEBUG: Overriding sweep values..." >&2
         for i in "${!SWEEP_VARS[@]}"; do
             local var="${SWEEP_VARS[$i]}"
             local val="${current_values[$i]}"
+            echo "DEBUG: Processing var=$var, val=$val" >&2
 
             if grep -q "^${var}=" "$case_file"; then
-                sed -i.bak "s|^${var}=.*|${var}=${val}|" "$case_file"
+                echo "DEBUG: Found $var in file, replacing with sed..." >&2
+                sed -i.bak "s|^${var}=.*|${var}=${val}|" "$case_file" || {
+                    echo "ERROR: sed failed for $var" >&2
+                    exit 1
+                }
+                echo "DEBUG: sed completed for $var" >&2
             else
+                echo "DEBUG: $var not found, appending..." >&2
                 echo "${var}=${val}" >> "$case_file"
             fi
+            echo "DEBUG: Removing backup file for $var..." >&2
             rm -f "${case_file}.bak"
+            echo "DEBUG: Completed $var" >&2
         done
+        echo "DEBUG: All sweep values overridden" >&2
 
         CASE_FILES+=("$case_file")
         ((COMBINATION_COUNT++))
@@ -229,8 +270,12 @@ generate_combinations() {
 }
 
 # Start recursion
+echo "DEBUG: About to start recursion with CASE_START=$CASE_START"
+echo "DEBUG: SWEEP_VARS=(${SWEEP_VARS[@]})"
+echo "DEBUG: SWEEP_VALUES=(${SWEEP_VALUES[@]})"
 generate_combinations 0
 
+echo "DEBUG: Recursion completed"
 echo "Generated $COMBINATION_COUNT parameter combinations"
 
 # Check if number of combinations matches the range
