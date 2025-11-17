@@ -78,6 +78,11 @@ slurm-*.err
 # Temporary sweep directories
 .sweep_tmp_*
 
+# postProcessing specific
+**/getData*
+**/getFacet*
+**/Video
+
 # always add .c and .h
 !*.c
 !*.h
