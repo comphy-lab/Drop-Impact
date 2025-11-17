@@ -161,8 +161,13 @@ function renderSections(sections, container) {
         return node;
       }
       
-      // Sanitize the temporary element and all its children
-      sanitizeNode(temp);
+      // Sanitize each child node since the wrapper div isn't an allowed tag
+      Array.from(temp.childNodes).forEach(child => {
+        const sanitizedChild = sanitizeNode(child);
+        if (sanitizedChild !== child) {
+          temp.replaceChild(sanitizedChild, child);
+        }
+      });
       
       // Return the sanitized HTML
       return temp.innerHTML;

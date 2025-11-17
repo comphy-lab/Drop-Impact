@@ -292,7 +292,13 @@
         const copyButtons = document.querySelectorAll('.copy-btn');
         copyButtons.forEach(button => {
             button.addEventListener('click', function() {
-                const textToCopy = this.getAttribute('data-clipboard-text');
+                const textToCopy = this.getAttribute('data-text') || this.getAttribute('data-clipboard-text');
+                if (!textToCopy) {
+                    if (DEBUG) {
+                        console.warn('Copy button clicked without text:', this);
+                    }
+                    return;
+                }
                 copyToClipboard(textToCopy, this);
             });
         });
