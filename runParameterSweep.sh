@@ -66,7 +66,7 @@ Examples:
     # Run custom sweep file
     $0 custom_sweep.params
 
-For more information, see CLAUDE.md
+For more information, see README.md
 EOF
 }
 
