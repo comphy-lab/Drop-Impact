@@ -253,7 +253,10 @@ Attempts to restore from restart file if available; otherwise initializes
 from scratch.
 */
 event init(t = 0) {
-    if (!restore(file = "restart")) {
+    char restart_path[512];
+    snprintf(restart_path, sizeof(restart_path), "%s/restart", params.output_dir);
+
+    if (!restore(file = restart_path)) {
         // No restart file found - initialize from scratch
         fprintf(stderr, "\nInitializing simulation from initial conditions...\n");
 
