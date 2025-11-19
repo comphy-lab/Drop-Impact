@@ -24,7 +24,7 @@
  */
 
 scalar f[];
-char filename[80];
+char filename[4096];
 
 int main(int a, char const *arguments[])
 {
@@ -34,7 +34,7 @@ int main(int a, char const *arguments[])
     return 1;
   }
 
-  sprintf (filename, "%s", arguments[1]);
+  snprintf(filename, sizeof(filename), "%s", arguments[1]);
   restore (file = filename);
 
   // Boundary: no fluid at left (axis), with proper VOF refinement

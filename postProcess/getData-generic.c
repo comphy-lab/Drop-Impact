@@ -41,7 +41,7 @@ vector u[];
  *   4. Write compute function: `static void compute_Aij_field(scalar target) { ... }`
  */
 typedef struct {
-  char filename[80];
+  char filename[4096];
   double xmin, ymin, xmax, ymax;
   double Deltax, Deltay;
   int nx, ny;
@@ -117,7 +117,7 @@ static int parse_arguments(int argc, char const *argv[],
     return 0;
   }
 
-  sprintf(cfg->filename, "%s", argv[1]);
+  snprintf(cfg->filename, sizeof(cfg->filename), "%s", argv[1]);
   cfg->xmin = atof(argv[2]);
   cfg->ymin = atof(argv[3]);
   cfg->xmax = atof(argv[4]);
