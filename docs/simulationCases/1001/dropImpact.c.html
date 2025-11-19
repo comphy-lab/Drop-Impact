@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+  <!-- 
+    IMPORTANT: DO NOT place empty anchor tags <a></a> in this template!
+    They cause JavaScript syntax errors when they appear inside script blocks.
+  -->
+  <!-- Eliminate FOUC (Flash of Unstyled Content) and FOUT (Flash of Incorrect Theme) -->
+  <script>
+    (function() {
+  try {
+    // Apply the theme as quickly as possible to avoid flash
+    let saved;
+    try {
+      saved = localStorage.getItem('theme');
+    } catch (storageError) {
+      // Handle localStorage access errors (private browsing, cookies disabled)
+      console.warn('Unable to access localStorage:', storageError);
+    }
+
+    let prefersDark = false;
+    try {
+      prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    } catch (mediaError) {
+      // Handle matchMedia access errors (unsupported browsers)
+      console.warn('Unable to check media query:', mediaError);
+    }
+
+    const theme = saved ? saved : (prefersDark ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', theme);
+    // Add theme class for CSS targeting
+    document.documentElement.classList.add(theme + '-theme');
+    // Mark when theme is set for CSS transitions
+    document.documentElement.classList.add('theme-set');
+  } catch (error) {
+    // Fallback for any other unexpected errors
+    console.warn('Theme initialization failed:', error);
+    // Apply default theme as fallback
+    try {
+      document.documentElement.setAttribute('data-theme', 'light');
+      document.documentElement.classList.add('light-theme');
+      document.documentElement.classList.add('theme-set');
+    } catch (fallbackError) {
+      // Silent catch for extreme cases
+      console.error('Critical theme fallback failed:', fallbackError);
+    }
+  }
+})();
+  </script>
+
+
+  <!-- No-JS fallback for theme and critical theming styles -->
+  <style>
+    /* Default light theme variables */
+    :root {
+      /* Base colors */
+      --color-background: #fff;
+      --color-text: #333;
+      --color-primary: #0066cc;
+      --color-secondary: #036;
+      --color-accent: #0099ff;
+
+      /* UI elements */
+      --color-header-bg: #f5f5f5;
+      --color-footer-bg: #2d2e33;
+      --color-border: #e0e0e0;
+      --color-input-bg: #f9f9f9;
+
+      /* Component colors */
+      --color-preloader-bg: #ffffff;
+      --color-loader: #0066cc;
+      --color-card-bg: #ffffff;
+      --color-code-bg: #f5f5f5;
+    }
+
+    /* Dark theme variables applied via media query when JS is disabled */
+    @media (prefers-color-scheme: dark) {
+      :root:not(.theme-set) {
+        /* Base colors - dark mode */
+        --color-background: #1a1a1a;
+        --color-text: #f5f5f5;
+        --color-primary: #4d9fff;
+        --color-secondary: #88ccff;
+        --color-accent: #00bfff;
+
+        /* UI elements - dark mode */
+        --color-header-bg: #121212;
+        --color-footer-bg: #121212;
+        --color-border: #333;
+        --color-input-bg: #2d2d2d;
+
+        /* Component colors - dark mode */
+        --color-preloader-bg: #1a1a1a;
+        --color-loader: #4d9fff;
+        --color-card-bg: #222;
+        --color-code-bg: #2d2d2d;
+      }
+    }
+
+    /* When JS sets the theme explicitly via data attribute */
+    [data-theme="dark"] {
+      /* Base colors - dark mode */
+      --color-background: #1a1a1a;
+      --color-text: #f5f5f5;
+      --color-primary: #4d9fff;
+      --color-secondary: #88ccff;
+      --color-accent: #00bfff;
+
+      /* UI elements - dark mode */
+      --color-header-bg: #121212;
+      --color-footer-bg: #121212;
+      --color-border: #333;
+      --color-input-bg: #2d2d2d;
+
+      /* Component colors - dark mode */
+      --color-preloader-bg: #1a1a1a;
+      --color-loader: #4d9fff;
+      --color-card-bg: #222;
+      --color-code-bg: #2d2d2d;
+    }
+
+    /* Prevent transition flashes during initial load */
+    html:not(.transitions-enabled) * {
+      transition: none !important;
+    }
+
+    /* Apply theme to preloader and early elements */
+    #preloader {
+      background-color: var(--color-preloader-bg);
+      color: var(--color-text);
+    }
+
+    #loader {
+      border-color: var(--color-loader);
+      border-top-color: transparent;
+    }
+
+    /* Noscript warning */
+    .noscript-warning {
+      background-color: var(--color-primary);
+      color: white;
+      text-align: center;
+      padding: 10px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+    }
+
+    /* Theme indicator for no-JS */
+    .theme-indicator {
+      padding: 5px 10px;
+      border-radius: 4px;
+      background-color: var(--color-input-bg);
+      color: var(--color-text);
+      text-align: center;
+    }
+
+    /* Hide JS-only elements when no JS */
+    .no-js .js-only {
+      display: none !important;
+    }
+
+    /* Show no-JS alternatives */
+    .js .no-js-only {
+      display: none !important;
+    }
+  </style>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="base-url" content="..">
+  <title>simulationCases/1001/dropImpact.c | Drop Impact Simulations</title>
+
+  <!-- Critical CSS for fastest paint -->
+  <style>
+      .s-intro__title {
+          visibility: visible;
+          font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      }
+      .s-header {
+          visibility: visible;
+      }
+
+      /* Ensure theme toggle properly styled immediately */
+      .theme-toggle {
+          background-color: var(--color-background);
+          color: var(--color-text);
+      }
+
+      /* Control SVG visibility based on theme */
+      [data-theme="dark"] .theme-toggle-icon.sun,
+      :root:not([data-theme="dark"]) .theme-toggle-icon.moon {
+          display: block;
+      }
+
+      [data-theme="dark"] .theme-toggle-icon.moon,
+      :root:not([data-theme="dark"]) .theme-toggle-icon.sun {
+          display: none;
+      }
+  </style>
+
+  <!-- Critical Meta Tags -->
+  <meta name="description" content="Axisymmetric simulation of a liquid drop impacting a solid surface using the Volume-of-Fluid (VOF) method with adaptive mesh refinement.">
+  <meta name="author" content="CoMPhy Lab">
+  <meta name="robots" content="index, follow">
+  <meta name="keywords" content="axi.h, diagnostics.h, drop_distance_squared, dropimpact, geometry.h, navier-stokes/centered.h, navier-stokes/conserving.h, params.h, tension.h, two-phase.h">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="apple-mobile-web-app-title" content="CoMPhy Lab">
+
+  <!-- Preload critical resources -->
+  <link rel="preload" href="../../assets/js/main.js" as="script">
+  <link rel="preload" href="../../assets/css/fontello/css/fontello.css" as="style">
+  <link rel="preload" href="../../assets/css/academicons-1.7.0/css/academicons.min.css" as="style">
+
+  <!-- Base stylesheets -->
+  <link rel="stylesheet" href="../../assets/css/styles.css">
+  <link rel="stylesheet" href="../../assets/css/custom_styles.css">
+  <link rel="stylesheet" href="../../assets/css/command-palette.css">
+  <link rel="stylesheet" href="../../assets/css/fontello/css/fontello.css">
+  <link rel="stylesheet" href="../../assets/css/academicons-1.7.0/css/academicons.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+
+  <!-- Font optimization -->
+  <style>
+      @font-face {
+          font-display: swap;
+          font-family: 'System Font';
+          src: local('system-ui');
+      }
+  </style>
+
+  <!-- Favicon -->
+  <link rel="apple-touch-icon" sizes="180x180" href="../../assets/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="../../assets/favicon/favicon-96x96.png">
+  <link rel="icon" type="image/svg+xml" href="../../assets/favicon/favicon.svg">
+  <link rel="shortcut icon" href="../../assets/favicon/favicon.ico">
+  <link rel="manifest" href="../../assets/favicon/site.webmanifest">
+
+  <!-- Scripts with proper loading attributes -->
+  <script src="../../assets/js/jquery.min.js"></script>
+  <script src="../../assets/js/jquery-ui.packed.js"></script>
+  <script src="../../assets/js/plots.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2/dist/fuse.min.js"></script>
+  <!-- Config script must load before other scripts -->
+  <script src="../../assets/js/config.js"></script>
+  <script defer src="../../assets/js/html-sanitizer.js"></script>
+  <script defer src="../../assets/js/search-helper.js"></script>
+  <script defer src="../../assets/js/command-palette.js"></script>
+  <script defer src="../../assets/js/command-data.js"></script>
+  <script defer src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/js/theme-toggle.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script"></script>
+
+  <!-- Optimize page load performance -->
+  <script>
+    // Preconnect to critical domains
+    const preconnectDomains = [
+      'https://cdnjs.cloudflare.com',
+      'https://cdn.jsdelivr.net'
+    ];
+
+    preconnectDomains.forEach(domain => {
+      const link = document.createElement('link');
+      link.rel = 'preconnect';
+      link.href = domain;
+      link.crossOrigin = 'anonymous';
+      document.head.appendChild(link);
+
+      // Also add DNS prefetch as fallback
+      const dnsLink = document.createElement('link');
+      dnsLink.rel = 'dns-prefetch';
+      dnsLink.href = domain;
+      document.head.appendChild(dnsLink);
+    });
+
+    // Detect when document is fully loaded to remove preloader
+    window.addEventListener('load', function() {
+      const preloader = document.getElementById('preloader');
+      if (preloader) {
+        preloader.style.opacity = '0';
+        setTimeout(() => {
+          preloader.style.display = 'none';
+        }, 300); // Match transition duration
+      }
+    });
+  </script>
+
+  <script>
+      // Load Font Awesome with proper environment detection and fallbacks
+      function loadStylesheet(href) {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = href;
+        link.crossOrigin = 'anonymous';
+        link.onerror = (e) => {
+          console.error(`Failed to load stylesheet: `, e);
+          console.log('Trying alternative Font Awesome source...');
+        };
+        document.head.appendChild(link);
+        return link;
+      }
+
+      // Check if we're on localhost
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        // Use hardcoded version numbers for reliable loading
+
+        // Load Font Awesome using multiple CDNs to maximize reliability for local development
+        loadStylesheet('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css');
+        // Backup CDN if the first one fails
+        loadStylesheet('https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/css/all.min.css');
+        // Final local fallback - ensures it will work on any localhost environment
+        loadStylesheet('https://use.fontawesome.com/releases/v6.7.2/css/all.css');
+      } else {
+        // Use Kit for production with defer
+        var script = document.createElement('script');
+        script.src = 'https://kit.fontawesome.com/b1cfd9ca75.js';
+        script.crossOrigin = 'anonymous';
+        script.defer = true;
+        document.head.appendChild(script);
+      }
+    </script>
+
+  <script>
+      // Mark page as JS-enabled and manage transitions
+      document.documentElement.classList.remove('no-js');
+      document.documentElement.classList.add('js');
+
+      // Allow CSS transitions after initial load to prevent transition flashes
+      window.addEventListener('DOMContentLoaded', () => {
+          setTimeout(() => {
+              document.documentElement.classList.add('transitions-enabled');
+          }, 100); // Short delay to ensure DOM is ready
+      });
+  </script>
+</head>
+<body id="top">
+<script>window.repoName = "Drop-Impact";</script>
+
+
+    <!-- Preloader with theme variables applied -->
+    <div id="preloader">
+        <div id="loader"></div>
+    </div>
+
+    <noscript>
+        <div class="noscript-warning">
+            <p>This site works best with JavaScript enabled. Some features may be limited.</p>
+        </div>
+    </noscript>
+
+    <div id="page" class="s-pagewrap">
+        <header class="s-header">
+            <div class="s-header__logo">
+                <a class="logo" href="/">
+                    <img src="../../assets/logos/CoMPhy-Lab-no-name.png" alt="CoMPhy Lab">
+                </a>
+                <a class="documentation-button" href="/Drop-Impact">
+                    <i class="fa-solid fa-book-open"></i>
+                    <span>Drop-Impact</span>
+                </a>
+            </div>
+            <a class="s-header__menu-toggle" href="#0">
+                <span class="s-header__menu-text">Menu</span>
+                <span class="s-header__menu-icon"></span>
+            </a>
+            <nav class="s-header__nav">
+                <a href="#0" class="s-header__nav-close-btn"><span>Close</span></a>
+                <ul class="s-header__nav-list">
+                    <li style="background: none;">
+                        <!-- JS theme toggle -->
+                        <div class="theme-toggle js-only" id="theme-toggle" aria-label="Toggle dark/light theme">
+                            <svg class="theme-toggle-icon moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                            </svg>
+                            <svg class="theme-toggle-icon sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="5"></circle>
+                                <line x1="12" y1="1" x2="12" y2="3"></line>
+                                <line x1="12" y1="21" x2="12" y2="23"></line>
+                                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                                <line x1="1" y1="12" x2="3" y2="12"></line>
+                                <line x1="21" y1="12" x2="23" y2="12"></line>
+                                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                            </svg>
+                        </div>
+                    </li>
+                    <li style="background: none;"><a href="https://scholar.google.com/citations?user=tHb_qZoAAAAJ&hl=en" style="background: none; padding: 0;" aria-label="Google Scholar Profile"><i class="ai ai-google-scholar" style="font-size: 1.75em;"></i></a></li>
+                    <li style="background: none;"><a href="https://github.com/comphy-lab" style="background: none; padding: 0;" aria-label="GitHub Organization"><i class="fa-brands fa-github" style="font-size: 1.75em"></i></a></li>
+                    <li><a href="https://comphy-lab.org/#about" class="smoothscroll">About</a></li>
+                    <li><a href="https://comphy-lab.org/team/">Team</a></li>
+                    <li><a href="https://comphy-lab.org/research">Research</a></li>
+                    <li><a href="https://comphy-lab.org/teaching">Teaching</a></li>
+                    <li><a href="https://comphy-lab.org/join">Join Us</a></li>
+                    <li><a href="https://blogs.comphy-lab.org/">Blog</a></li>
+                    <li style="background: none;"><a href="https://bsky.app/profile/comphy-lab.org" style="background: none; padding: 0;" aria-label="Bluesky Profile"><i class="fa-brands fa-bluesky" style="font-size: 1.75em; color: #0085ff;"></i></a></li>
+                    <!-- Command Palette Button (Styled like search) -->
+                    <li class="command-palette-button">
+                        <div class="command-wrapper">
+                            <button class="command-k-style-btn" id="command-palette-btn" aria-label="Open command palette">
+                                <span class="default-theme-text">ctrl K</span>
+                                <span class="mac-theme-text">⌘ K</span>
+                                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                            </button>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        </header>
+
+        <!-- Main content -->
+        <main class="content">
+
+            <div class="page-content">
+
+                                <h1 class="page-title">simulationCases/1001/dropImpact.c</h1>
+
+                                <nav class="table-of-contents" id="TOC">
+                    <ul>
+                    <li><a href="#drop-impact-on-solid-surface"
+                    id="toc-drop-impact-on-solid-surface">Drop Impact on
+                    Solid Surface</a>
+                    <ul>
+                    <li><a href="#physical-problem"
+                    id="toc-physical-problem">Physical Problem</a></li>
+                    <li><a href="#coordinate-system"
+                    id="toc-coordinate-system">Coordinate
+                    System</a></li>
+                    <li><a href="#governing-equations"
+                    id="toc-governing-equations">Governing
+                    Equations</a></li>
+                    <li><a href="#dimensionless-numbers"
+                    id="toc-dimensionless-numbers">Dimensionless
+                    Numbers</a></li>
+                    <li><a href="#numerical-method"
+                    id="toc-numerical-method">Numerical Method</a></li>
+                    <li><a href="#usage" id="toc-usage">Usage</a>
+                    <ul>
+                    <li><a href="#from-parameter-file"
+                    id="toc-from-parameter-file">From parameter
+                    file:</a></li>
+                    <li><a href="#from-command-line-legacy-mode"
+                    id="toc-from-command-line-legacy-mode">From command
+                    line (legacy mode):</a></li>
+                    </ul></li>
+                    <li><a href="#references"
+                    id="toc-references">References</a></li>
+                    <li><a href="#see-also" id="toc-see-also">See
+                    Also</a></li>
+                    <li><a href="#compile-time-constants"
+                    id="toc-compile-time-constants">Compile-Time
+                    Constants</a></li>
+                    <li><a href="#geometry-helper-macros"
+                    id="toc-geometry-helper-macros">Geometry Helper
+                    Macros</a></li>
+                    <li><a href="#global-configuration"
+                    id="toc-global-configuration">Global
+                    Configuration</a></li>
+                    <li><a href="#boundary-conditions"
+                    id="toc-boundary-conditions">Boundary
+                    Conditions</a></li>
+                    <li><a href="#main-function"
+                    id="toc-main-function">Main Function</a>
+                    <ul>
+                    <li><a href="#parameter-parsing"
+                    id="toc-parameter-parsing">Parameter
+                    Parsing</a></li>
+                    <li><a href="#parameter-validation"
+                    id="toc-parameter-validation">Parameter
+                    Validation</a></li>
+                    <li><a href="#domain-setup"
+                    id="toc-domain-setup">Domain Setup</a></li>
+                    <li><a href="#material-properties"
+                    id="toc-material-properties">Material
+                    Properties</a></li>
+                    <li><a href="#output-setup"
+                    id="toc-output-setup">Output Setup</a></li>
+                    <li><a href="#print-configuration"
+                    id="toc-print-configuration">Print
+                    Configuration</a></li>
+                    <li><a href="#launch-simulation"
+                    id="toc-launch-simulation">Launch
+                    Simulation</a></li>
+                    </ul></li>
+                    <li><a href="#event-initialization"
+                    id="toc-event-initialization">Event:
+                    Initialization</a>
+                    <ul>
+                    <li><a href="#grid-refinement"
+                    id="toc-grid-refinement">Grid Refinement</a></li>
+                    <li><a href="#drop-initialization"
+                    id="toc-drop-initialization">Drop
+                    Initialization</a></li>
+                    </ul></li>
+                    <li><a href="#event-adaptive-mesh-refinement"
+                    id="toc-event-adaptive-mesh-refinement">Event:
+                    Adaptive Mesh Refinement</a>
+                    <ul>
+                    <li><a href="#curvature-calculation"
+                    id="toc-curvature-calculation">Curvature
+                    Calculation</a></li>
+                    <li><a href="#wavelet-based-adaptation"
+                    id="toc-wavelet-based-adaptation">Wavelet-based
+                    Adaptation</a></li>
+                    <li><a href="#outflow-region-un-refinement"
+                    id="toc-outflow-region-un-refinement">Outflow Region
+                    Un-refinement</a></li>
+                    </ul></li>
+                    <li><a href="#event-statistics-output"
+                    id="toc-event-statistics-output">Event: Statistics
+                    Output</a></li>
+                    <li><a href="#event-snapshot-output"
+                    id="toc-event-snapshot-output">Event: Snapshot
+                    Output</a></li>
+                    <li><a href="#event-cleanup"
+                    id="toc-event-cleanup">Event: Cleanup</a></li>
+                    </ul></li>
+                    </ul>
+                </nav>
+
+                                <div class="raw-file-button-container">
+                    <a href="https://github.com/comphy-lab/Drop-Impact/raw/main/simulationCases/1001/dropImpact.c" class="raw-file-button" target="_blank" rel="noopener noreferrer">
+                        <i class="fa-brands fa-github"></i> See raw file
+                    </a>
+                </div>
+
+                <h1 id="drop-impact-on-solid-surface">Drop Impact on
+                Solid Surface</h1>
+                <p>Axisymmetric simulation of a liquid drop impacting a
+                solid surface using the Volume-of-Fluid (VOF) method
+                with adaptive mesh refinement.</p>
+                <h2 id="physical-problem">Physical Problem</h2>
+                <p>A spherical drop of radius <span
+                class="math inline">\(R\)</span> impacts a solid surface
+                with velocity <span class="math inline">\(U\)</span>.
+                The simulation captures:</p>
+                <ul>
+                <li>Two-phase flow (liquid drop in surrounding gas)</li>
+                <li>Surface tension effects at the liquid-gas
+                interface</li>
+                <li>Viscous dissipation in both phases</li>
+                <li>Dynamic contact line motion</li>
+                <li>Drop spreading and potential splashing</li>
+                </ul>
+                <h2 id="coordinate-system">Coordinate System</h2>
+                <p>Axisymmetric cylindrical coordinates: - <span
+                class="math inline">\(x\)</span>: radial coordinate
+                (distance from axis of symmetry) - <span
+                class="math inline">\(y\)</span>: axial coordinate
+                (height above surface) - Azimuthal symmetry assumed (no
+                <span class="math inline">\(\theta\)</span>
+                dependence)</p>
+                <h2 id="governing-equations">Governing Equations</h2>
+                <p>Incompressible Navier-Stokes equations for two-phase
+                flow:</p>
+                <p><span class="math display">\[\nabla \cdot \mathbf{u}
+                = 0\]</span></p>
+                <p><span class="math display">\[\rho
+                \left(\frac{\partial \mathbf{u}}{\partial t} +
+                \mathbf{u} \cdot \nabla \mathbf{u}\right) =
+                -\nabla p + \nabla \cdot (2\mu \mathbf{D}) + \sigma
+                \kappa \mathbf{n} \delta_s\]</span></p>
+                <p>where: - <span
+                class="math inline">\(\mathbf{u}\)</span>: velocity
+                field - <span class="math inline">\(p\)</span>: pressure
+                - <span class="math inline">\(\rho\)</span>, <span
+                class="math inline">\(\mu\)</span>: density and
+                viscosity (phase-dependent) - <span
+                class="math inline">\(\mathbf{D}\)</span>: deformation
+                tensor - <span class="math inline">\(\sigma\)</span>:
+                surface tension coefficient - <span
+                class="math inline">\(\kappa\)</span>: interface
+                curvature - <span
+                class="math inline">\(\mathbf{n}\)</span>: interface
+                normal - <span class="math inline">\(\delta_s\)</span>:
+                interface delta function</p>
+                <h2 id="dimensionless-numbers">Dimensionless
+                Numbers</h2>
+                <p>Variables are normalized by drop radius <span
+                class="math inline">\(R\)</span>, impact velocity <span
+                class="math inline">\(U\)</span>, liquid density <span
+                class="math inline">\(\rho_\ell\)</span>, and surface
+                tension <span class="math inline">\(\sigma\)</span>:</p>
+                <ul>
+                <li><strong>Weber number</strong>: <span
+                class="math inline">\(We = \frac{\rho_\ell U^2
+                R}{\sigma}\)</span> (inertia vs surface tension)</li>
+                <li><strong>Ohnesorge number</strong>: <span
+                class="math inline">\(Oh = \frac{\mu}{\sqrt{\rho_\ell
+                \sigma R}}\)</span> (viscous vs surface tension)</li>
+                <li><strong>Reynolds number</strong>: <span
+                class="math inline">\(Re = \frac{\rho_\ell U R}{\mu} =
+                \frac{\sqrt{We}}{Oh}\)</span> (inertia vs viscous)</li>
+                <li><strong>Bond number</strong>: <span
+                class="math inline">\(Bo = \frac{\rho_\ell g
+                R^2}{\sigma}\)</span> (gravity vs surface tension, often
+                negligible)</li>
+                </ul>
+                <h2 id="numerical-method">Numerical Method</h2>
+                <ul>
+                <li><strong>Spatial discretization</strong>: Adaptive
+                quadtree grid (Basilisk framework)</li>
+                <li><strong>VOF method</strong>: Interface tracking
+                using volume fraction field</li>
+                <li><strong>Projection method</strong>:
+                Incompressibility constraint enforcement</li>
+                <li><strong>Adaptive refinement</strong>: Error-based
+                mesh adaptation for interface and flow features</li>
+                <li><strong>Time integration</strong>: CFL-limited
+                explicit time stepping</li>
+                </ul>
+                <h2 id="usage">Usage</h2>
+                <h3 id="from-parameter-file">From parameter file:</h3>
+                <div class="code-block-container"><div class="code-block-container"><pre
+                class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">qcc</span> <span class="at">-I..</span>/src-local <span class="at">-O2</span> <span class="at">-Wall</span> <span class="at">-disable-dimensions</span> dropImpact.c <span class="at">-o</span> dropImpact <span class="at">-lm</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./dropImpact</span> examples/default.params</span></code></pre></div></div>
+                <h3 id="from-command-line-legacy-mode">From command line
+                (legacy mode):</h3>
+                <div class="code-block-container"><div class="code-block-container"><pre
+                class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./dropImpact</span> <span class="op">&lt;</span>MAXlevel<span class="op">&gt;</span> <span class="op">&lt;</span>tmax<span class="op">&gt;</span> <span class="op">&lt;</span>We<span class="op">&gt;</span> <span class="op">&lt;</span>Ohd<span class="op">&gt;</span> <span class="op">&lt;</span>Ohs<span class="op">&gt;</span> <span class="op">&lt;</span>Ldomain<span class="op">&gt;</span> [drop_x] [drop_y] [impact_vel]</span></code></pre></div></div>
+                <h2 id="references">References</h2>
+                <ul>
+                <li>Vatsal Sanjay (vatsal.sanjay@comphy-lab.org)</li>
+                <li>CoMPhy Lab, Durham University</li>
+                <li>Date: 2022-02-08 (original), 2025 (refactored)</li>
+                </ul>
+                <h2 id="see-also">See Also</h2>
+                <ul>
+                <li>Basilisk: https://basilisk.fr</li>
+                <li><a
+                href="https://doi.org/10.1103/PhysRevLett.134.104003">Sanjay
+                &amp; Lohse (2025)</a> - Unifying theory of scaling in
+                drop impact</li>
+                <li><a
+                href="http://dx.doi.org/10.1146/annurev-fluid-122414-034401">Josserand
+                &amp; Thoroddsen (2016)</a> - Drop impact review</li>
+                <li><a
+                href="http://dx.doi.org/10.1146/annurev.fluid.38.050304.092144">Yarin
+                (2006)</a> - Drop impact dynamics</li>
+                </ul>
+                <div class="code-block-container"><div class="code-block-container"><pre
+                class="sourceCode c"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Basilisk includes</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><a href="https://basilisk.fr/src/axi.h" title="Link to Basilisk source for axi.h"><span class="im">"axi.h"</span></a><span class="pp">                           </span><span class="co">// Axisymmetric coordinates</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><a href="https://basilisk.fr/src/navier-stokes/centered.h" title="Link to Basilisk source for navier-stokes/centered.h"><span class="im">"navier-stokes/centered.h"</span></a><span class="pp">        </span><span class="co">// Centered NS solver</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="pp">#define FILTERED</span><span class="co">// Filtered interface for stability</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><a href="https://basilisk.fr/src/two-phase.h" title="Link to Basilisk source for two-phase.h"><span class="im">"two-phase.h"</span></a><span class="pp">                     </span><span class="co">// Two-phase flow (VOF method)</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><a href="https://basilisk.fr/src/navier-stokes/conserving.h" title="Link to Basilisk source for navier-stokes/conserving.h"><span class="im">"navier-stokes/conserving.h"</span></a><span class="pp">     </span><span class="co">// Momentum conservation</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><a href="https://basilisk.fr/src/tension.h" title="Link to Basilisk source for tension.h"><span class="im">"tension.h"</span></a><span class="pp">                       </span><span class="co">// Surface tension forces</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">// Local modular headers</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><a href="../../src-local/params.h.html" title="Link to local documentation for params.h"><span class="im">"params.h"</span></a><span class="pp">                        </span><span class="co">// Parameter management</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><a href="../../src-local/geometry.h.html" title="Link to local documentation for geometry.h"><span class="im">"geometry.h"</span></a><span class="pp">                      </span><span class="co">// Geometry and initialization</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><a href="../../src-local/diagnostics.h.html" title="Link to local documentation for diagnostics.h"><span class="im">"diagnostics.h"</span></a><span class="pp">                   </span><span class="co">// Statistics and output</span></span></code></pre></div></div>
+                <h2 id="compile-time-constants">Compile-Time
+                Constants</h2>
+                <p>Basilisk’s event system requires compile-time
+                constants for time intervals. These cannot be runtime
+                variables from parameter files.</p>
+                <div class="code-block-container"><div class="code-block-container"><pre
+                class="sourceCode c"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define TSNAP (0.01)                       </span><span class="co">// Snapshot interval (fixed at compile time)</span></span></code></pre></div></div>
+                <h2 id="geometry-helper-macros">Geometry Helper
+                Macros</h2>
+                <p>These must be defined here for Basilisk’s qcc
+                preprocessor to see them.</p>
+                <div class="code-block-container"><div class="code-block-container"><pre
+                class="sourceCode c"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#ifndef drop_distance_squared</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#define drop_distance_squared(x, y, p) \</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">((</span>x <span class="op">-</span> <span class="op">(</span>p<span class="op">)-&gt;</span>drop_x<span class="op">)</span> <span class="op">*</span> <span class="op">(</span>x <span class="op">-</span> <span class="op">(</span>p<span class="op">)-&gt;</span>drop_x<span class="op">)</span> <span class="op">+</span> <span class="op">(</span>y <span class="op">-</span> <span class="op">(</span>p<span class="op">)-&gt;</span>drop_y<span class="op">)</span> <span class="op">*</span> <span class="op">(</span>y <span class="op">-</span> <span class="op">(</span>p<span class="op">)-&gt;</span>drop_y<span class="op">))</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="pp">#endif</span></span></code></pre></div></div>
+                <h2 id="global-configuration">Global Configuration</h2>
+                <p>All simulation parameters are stored in a single
+                structure for: - Easy parameter passing - Clear
+                organization - Extensibility</p>
+                <div class="code-block-container"><div class="code-block-container"><pre
+                class="sourceCode c"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> SimulationParams params<span class="op">;</span></span></code></pre></div></div>
+                <h2 id="boundary-conditions">Boundary Conditions</h2>
+                <p>Axisymmetric flow requires special treatment at axis
+                and appropriate outflow conditions:</p>
+                <div class="code-block-container"><div class="code-block-container"><pre
+                class="sourceCode c"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">// Left boundary (axis of symmetry, x=0)</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>u<span class="op">.</span>t<span class="op">[</span>left<span class="op">]</span> <span class="op">=</span> dirichlet<span class="op">(</span><span class="fl">0.0</span><span class="op">);</span>   <span class="co">// No tangential velocity (azimuthal component)</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>f<span class="op">[</span>left<span class="op">]</span> <span class="op">=</span> dirichlet<span class="op">(</span><span class="fl">0.0</span><span class="op">);</span>     <span class="co">// No fluid crosses axis (ensures symmetry)</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co">// Right boundary (outflow, x=Ldomain)</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>u<span class="op">.</span>n<span class="op">[</span>right<span class="op">]</span> <span class="op">=</span> neumann<span class="op">(</span><span class="fl">0.</span><span class="op">);</span>     <span class="co">// Stress-free outflow (du/dn = 0)</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>p<span class="op">[</span>right<span class="op">]</span> <span class="op">=</span> dirichlet<span class="op">(</span><span class="fl">0.0</span><span class="op">);</span>    <span class="co">// Zero reference pressure</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co">// Top boundary (outflow, y=Ldomain)</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>u<span class="op">.</span>n<span class="op">[</span>top<span class="op">]</span> <span class="op">=</span> neumann<span class="op">(</span><span class="fl">0.</span><span class="op">);</span>       <span class="co">// Stress-free outflow</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>p<span class="op">[</span>top<span class="op">]</span> <span class="op">=</span> dirichlet<span class="op">(</span><span class="fl">0.0</span><span class="op">);</span>      <span class="co">// Zero reference pressure</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="co">// Bottom boundary (y=0, solid surface)</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="co">// Uses default no-slip condition from centered solver</span></span></code></pre></div></div>
+                <h2 id="main-function">Main Function</h2>
+                <p>Handles parameter parsing, validation, domain setup,
+                and simulation launch.</p>
+                <div class="code-block-container"><div class="code-block-container"><pre
+                class="sourceCode c"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="dt">int</span> main<span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="dt">const</span> <span class="op">*</span>argv<span class="op">[])</span> <span class="op">{</span></span></code></pre></div></div>
+                <h3 id="parameter-parsing">Parameter Parsing</h3>
+                <p>Supports two modes: 1. Parameter file:
+                <code>./dropImpact config.params</code> 2. Command line:
+                <code>./dropImpact &lt;MAXlevel&gt; &lt;tmax&gt; &lt;We&gt; &lt;Ohd&gt; &lt;Ohs&gt; &lt;Ldomain&gt; ...</code></p>
+                <div class="code-block-container"><div class="code-block-container"><pre
+                class="sourceCode c"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>argc <span class="op">==</span> <span class="dv">2</span> <span class="op">&amp;&amp;</span> access<span class="op">(</span>argv<span class="op">[</span><span class="dv">1</span><span class="op">],</span> F_OK<span class="op">)</span> <span class="op">==</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Parameter file mode</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>parse_params_from_file<span class="op">(</span>argv<span class="op">[</span><span class="dv">1</span><span class="op">],</span> <span class="op">&amp;</span>params<span class="op">)</span> <span class="op">!=</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>            fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;ERROR: Failed to parse parameter file</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span> <span class="cf">else</span> <span class="cf">if</span> <span class="op">(</span>argc <span class="op">&gt;=</span> <span class="dv">7</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Command line mode (legacy compatibility)</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>parse_params_from_cli<span class="op">(</span>argc<span class="op">,</span> <span class="op">(</span><span class="dt">char</span><span class="op">**)</span>argv<span class="op">,</span> <span class="op">&amp;</span>params<span class="op">)</span> <span class="op">!=</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Print usage and exit</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>        fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;Usage:</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>        fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;  %s &lt;params_file&gt;</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> argv<span class="op">[</span><span class="dv">0</span><span class="op">]);</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>        fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;  %s &lt;MAXlevel&gt; &lt;tmax&gt; &lt;We&gt; &lt;Ohd&gt; &lt;Ohs&gt; &lt;Ldomain&gt; [drop_x] [drop_y] [impact_vel]</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> argv<span class="op">[</span><span class="dv">0</span><span class="op">]);</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>        fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">Parameter file format: key=value (one per line)</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>        fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;See examples/default.params for template</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span></code></pre></div></div>
+                <h3 id="parameter-validation">Parameter Validation</h3>
+                <p>Check physical constraints and consistency before
+                starting simulation.</p>
+                <div class="code-block-container"><div class="code-block-container"><pre
+                class="sourceCode c"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(!</span>validate_params<span class="op">(&amp;</span>params<span class="op">))</span> <span class="op">{</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>        fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;ERROR: Parameter validation failed. Exiting.</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span></code></pre></div></div>
+                <h3 id="domain-setup">Domain Setup</h3>
+                <p>Initialize computational domain with specified size
+                and initial grid.</p>
+                <div class="code-block-container"><div class="code-block-container"><pre
+                class="sourceCode c"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>    L0 <span class="op">=</span> params<span class="op">.</span>Ldomain<span class="op">;</span>          <span class="co">// Domain size</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    X0 <span class="op">=</span> <span class="fl">0.</span><span class="op">;</span>                       <span class="co">// Origin at axis</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    Y0 <span class="op">=</span> <span class="fl">0.</span><span class="op">;</span>                       <span class="co">// Origin at surface</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    init_grid<span class="op">(</span><span class="dv">1</span> <span class="op">&lt;&lt;</span> params<span class="op">.</span>init_grid_level<span class="op">);</span>  <span class="co">// Initial grid: 2^init_grid_level</span></span></code></pre></div></div>
+                <h3 id="material-properties">Material Properties</h3>
+                <p>Set phase properties from dimensionless numbers: -
+                Phase 1 (f=1): Drop (liquid, typically water) - Phase 2
+                (f=0): Surrounding (gas, typically air)</p>
+                <div class="code-block-container"><div class="code-block-container"><pre
+                class="sourceCode c"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>    rho1 <span class="op">=</span> <span class="fl">1.0</span><span class="op">;</span>                            <span class="co">// Drop density (normalized)</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    mu1 <span class="op">=</span> params<span class="op">.</span>Ohd <span class="op">/</span> sqrt<span class="op">(</span>params<span class="op">.</span>We<span class="op">);</span>    <span class="co">// Drop viscosity from Oh and We</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    rho2 <span class="op">=</span> params<span class="op">.</span>rho_ratio<span class="op">;</span>               <span class="co">// Gas density</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    mu2 <span class="op">=</span> params<span class="op">.</span>Ohs <span class="op">/</span> sqrt<span class="op">(</span>params<span class="op">.</span>We<span class="op">);</span>    <span class="co">// Gas viscosity</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    f<span class="op">.</span>sigma <span class="op">=</span> <span class="fl">1.0</span> <span class="op">/</span> params<span class="op">.</span>We<span class="op">;</span>             <span class="co">// Surface tension from We</span></span></code></pre></div></div>
+                <h3 id="output-setup">Output Setup</h3>
+                <p>Create output directory and open log files. File
+                handles remain open for performance (avoids repeated
+                open/close).</p>
+                <div class="code-block-container"><div class="code-block-container"><pre
+                class="sourceCode c"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>    create_output_directory<span class="op">(</span>params<span class="op">.</span>output_dir<span class="op">);</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    open_log_files<span class="op">(&amp;</span>params<span class="op">);</span></span></code></pre></div></div>
+                <h3 id="print-configuration">Print Configuration</h3>
+                <p>Write complete parameter summary to stderr for
+                verification.</p>
+                <div class="code-block-container"><div class="code-block-container"><pre
+                class="sourceCode c"><code class="sourceCode c"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>    print_params<span class="op">(&amp;</span>params<span class="op">,</span> stderr<span class="op">);</span></span></code></pre></div></div>
+                <h3 id="launch-simulation">Launch Simulation</h3>
+                <p>Start time-stepping loop (controlled by Basilisk
+                event system).</p>
+                <div class="code-block-container"><div class="code-block-container"><pre
+                class="sourceCode c"><code class="sourceCode c"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>    run<span class="op">();</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></div>
+                <h2 id="event-initialization">Event: Initialization</h2>
+                <p>Sets up initial conditions: drop shape, velocity
+                field, and refined mesh.</p>
+                <p>Attempts to restore from restart file if available;
+                otherwise initializes from scratch.</p>
+                <div class="code-block-container"><div class="code-block-container"><pre
+                class="sourceCode c"><code class="sourceCode c"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>event init<span class="op">(</span>t <span class="op">=</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(!</span>restore<span class="op">(</span>file <span class="op">=</span> <span class="st">&quot;restart&quot;</span><span class="op">))</span> <span class="op">{</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>        <span class="co">// No restart file found - initialize from scratch</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>        fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">Initializing simulation from initial conditions...</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span></code></pre></div></div>
+                <h3 id="grid-refinement">Grid Refinement</h3>
+                <p>Refine grid around drop for accurate interface
+                resolution. Uses 5% margin beyond drop radius.</p>
+                <div class="code-block-container"><div class="code-block-container"><pre
+                class="sourceCode c"><code class="sourceCode c"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>        <span class="dt">const</span> <span class="dt">double</span> refine_margin <span class="op">=</span> <span class="fl">1.05</span><span class="op">;</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>        <span class="dt">const</span> <span class="dt">double</span> refine_r_sq <span class="op">=</span> refine_margin <span class="op">*</span> refine_margin <span class="op">*</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>                                   params<span class="op">.</span>drop_radius <span class="op">*</span> params<span class="op">.</span>drop_radius<span class="op">;</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>        refine<span class="op">(</span>drop_distance_squared<span class="op">(</span>x<span class="op">,</span> y<span class="op">,</span> <span class="op">&amp;</span>params<span class="op">)</span> <span class="op">&lt;</span> refine_r_sq <span class="op">&amp;&amp;</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>               level <span class="op">&lt;</span> params<span class="op">.</span>MAXlevel<span class="op">);</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>        fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;Initial grid refinement complete (MAXlevel = %d)</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> params<span class="op">.</span>MAXlevel<span class="op">);</span></span></code></pre></div></div>
+                <h3 id="drop-initialization">Drop Initialization</h3>
+                <p>Initialize VOF field and velocity field.</p>
+                <div class="code-block-container"><div class="code-block-container"><pre
+                class="sourceCode c"><code class="sourceCode c"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>        fraction<span class="op">(</span>f<span class="op">,</span> params<span class="op">.</span>drop_radius <span class="op">*</span> params<span class="op">.</span>drop_radius <span class="op">-</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>                    drop_distance_squared<span class="op">(</span>x<span class="op">,</span> y<span class="op">,</span> <span class="op">&amp;</span>params<span class="op">));</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>        foreach<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>            u<span class="op">.</span>x<span class="op">[]</span> <span class="op">=</span> params<span class="op">.</span>impact_velocity <span class="op">*</span> f<span class="op">[];</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>            u<span class="op">.</span>y<span class="op">[]</span> <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>        fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;Initial drop setup complete:</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>        fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;  Drop center: (%g, %g)</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> params<span class="op">.</span>drop_x<span class="op">,</span> params<span class="op">.</span>drop_y<span class="op">);</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>        fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;  Drop radius: %g</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> params<span class="op">.</span>drop_radius<span class="op">);</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>        fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;  Impact velocity: %g</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> params<span class="op">.</span>impact_velocity<span class="op">);</span></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>        fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;Initialization complete.</span><span class="sc">\n\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>        fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">Simulation restored from restart file.</span><span class="sc">\n\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></div>
+                <h2 id="event-adaptive-mesh-refinement">Event: Adaptive
+                Mesh Refinement</h2>
+                <p>Dynamically adapts the mesh based on interface
+                position and flow features.</p>
+                <p>Refinement criteria: - VOF field (interface tracking)
+                - Curvature (surface tension resolution) - Velocity
+                gradients (flow features)</p>
+                <p>Un-refinement near outflow boundaries prevents
+                unnecessary resolution in far-field regions.</p>
+                <div class="code-block-container"><div class="code-block-container"><pre
+                class="sourceCode c"><code class="sourceCode c"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>event adapt<span class="op">(</span>i<span class="op">++)</span> <span class="op">{</span></span></code></pre></div></div>
+                <h3 id="curvature-calculation">Curvature
+                Calculation</h3>
+                <p>Interface curvature needed for surface tension and
+                adaptation criterion.</p>
+                <div class="code-block-container"><div class="code-block-container"><pre
+                class="sourceCode c"><code class="sourceCode c"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>    scalar KAPPA<span class="op">[];</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    curvature<span class="op">(</span>f<span class="op">,</span> KAPPA<span class="op">);</span></span></code></pre></div></div>
+                <h3 id="wavelet-based-adaptation">Wavelet-based
+                Adaptation</h3>
+                <p>Adapt mesh based on multi-scale wavelet decomposition
+                of fields.</p>
+                <div class="code-block-container"><div class="code-block-container"><pre
+                class="sourceCode c"><code class="sourceCode c"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>    adapt_wavelet<span class="op">((</span>scalar <span class="op">*){</span>f<span class="op">,</span> KAPPA<span class="op">,</span> u<span class="op">.</span>x<span class="op">,</span> u<span class="op">.</span>y<span class="op">},</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>                  <span class="op">(</span><span class="dt">double</span><span class="op">[]){</span>params<span class="op">.</span>fErr<span class="op">,</span> params<span class="op">.</span>KErr<span class="op">,</span> params<span class="op">.</span>VelErr<span class="op">,</span> params<span class="op">.</span>VelErr<span class="op">},</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>                  params<span class="op">.</span>MAXlevel<span class="op">,</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>                  params<span class="op">.</span>MINlevel<span class="op">);</span></span></code></pre></div></div>
+                <h3 id="outflow-region-un-refinement">Outflow Region
+                Un-refinement</h3>
+                <p>Prevent spurious refinement near outflow boundaries
+                where solution should be smooth (no drop, low
+                velocities).</p>
+                <div class="code-block-container"><div class="code-block-container"><pre
+                class="sourceCode c"><code class="sourceCode c"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>    unrefine<span class="op">(</span>x <span class="op">&gt;</span> params<span class="op">.</span>outflow_x_frac <span class="op">*</span> params<span class="op">.</span>Ldomain <span class="op">||</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>             y <span class="op">&gt;</span> params<span class="op">.</span>outflow_y_max<span class="op">);</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></div>
+                <h2 id="event-statistics-output">Event: Statistics
+                Output</h2>
+                <p>Calculates and logs flow statistics at regular
+                intervals.</p>
+                <p>Avoids file I/O performance penalty by: - Keeping log
+                file open throughout simulation - Writing buffered
+                output - Flushing periodically</p>
+                <div class="code-block-container"><div class="code-block-container"><pre
+                class="sourceCode c"><code class="sourceCode c"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>event statistics<span class="op">(</span>i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Write statistics at specified interval</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>i <span class="op">%</span> params<span class="op">.</span>log_interval <span class="op">==</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>        write_statistics<span class="op">(</span>i<span class="op">,</span> t<span class="op">,</span> dt<span class="op">,</span> <span class="op">&amp;</span>params<span class="op">);</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></div>
+                <h2 id="event-snapshot-output">Event: Snapshot
+                Output</h2>
+                <p>Saves complete simulation state for: - Restart
+                capability - Post-processing and visualization -
+                Long-term archival</p>
+                <p>Note: The time interval (TSNAP) must be a
+                compile-time constant for Basilisk. The end time
+                (params.tmax) can be a runtime variable.</p>
+                <div class="code-block-container"><div class="code-block-container"><pre
+                class="sourceCode c"><code class="sourceCode c"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>event snapshots<span class="op">(</span>t <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> t <span class="op">+=</span> TSNAP<span class="op">;</span> t <span class="op">&lt;=</span> params<span class="op">.</span>tmax<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    save_snapshot<span class="op">(</span>t<span class="op">,</span> <span class="op">&amp;</span>params<span class="op">);</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></div>
+                <h2 id="event-cleanup">Event: Cleanup</h2>
+                <p>Properly close all files at simulation end.</p>
+                <div class="code-block-container"><div class="code-block-container"><pre
+                class="sourceCode c"><code class="sourceCode c"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>event cleanup<span class="op">(</span>t <span class="op">=</span> end<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    close_log_files<span class="op">();</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">Simulation completed successfully.</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></div>
+            </div>
+        </main>
+
+        <footer class="site-footer">
+            <div class="footer-left">
+              <a href="https://basilisk.fr/sandbox/vatsal/" target="_blank" rel="noopener noreferrer">
+                <img src="../../assets/logos/logoBasilisk_TransparentBackground.png" alt="Basilisk C" class="footer-logo">
+              </a>
+              <a href="https://pof.tnw.utwente.nl/" target="_blank" rel="noopener noreferrer">
+                <img src="../../assets/logos/LogoPof_transparent_white.png" alt="Physics of Fluids" class="footer-logo pof-logo">
+              </a>
+              <a href="https://www.utwente.nl/" target="_blank" rel="noopener noreferrer">
+                <img src="../../assets/logos/UT_Logo_2400_Sta_White_EN.png" alt="University of Twente" class="footer-logo">
+              </a>
+              <a href="https://www.vatsalsanjay.com/" target="_blank" rel="noopener noreferrer">
+                <img src="../../assets/logos/Logo_Vatsal_v3_OutLine.png" alt="Vatsal Sanjay" class="footer-logo">
+              </a>
+            </div>
+            <div class="footer-center">
+              <p class="copyright-text">
+                &copy; Copyright<br>
+                CoMPhy Lab 2025
+              </p>
+            </div>
+            <div class="footer-right">
+              <a href="https://scholar.google.com/citations?user=tHb_qZoAAAAJ&hl=en" target="_blank" rel="noopener noreferrer" aria-label="Google Scholar Profile">
+                <i class="ai ai-google-scholar" style="font-size: 2.5em; color: white;"></i>
+              </a>
+              <a href="https://github.com/comphy-lab" target="_blank" rel="noopener noreferrer" aria-label="GitHub Organization">
+                <i class="fa-brands fa-github" style="font-size: 2.5em; color: white;"></i>
+              </a>
+              <a href="https://www.youtube.com/@CoMPhyLab" target="_blank" rel="noopener noreferrer" aria-label="YouTube Channel">
+                <i class="fa-brands fa-youtube" style="font-size: 2.5em; color: white;"></i>
+              </a>
+              <a href="https://x.com/VatsalSanjay" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter) Profile">
+                <i class="fa-brands fa-x-twitter" style="font-size: 2.5em; color: white;"></i>
+              </a>
+              <a href="https://bsky.app/profile/comphy-lab.org" target="_blank" rel="noopener noreferrer" aria-label="Bluesky Profile">
+                <i class="fa-brands fa-bluesky" style="font-size: 2.5em; color: white;"></i>
+              </a>
+              <a href="https://github.com/comphy-lab/Drop-Impact" class="edit-link" aria-label="Edit this page on GitHub">
+                <i class="fa-brands fa-github"></i> Edit this page
+              </a>
+            </div>
+          </footer>
+    </div>  
+
+    <!-- Command Palette -->
+    <div id="simple-command-palette" class="simple-command-palette" style="display: none;">
+        <div class="simple-command-palette-backdrop"></div>
+        <div class="simple-command-palette-modal">
+            <input type="text" id="command-palette-input" placeholder="Type a command..." autocomplete="off">
+            <div id="command-palette-results" class="command-palette-results"></div>
+            <div class="command-palette-footer">
+                <span class="command-palette-footer-item"><kbd>↑</kbd> <kbd>↓</kbd> to navigate</span>
+                <span class="command-palette-footer-item"><kbd>enter</kbd> to select</span>
+                <span class="command-palette-footer-item"><kbd>esc</kbd> to close</span>
+            </div>
+        </div>
+    </div>
+
+
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function() {
+    // Add copy button to each code block container
+    const codeBlocks = document.querySelectorAll('.code-block-container pre');
+    codeBlocks.forEach(function(codeBlock, index) {
+        // Create button element
+        const button = document.createElement('button');
+        button.className = 'copy-button';
+        button.textContent = 'Copy';
+        button.setAttribute('aria-label', 'Copy code to clipboard');
+        button.setAttribute('data-copy-state', 'copy');
+        
+        // Get the code block container (parent of the pre)
+        const container = codeBlock.parentNode;
+        
+        // Add the button to the container
+        container.appendChild(button);
+        
+        // Set up click event
+        button.addEventListener('click', async function() {
+            const codeText = codeBlock.textContent;
+            
+            try {
+                // Try to use the modern clipboard API first
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(codeText);
+                    updateButtonState(button, 'success');
+                } else {
+                    // Fall back to the deprecated execCommand method
+                    const textarea = document.createElement('textarea');
+                    textarea.value = codeText;
+                    textarea.style.position = 'fixed';  // Prevent scrolling to the bottom
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    
+                    const successful = document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    
+                    if (successful) {
+                        updateButtonState(button, 'success');
+                    } else {
+                        updateButtonState(button, 'error');
+                    }
+                }
+            } catch (err) {
+                console.error('Copy failed:', err);
+                updateButtonState(button, 'error');
+            }
+        });
+    });
+    
+    // Function to update button state
+    function updateButtonState(button, state) {
+        if (state === 'success') {
+            button.textContent = 'Copied!';
+            button.classList.add('copied');
+        } else if (state === 'error') {
+            button.textContent = 'Error!';
+            button.classList.add('error');
+        }
+        
+        // Reset button state after 2 seconds
+        setTimeout(function() {
+            button.textContent = 'Copy';
+            button.classList.remove('copied', 'error');
+        }, 2000);
+    }
+});
+</script>
+        </body>
+</html>
