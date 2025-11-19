@@ -30,6 +30,7 @@ with zero-padded PNG files compatible with downstream stitching utilities.
 import argparse
 import multiprocessing as mp
 import os
+import shutil
 import subprocess as sp
 from dataclasses import dataclass
 from functools import partial
@@ -42,9 +43,16 @@ import numpy as np
 from matplotlib.collections import LineCollection
 from matplotlib.ticker import StrMethodFormatter
 
+# Configure matplotlib with LaTeX if available, fallback otherwise
 matplotlib.rcParams["font.family"] = "serif"
-matplotlib.rcParams["text.usetex"] = True
-matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
+if shutil.which("latex"):
+    try:
+        matplotlib.rcParams["text.usetex"] = True
+        matplotlib.rcParams["text.latex.preamble"] = r"\usepackage{amsmath}"
+    except Exception:
+        matplotlib.rcParams["text.usetex"] = False
+else:
+    matplotlib.rcParams["text.usetex"] = False
 
 
 @dataclass(frozen=True)

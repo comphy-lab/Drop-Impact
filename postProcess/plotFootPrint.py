@@ -26,6 +26,7 @@ import argparse
 import glob
 import os
 import re
+import shutil
 from dataclasses import dataclass
 from typing import List, Optional, Tuple
 
@@ -34,11 +35,17 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-# Configure matplotlib for publication-quality output
+# Configure matplotlib for publication-quality output with LaTeX fallback
 matplotlib.rcParams['font.family'] = 'serif'
 matplotlib.rcParams['font.serif'] = ['Computer Modern Roman']
-matplotlib.rcParams['text.usetex'] = True
-matplotlib.rcParams['text.latex.preamble'] = r'\usepackage{amsmath}'
+if shutil.which('latex'):
+    try:
+        matplotlib.rcParams['text.usetex'] = True
+        matplotlib.rcParams['text.latex.preamble'] = r'\usepackage{amsmath}'
+    except Exception:
+        matplotlib.rcParams['text.usetex'] = False
+else:
+    matplotlib.rcParams['text.usetex'] = False
 
 # Font settings for 6x4 inch figure (smaller than default 12x9)
 PLT_SETTINGS = {
