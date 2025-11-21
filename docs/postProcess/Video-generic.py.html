@@ -205,7 +205,7 @@
   <meta name="description" content="Generic video post-processing pipeline for Basilisk drop-impact runs. Overview -------- The helper executables postProcess/getFacet and postProcess/getData-g...">
   <meta name="author" content="CoMPhy Lab">
   <meta name="robots" content="index, follow">
-  <meta name="keywords" content="draw_domain_outline, from, generic, get_facets, get_field, mirrors, parse_arguments, snapshotinfo, swaps, video">
+  <meta name="keywords" content="add_colorbar, class, domainbounds, main, mirrors, parse_arguments, process_timestep, rmin, swaps, video">
   <meta name="msapplication-TileColor" content="#da532c">
   <meta name="theme-color" content="#ffffff">
   <meta name="apple-mobile-web-app-title" content="CoMPhy Lab">
@@ -465,24 +465,33 @@
                 class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> argparse</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> multiprocessing <span class="im">as</span> mp</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> subprocess <span class="im">as</span> sp</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dataclasses <span class="im">import</span> dataclass</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> functools <span class="im">import</span> partial</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> typing <span class="im">import</span> Sequence, Tuple</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib.collections <span class="im">import</span> LineCollection</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib.ticker <span class="im">import</span> StrMethodFormatter</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>matplotlib.rcParams[<span class="st">&quot;font.family&quot;</span>] <span class="op">=</span> <span class="st">&quot;serif&quot;</span></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>matplotlib.rcParams[<span class="st">&quot;text.usetex&quot;</span>] <span class="op">=</span> <span class="va">True</span></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>matplotlib.rcParams[<span class="st">&quot;text.latex.preamble&quot;</span>] <span class="op">=</span> <span class="vs">r&quot;\usepackage</span><span class="sc">{amsmath}</span><span class="vs">&quot;</span></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="at">@dataclass</span>(frozen<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> DomainBounds:</span></code></pre></div></div>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> shutil</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> subprocess <span class="im">as</span> sp</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> dataclasses <span class="im">import</span> dataclass</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> functools <span class="im">import</span> partial</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> datetime <span class="im">import</span> datetime</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> typing <span class="im">import</span> Sequence, Tuple</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib.collections <span class="im">import</span> LineCollection</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib.ticker <span class="im">import</span> StrMethodFormatter</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Configure matplotlib with LaTeX if available, fallback otherwise</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>matplotlib.rcParams[<span class="st">&quot;font.family&quot;</span>] <span class="op">=</span> <span class="st">&quot;serif&quot;</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> shutil.which(<span class="st">&quot;latex&quot;</span>):</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>        matplotlib.rcParams[<span class="st">&quot;text.usetex&quot;</span>] <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>        matplotlib.rcParams[<span class="st">&quot;text.latex.preamble&quot;</span>] <span class="op">=</span> <span class="vs">r&quot;\usepackage</span><span class="sc">{amsmath}</span><span class="vs">&quot;</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">Exception</span>:</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>        matplotlib.rcParams[<span class="st">&quot;text.usetex&quot;</span>] <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span>:</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    matplotlib.rcParams[<span class="st">&quot;text.usetex&quot;</span>] <span class="op">=</span> <span class="va">False</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="at">@dataclass</span>(frozen<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> DomainBounds:</span></code></pre></div></div>
                 <p>Symmetry-aware domain description in cylindrical
                 coordinates.</p>
                 <p>The code expects r in [rmin, rmax] with rmin &lt;= 0
@@ -581,394 +590,320 @@
 <span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>PLOT_STYLE <span class="op">=</span> PlotStyle()</span>
 <span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> parse_arguments() <span class="op">-&gt;</span> RuntimeConfig:</span></code></pre></div></div>
-                <p>The returned dataclass is immutable and can be safely
-                shared across multiprocessing workers without
-                coordination overhead. This design makes future CLI
-                additions trivial.</p>
-                <p>Returns: RuntimeConfig: Configuration object
-                containing: - cpus: Number of parallel workers (default:
-                4) - n_snapshots: Total frames to process (default:
-                4000) - grids_per_r: Radial mesh resolution (default:
-                64) - tsnap: Time interval between snapshots (default:
-                0.01) - Domain bounds (zmin, zmax, rmax) - I/O paths
-                (case_dir, output_dir)</p>
-                <p>Examples: &gt;&gt;&gt; config = parse_arguments()
-                &gt;&gt;&gt; config.cpus 4 &gt;&gt;&gt; config.bounds
-                DomainBounds(rmin=-4.0, rmax=4.0, zmin=0.0,
-                zmax=4.0)</p>
-                <p>See Also: RuntimeConfig: Full specification of
-                configuration fields DomainBounds: Domain geometry
-                description</p>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> log_status(message: <span class="bu">str</span>, <span class="op">*</span>, level: <span class="bu">str</span> <span class="op">=</span> <span class="st">&quot;INFO&quot;</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span></code></pre></div></div>
+                <p>timestamp = datetime.now().strftime(“%H:%M:%S”)
+                print(f”[{timestamp}] [{level}] {message}“,
+                flush=True)</p>
+                <p>def parse_arguments() -&gt; RuntimeConfig:</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
-                class="sourceCode python"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>    parser <span class="op">=</span> argparse.ArgumentParser(description<span class="op">=</span><span class="st">&quot;Generate snapshot videos.&quot;</span>)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    parser.add_argument(<span class="st">&quot;--CPUs&quot;</span>, <span class="bu">type</span><span class="op">=</span><span class="bu">int</span>, default<span class="op">=</span><span class="dv">4</span>, <span class="bu">help</span><span class="op">=</span><span class="st">&quot;Number of CPUs to use&quot;</span>)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    parser.add_argument(</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;--nGFS&quot;</span>, <span class="bu">type</span><span class="op">=</span><span class="bu">int</span>, default<span class="op">=</span><span class="dv">4000</span>, <span class="bu">help</span><span class="op">=</span><span class="st">&quot;Number of restart files to process&quot;</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    parser.add_argument(</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;--GridsPerR&quot;</span>, <span class="bu">type</span><span class="op">=</span><span class="bu">int</span>, default<span class="op">=</span><span class="dv">256</span>, <span class="bu">help</span><span class="op">=</span><span class="st">&quot;Number of grids per R&quot;</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    parser.add_argument(<span class="st">&quot;--ZMAX&quot;</span>, <span class="bu">type</span><span class="op">=</span><span class="bu">float</span>, default<span class="op">=</span><span class="fl">4.0</span>, <span class="bu">help</span><span class="op">=</span><span class="st">&quot;Maximum Z value&quot;</span>)</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    parser.add_argument(<span class="st">&quot;--RMAX&quot;</span>, <span class="bu">type</span><span class="op">=</span><span class="bu">float</span>, default<span class="op">=</span><span class="fl">4.0</span>, <span class="bu">help</span><span class="op">=</span><span class="st">&quot;Maximum R value&quot;</span>)</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    parser.add_argument(<span class="st">&quot;--ZMIN&quot;</span>, <span class="bu">type</span><span class="op">=</span><span class="bu">float</span>, default<span class="op">=</span><span class="fl">0.0</span>, <span class="bu">help</span><span class="op">=</span><span class="st">&quot;Minimum Z value&quot;</span>)</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    parser.add_argument(<span class="st">&quot;--tsnap&quot;</span>, <span class="bu">type</span><span class="op">=</span><span class="bu">float</span>, default<span class="op">=</span><span class="fl">0.01</span>, <span class="bu">help</span><span class="op">=</span><span class="st">&quot;Time snap&quot;</span>)</span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    parser.add_argument(</span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;--caseToProcess&quot;</span>,</span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>        <span class="bu">type</span><span class="op">=</span><span class="bu">str</span>,</span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>        default<span class="op">=</span><span class="st">&quot;../simulationCases/1000/results&quot;</span>,</span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>        <span class="bu">help</span><span class="op">=</span><span class="st">&quot;Case to process&quot;</span>,</span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>    parser.add_argument(</span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;--folderToSave&quot;</span>, <span class="bu">type</span><span class="op">=</span><span class="bu">str</span>, default<span class="op">=</span><span class="st">&quot;../simulationCases/1000/results/Video&quot;</span>, <span class="bu">help</span><span class="op">=</span><span class="st">&quot;Folder to save&quot;</span></span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>    args <span class="op">=</span> parser.parse_args()</span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> RuntimeConfig(</span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>        cpus<span class="op">=</span>args.CPUs,</span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>        n_snapshots<span class="op">=</span>args.nGFS,</span>
-<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>        grids_per_r<span class="op">=</span>args.GridsPerR,</span>
-<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>        tsnap<span class="op">=</span>args.tsnap,</span>
-<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>        zmin<span class="op">=</span>args.ZMIN,</span>
-<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>        zmax<span class="op">=</span>args.ZMAX,</span>
-<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>        rmax<span class="op">=</span>args.RMAX,</span>
-<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>        case_dir<span class="op">=</span>args.caseToProcess,</span>
-<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>        output_dir<span class="op">=</span>args.folderToSave,</span>
-<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> ensure_directory(path: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span></code></pre></div></div>
-                <p>Create an output directory if it does not exist.</p>
-                <p>Parameters: path: Directory to create (including
-                parents).</p>
+                class="sourceCode python"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>    The returned dataclass <span class="kw">is</span> immutable <span class="kw">and</span> can be safely shared across</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    multiprocessing workers without coordination overhead. This design</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    makes future CLI additions trivial.</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    Returns:</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>        RuntimeConfig: Configuration <span class="bu">object</span> containing:</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>            <span class="op">-</span> cpus: Number of parallel workers (default: <span class="dv">4</span>)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>            <span class="op">-</span> n_snapshots: Total frames to process (default: <span class="dv">4000</span>)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>            <span class="op">-</span> grids_per_r: Radial mesh resolution (default: <span class="dv">64</span>)</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>            <span class="op">-</span> tsnap: Time interval between snapshots (default: <span class="fl">0.01</span>)</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>            <span class="op">-</span> Domain bounds (zmin, zmax, rmax)</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>            <span class="op">-</span> I<span class="op">/</span>O paths (case_dir, output_dir)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    Examples:</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>        <span class="op">&gt;&gt;&gt;</span> config <span class="op">=</span> parse_arguments()</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>        <span class="op">&gt;&gt;&gt;</span> config.cpus</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>        <span class="dv">4</span></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>        <span class="op">&gt;&gt;&gt;</span> config.bounds</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>        DomainBounds(rmin<span class="op">=-</span><span class="fl">4.0</span>, rmax<span class="op">=</span><span class="fl">4.0</span>, zmin<span class="op">=</span><span class="fl">0.0</span>, zmax<span class="op">=</span><span class="fl">4.0</span>)</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>    See Also:</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>        RuntimeConfig: Full specification of configuration fields</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>        DomainBounds: Domain geometry description</span></code></pre></div></div>
+                <p>parser =
+                argparse.ArgumentParser(description=“Generate snapshot
+                videos.”) parser.add_argument(“–CPUs”, type=int,
+                default=4, help=“Number of CPUs to use”)
+                parser.add_argument( “–nGFS”, type=int, default=4000,
+                help=“Number of restart files to process” )
+                parser.add_argument( “–GridsPerR”, type=int,
+                default=256, help=“Number of grids per R” )
+                parser.add_argument(“–ZMAX”, type=float, default=4.0,
+                help=“Maximum Z value”) parser.add_argument(“–RMAX”,
+                type=float, default=4.0, help=“Maximum R value”)
+                parser.add_argument(“–ZMIN”, type=float, default=0.0,
+                help=“Minimum Z value”) parser.add_argument(“–tsnap”,
+                type=float, default=0.01, help=“Time snap”)
+                parser.add_argument( “–caseToProcess”, type=str,
+                default=“simulationCases/1000/results”, help=“Case to
+                process”, ) parser.add_argument( “–folderToSave”,
+                type=str, default=“simulationCases/1000/results/Video”,
+                help=“Folder to save” ) args = parser.parse_args()</p>
+                <p>return RuntimeConfig( cpus=args.CPUs,
+                n_snapshots=args.nGFS, grids_per_r=args.GridsPerR,
+                tsnap=args.tsnap, zmin=args.ZMIN, zmax=args.ZMAX,
+                rmax=args.RMAX, case_dir=args.caseToProcess,
+                output_dir=args.folderToSave, )</p>
+                <p>def ensure_directory(path: str) -&gt; None:</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
-                class="sourceCode python"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> os.path.isdir(path):</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>        os.makedirs(path, exist_ok<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> run_helper(command: Sequence[<span class="bu">str</span>]) <span class="op">-&gt;</span> Sequence[<span class="bu">str</span>]:</span></code></pre></div></div>
-                <p>Run a helper executable and return its stderr as
-                decoded lines.</p>
-                <p>The compiled helpers deliberately emit their payload
-                to stderr, so stdout is ignored (it is typically empty)
-                and we bubble up informative stderr content.</p>
-                <p>Parameters: command: Command list passed to
-                subprocess.</p>
-                <p>Returns: list[str]: Decoded stderr lines produced by
-                the helper.</p>
+                class="sourceCode python"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>    Create an output directory <span class="cf">if</span> it does <span class="kw">not</span> exist.</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    Parameters:</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>        path: Directory to create (including parents).</span></code></pre></div></div>
+                <p>if not os.path.isdir(path): os.makedirs(path,
+                exist_ok=True)</p>
+                <p>def run_helper(command: Sequence[str]) -&gt;
+                Sequence[str]:</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
-                class="sourceCode python"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>    process <span class="op">=</span> sp.Popen(command, stdout<span class="op">=</span>sp.PIPE, stderr<span class="op">=</span>sp.PIPE)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    _, stderr <span class="op">=</span> process.communicate()</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> process.returncode <span class="op">!=</span> <span class="dv">0</span>:</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">RuntimeError</span>(</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f&quot;Command </span><span class="sc">{</span><span class="st">&#39; &#39;</span><span class="sc">.</span>join(command)<span class="sc">}</span><span class="ss"> failed with code </span><span class="sc">{</span>process<span class="sc">.</span>returncode<span class="sc">}</span><span class="ss">:</span><span class="ch">\n</span><span class="ss">&quot;</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>            <span class="ss">f&quot;</span><span class="sc">{</span>stderr<span class="sc">.</span>decode(<span class="st">&#39;utf-8&#39;</span>)<span class="sc">}</span><span class="ss">&quot;</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> stderr.decode(<span class="st">&quot;utf-8&quot;</span>).split(<span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_facets(filename: <span class="bu">str</span>):</span></code></pre></div></div>
-                <p>Shells out to the compiled <code>getFacet</code>
-                executable, which extracts the volume-of-fluid (VOF)
-                interface as a sequence of line segments. Since the
-                Basilisk simulation uses axisymmetric coordinates, only
-                the r ≥ 0 half is computed. This function mirrors each
-                segment about r=0 to create the full visualization.</p>
-                <p>Args: filename: Path to Basilisk snapshot file (e.g.,
-                ‘snapshot-0.0100’)</p>
-                <p>Returns: list[tuple]: Sequence of line segments, each
-                as ((r1, z1), (r2, z2)). Each physical segment appears
-                twice: once at +r and once at -r for the mirrored
-                visualization. Empty list if fewer than 100 output lines
-                (likely indicates no interface present).</p>
-                <p>Note: The getFacet helper outputs space-separated (z,
-                r) pairs. This function swaps to (r, z) convention for
-                matplotlib plotting.</p>
-                <p>See Also: plot_snapshot: Uses returned segments for
-                LineCollection rendering</p>
+                class="sourceCode python"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>    Run a helper executable <span class="kw">and</span> <span class="cf">return</span> its stderr <span class="im">as</span> decoded lines.</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    The compiled helpers deliberately emit their payload to stderr, so stdout <span class="kw">is</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    ignored (it <span class="kw">is</span> typically empty) <span class="kw">and</span> we bubble up informative stderr content.</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    Parameters:</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>        command: Command <span class="bu">list</span> passed to subprocess.</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    Returns:</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>        <span class="bu">list</span>[<span class="bu">str</span>]: Decoded stderr lines produced by the helper.</span></code></pre></div></div>
+                <p>process = sp.Popen(command, stdout=sp.PIPE,
+                stderr=sp.PIPE) _, stderr = process.communicate() if
+                process.returncode != 0: raise RuntimeError( f”Command
+                {’ ‘.join(command)} failed with code
+                {process.returncode}:” f”{stderr.decode(’utf-8’)}” )
+                return stderr.decode(“utf-8”).split(“”)</p>
+                <p>def get_facets(filename: str):</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
-                class="sourceCode python"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>    temp2 <span class="op">=</span> run_helper([<span class="st">&quot;./getFacet&quot;</span>, filename])</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    segs <span class="op">=</span> []</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    skip <span class="op">=</span> <span class="va">False</span></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">len</span>(temp2) <span class="op">&gt;</span> <span class="fl">1e2</span>:</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> n1 <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(temp2)):</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>            temp3 <span class="op">=</span> temp2[n1].split(<span class="st">&quot; &quot;</span>)</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> temp3 <span class="op">==</span> [<span class="st">&quot;&quot;</span>]:</span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>                skip <span class="op">=</span> <span class="va">False</span></span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>                <span class="cf">continue</span></span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="kw">not</span> skip <span class="kw">and</span> n1 <span class="op">+</span> <span class="dv">1</span> <span class="op">&lt;</span> <span class="bu">len</span>(temp2):</span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>                temp4 <span class="op">=</span> temp2[n1 <span class="op">+</span> <span class="dv">1</span>].split(<span class="st">&quot; &quot;</span>)</span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>                r1, z1 <span class="op">=</span> np.array([<span class="bu">float</span>(temp3[<span class="dv">1</span>]), <span class="bu">float</span>(temp3[<span class="dv">0</span>])])</span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>                r2, z2 <span class="op">=</span> np.array([<span class="bu">float</span>(temp4[<span class="dv">1</span>]), <span class="bu">float</span>(temp4[<span class="dv">0</span>])])</span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>                segs.append(((r1, z1), (r2, z2)))</span>
-<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>                segs.append(((<span class="op">-</span>r1, z1), (<span class="op">-</span>r2, z2)))</span>
-<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>                skip <span class="op">=</span> <span class="va">True</span></span>
-<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> segs</span>
-<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a></span>
+                class="sourceCode python"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>    Shells out to the compiled ``getFacet`` executable, which extracts the</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    volume<span class="op">-</span>of<span class="op">-</span>fluid (VOF) interface <span class="im">as</span> a sequence of line segments. Since</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    the Basilisk simulation uses axisymmetric coordinates, only the r ≥ <span class="dv">0</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    half <span class="kw">is</span> computed. This function mirrors each segment about r<span class="op">=</span><span class="dv">0</span> to create</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    the full visualization.</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    Args:</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>        filename: Path to Basilisk snapshot <span class="bu">file</span> (e.g., <span class="st">&#39;snapshot-0.0100&#39;</span>)</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    Returns:</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>        <span class="bu">list</span>[<span class="bu">tuple</span>]: Sequence of line segments, each <span class="im">as</span> ((r1, z1), (r2, z2)).</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>            Each physical segment appears twice: once at <span class="op">+</span>r <span class="kw">and</span> once at <span class="op">-</span>r</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> the mirrored visualization. Empty <span class="bu">list</span> <span class="cf">if</span> fewer than <span class="dv">100</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>            output lines (likely indicates no interface present).</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    Note:</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>        The getFacet helper outputs space<span class="op">-</span>separated (z, r) pairs. This</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>        function swaps to (r, z) convention <span class="cf">for</span> matplotlib plotting.</span>
 <span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_field(filename: <span class="bu">str</span>, zmin: <span class="bu">float</span>, zmax: <span class="bu">float</span>, rmax: <span class="bu">float</span>, nr: <span class="bu">int</span>) <span class="op">-&gt;</span> FieldData:</span></code></pre></div></div>
-                <p>Shells out to the compiled
-                <code>getData-generic</code> executable, which samples
-                the velocity and strain-rate fields on a structured
-                grid. Returns a FieldData struct with reshaped 2D
-                arrays, abstracting away the flattening scheme used by
-                the helper.</p>
-                <p>Args: filename: Path to Basilisk snapshot file (e.g.,
-                ‘snapshot-0.0100’) zmin: Minimum axial coordinate for
-                sampling domain zmax: Maximum axial coordinate for
-                sampling domain rmax: Maximum radial coordinate
-                (positive branch only) nr: Number of grid points in
-                radial direction</p>
-                <p>Returns: FieldData: Structured container with
-                reshaped 2D arrays: - R, Z: Meshgrid coordinates (nz ×
-                nr) - strain_rate: Second invariant of rate-of-strain
-                tensor - velocity: Velocity magnitude field - nz: Number
-                of grid points in axial direction (computed)</p>
-                <p>Note: The helper samples r ∈ [0, rmax], but plotting
-                mirrors about r=0 to create the full axisymmetric
-                visualization.</p>
-                <p>See Also: FieldData: Structure definition with extent
-                properties plot_snapshot: Uses the returned FieldData
-                for visualization</p>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>    See Also:</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>        plot_snapshot: Uses returned segments <span class="cf">for</span> LineCollection rendering</span></code></pre></div></div>
+                <p>temp2 = run_helper([“postProcess/getFacet”,
+                filename]) segs = [] skip = False if len(temp2) &gt;
+                1e2: for n1 in range(len(temp2)): temp3 =
+                temp2[n1].split(” “) if temp3 == [””]: skip = False
+                continue if not skip and n1 + 1 &lt; len(temp2): temp4 =
+                temp2[n1 + 1].split(” “) r1, z1 =
+                np.array([float(temp3[1]), float(temp3[0])]) r2, z2 =
+                np.array([float(temp4[1]), float(temp4[0])])
+                segs.append(((r1, z1), (r2, z2))) segs.append(((-r1,
+                z1), (-r2, z2))) skip = True return segs</p>
+                <p>def get_field(filename: str, zmin: float, zmax:
+                float, rmax: float, nr: int) -&gt; FieldData:</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
-                class="sourceCode python"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>    temp2 <span class="op">=</span> run_helper(</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>        [</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>            <span class="st">&quot;./getData-generic&quot;</span>,</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>            filename,</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>            <span class="bu">str</span>(zmin),</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>            <span class="bu">str</span>(<span class="dv">0</span>),</span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>            <span class="bu">str</span>(zmax),</span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>            <span class="bu">str</span>(rmax),</span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>            <span class="bu">str</span>(nr),</span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>        ]</span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    Rtemp, Ztemp, D2temp, veltemp <span class="op">=</span> [], [], [], []</span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> n1 <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(temp2)):</span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>        temp3 <span class="op">=</span> temp2[n1].split(<span class="st">&quot; &quot;</span>)</span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> temp3 <span class="op">==</span> [<span class="st">&quot;&quot;</span>]:</span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>            <span class="cf">continue</span></span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>        Ztemp.append(<span class="bu">float</span>(temp3[<span class="dv">0</span>]))</span>
-<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>        Rtemp.append(<span class="bu">float</span>(temp3[<span class="dv">1</span>]))</span>
-<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>        D2temp.append(<span class="bu">float</span>(temp3[<span class="dv">2</span>]))</span>
-<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>        veltemp.append(<span class="bu">float</span>(temp3[<span class="dv">3</span>]))</span>
-<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>    R <span class="op">=</span> np.asarray(Rtemp)</span>
-<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>    Z <span class="op">=</span> np.asarray(Ztemp)</span>
-<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>    D2 <span class="op">=</span> np.asarray(D2temp)</span>
-<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>    vel <span class="op">=</span> np.asarray(veltemp)</span>
-<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>    nz <span class="op">=</span> <span class="bu">int</span>(<span class="bu">len</span>(Z) <span class="op">/</span> nr)</span>
-<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">&quot;nz is </span><span class="sc">%d</span><span class="st">&quot;</span> <span class="op">%</span> nz)</span>
-<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>    R.resize((nz, nr))</span>
-<span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>    Z.resize((nz, nr))</span>
-<span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a>    D2.resize((nz, nr))</span>
-<span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a>    vel.resize((nz, nr))</span>
-<span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> FieldData(R<span class="op">=</span>R, Z<span class="op">=</span>Z, strain_rate<span class="op">=</span>D2, velocity<span class="op">=</span>vel, nz<span class="op">=</span>nz)</span>
-<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> build_snapshot_info(index: <span class="bu">int</span>, config: RuntimeConfig) <span class="op">-&gt;</span> SnapshotInfo:</span></code></pre></div></div>
-                <p>Construct file paths for a given timestep index.</p>
-                <p>Parameters: index: Integer index used with
-                <code>tsnap</code> to recover time. config:
-                RuntimeConfig providing directories and stride.</p>
-                <p>Returns: SnapshotInfo: Pre-computed metadata for the
-                worker.</p>
+                class="sourceCode python"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>    Shells out to the compiled ``getData<span class="op">-</span>generic`` executable, which samples</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    the velocity <span class="kw">and</span> strain<span class="op">-</span>rate fields on a structured grid. Returns a</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    FieldData struct <span class="cf">with</span> reshaped <span class="dv">2</span><span class="er">D</span> arrays, abstracting away the flattening</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    scheme used by the helper.</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    Args:</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>        filename: Path to Basilisk snapshot <span class="bu">file</span> (e.g., <span class="st">&#39;snapshot-0.0100&#39;</span>)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>        zmin: Minimum axial coordinate <span class="cf">for</span> sampling domain</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>        zmax: Maximum axial coordinate <span class="cf">for</span> sampling domain</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>        rmax: Maximum radial coordinate (positive branch only)</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>        nr: Number of grid points <span class="kw">in</span> radial direction</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>    Returns:</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>        FieldData: Structured container <span class="cf">with</span> reshaped <span class="dv">2</span><span class="er">D</span> arrays:</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>            <span class="op">-</span> R, Z: Meshgrid coordinates (nz × nr)</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>            <span class="op">-</span> strain_rate: Second invariant of rate<span class="op">-</span>of<span class="op">-</span>strain tensor</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>            <span class="op">-</span> velocity: Velocity magnitude field</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>            <span class="op">-</span> nz: Number of grid points <span class="kw">in</span> axial direction (computed)</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>    Note:</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>        The helper samples r ∈ [<span class="dv">0</span>, rmax], but plotting mirrors about r<span class="op">=</span><span class="dv">0</span></span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>        to create the full axisymmetric visualization.</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>    See Also:</span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>        FieldData: Structure definition <span class="cf">with</span> extent properties</span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>        plot_snapshot: Uses the returned FieldData <span class="cf">for</span> visualization</span></code></pre></div></div>
+                <p>temp2 = run_helper( [ “postProcess/getData-generic”,
+                filename, str(zmin), str(0), str(zmax), str(rmax),
+                str(nr),] ) Rtemp, Ztemp, D2temp, veltemp = [], [], [],
+                []</p>
+                <p>for n1 in range(len(temp2)): temp3 =
+                temp2[n1].split(” “) if temp3 == [“”]: continue
+                Ztemp.append(float(temp3[0]))
+                Rtemp.append(float(temp3[1]))
+                D2temp.append(float(temp3[2]))
+                veltemp.append(float(temp3[3]))</p>
+                <p>R = np.asarray(Rtemp) Z = np.asarray(Ztemp) D2 =
+                np.asarray(D2temp) vel = np.asarray(veltemp) nz =
+                int(len(Z) / nr)</p>
+                <p>log_status(f”{filename}: nz = {nz}“)</p>
+                <p>R.resize((nz, nr)) Z.resize((nz, nr)) D2.resize((nz,
+                nr)) vel.resize((nz, nr))</p>
+                <p>return FieldData(R=R, Z=Z, strain_rate=D2,
+                velocity=vel, nz=nz)</p>
+                <p>def build_snapshot_info(index: int, config:
+                RuntimeConfig) -&gt; SnapshotInfo:</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
-                class="sourceCode python"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>    time <span class="op">=</span> config.tsnap <span class="op">*</span> index</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    source <span class="op">=</span> os.path.join(config.case_dir, <span class="st">&quot;intermediate&quot;</span>, <span class="ss">f&quot;snapshot-</span><span class="sc">{</span>time<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    target <span class="op">=</span> os.path.join(config.output_dir, <span class="ss">f&quot;</span><span class="sc">{</span><span class="bu">int</span>(time <span class="op">*</span> <span class="dv">1000</span>)<span class="sc">:08d}</span><span class="ss">.png&quot;</span>)</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> SnapshotInfo(index<span class="op">=</span>index, time<span class="op">=</span>time, source<span class="op">=</span>source, target<span class="op">=</span>target)</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
+                class="sourceCode python"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>    Construct <span class="bu">file</span> paths <span class="cf">for</span> a given timestep index.</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    Parameters:</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>        index: Integer index used <span class="cf">with</span> ``tsnap`` to recover time.</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>        config: RuntimeConfig providing directories <span class="kw">and</span> stride.</span>
 <span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> draw_domain_outline(ax, bounds: DomainBounds, style: PlotStyle) <span class="op">-&gt;</span> <span class="va">None</span>:</span></code></pre></div></div>
-                <p>Outline computational domain and symmetry line.</p>
-                <p>Parameters: ax: Matplotlib axis used for plotting.
-                bounds: Domain extents in both directions. style:
-                Colour/width styling information.</p>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    Returns:</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>        SnapshotInfo: Pre<span class="op">-</span>computed metadata <span class="cf">for</span> the worker.</span></code></pre></div></div>
+                <p>time = config.tsnap * index source =
+                os.path.join(config.case_dir, “intermediate”,
+                f”snapshot-{time:.4f}“) target =
+                os.path.join(config.output_dir, f”{int(time *
+                1000):08d}.png”) return SnapshotInfo(index=index,
+                time=time, source=source, target=target)</p>
+                <p>def draw_domain_outline(ax, bounds: DomainBounds,
+                style: PlotStyle) -&gt; None:</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
-                class="sourceCode python"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>    ax.plot(</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>        [<span class="dv">0</span>, <span class="dv">0</span>],</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>        [bounds.zmin, bounds.zmax],</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;-.&quot;</span>,</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>        color<span class="op">=</span>style.zero_axis_color,</span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>        linewidth<span class="op">=</span>style.line_width,</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    ax.plot(</span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>        [bounds.rmin, bounds.rmin],</span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>        [bounds.zmin, bounds.zmax],</span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;-&quot;</span>,</span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>        color<span class="op">=</span>style.axis_color,</span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>        linewidth<span class="op">=</span>style.line_width,</span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>    ax.plot(</span>
-<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>        [bounds.rmin, bounds.rmax],</span>
-<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>        [bounds.zmin, bounds.zmin],</span>
-<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;-&quot;</span>,</span>
-<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>        color<span class="op">=</span>style.axis_color,</span>
-<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>        linewidth<span class="op">=</span>style.line_width,</span>
-<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a>    ax.plot(</span>
-<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a>        [bounds.rmin, bounds.rmax],</span>
-<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>        [bounds.zmax, bounds.zmax],</span>
-<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;-&quot;</span>,</span>
-<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>        color<span class="op">=</span>style.axis_color,</span>
-<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a>        linewidth<span class="op">=</span>style.line_width,</span>
-<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>    ax.plot(</span>
-<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a>        [bounds.rmax, bounds.rmax],</span>
-<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a>        [bounds.zmin, bounds.zmax],</span>
-<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;-&quot;</span>,</span>
-<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a>        color<span class="op">=</span>style.axis_color,</span>
-<span id="cb14-34"><a href="#cb14-34" aria-hidden="true" tabindex="-1"></a>        linewidth<span class="op">=</span>style.line_width,</span>
-<span id="cb14-35"><a href="#cb14-35" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb14-36"><a href="#cb14-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-37"><a href="#cb14-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-38"><a href="#cb14-38" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> add_colorbar(fig, ax, mappable, <span class="op">*</span>, align: <span class="bu">str</span>, label: <span class="bu">str</span>, style: PlotStyle):</span></code></pre></div></div>
-                <p>Attach a vertical colorbar on the requested side of
-                the axis.</p>
-                <p>Using manual axes lets us keep the main axis square
-                while still showing two distinct colour scales.</p>
-                <p>Parameters: fig: Figure hosting the axes. ax: Primary
-                axes sharing its bounding box. mappable: The
-                image/artist the colorbar describes. align: ‘left’ or
-                ‘right’ relative to the plotting axis. label: Axis label
-                to display. style: PlotStyle values for spacing and
-                typography.</p>
-                <p>Returns: matplotlib.colorbar.Colorbar: The
-                constructed colorbar.</p>
+                class="sourceCode python"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>    Outline computational domain <span class="kw">and</span> symmetry line.</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    Parameters:</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>        ax: Matplotlib axis used <span class="cf">for</span> plotting.</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>        bounds: Domain extents <span class="kw">in</span> both directions.</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>        style: Colour<span class="op">/</span>width styling information.</span></code></pre></div></div>
+                <p>ax.plot( [0, 0], [bounds.zmin, bounds.zmax], “-.”,
+                color=style.zero_axis_color, linewidth=style.line_width,
+                ) ax.plot( [bounds.rmin, bounds.rmin], [bounds.zmin,
+                bounds.zmax], “-”, color=style.axis_color,
+                linewidth=style.line_width, ) ax.plot( [bounds.rmin,
+                bounds.rmax], [bounds.zmin, bounds.zmin], “-”,
+                color=style.axis_color, linewidth=style.line_width, )
+                ax.plot( [bounds.rmin, bounds.rmax], [bounds.zmax,
+                bounds.zmax], “-”, color=style.axis_color,
+                linewidth=style.line_width, ) ax.plot( [bounds.rmax,
+                bounds.rmax], [bounds.zmin, bounds.zmax], “-”,
+                color=style.axis_color, linewidth=style.line_width,
+                )</p>
+                <p>def add_colorbar(fig, ax, mappable, *, align: str,
+                label: str, style: PlotStyle):</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
-                class="sourceCode python"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>    l, b, w, h <span class="op">=</span> ax.get_position().bounds</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> align <span class="op">==</span> <span class="st">&quot;left&quot;</span>:</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>        position <span class="op">=</span> [l <span class="op">-</span> style.left_colorbar_offset, b, style.colorbar_width, h]</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>        position <span class="op">=</span> [l <span class="op">+</span> w <span class="op">+</span> style.right_colorbar_offset, b, style.colorbar_width, h]</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    cb_ax <span class="op">=</span> fig.add_axes(position)</span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>    colorbar <span class="op">=</span> plt.colorbar(mappable, cax<span class="op">=</span>cb_ax, orientation<span class="op">=</span><span class="st">&quot;vertical&quot;</span>)</span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    colorbar.set_label(label, fontsize<span class="op">=</span>style.tick_label_size, labelpad<span class="op">=</span><span class="dv">5</span>)</span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    colorbar.ax.tick_params(labelsize<span class="op">=</span>style.tick_label_size)</span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    colorbar.ax.yaxis.set_major_formatter(StrMethodFormatter(<span class="st">&quot;{x:,.2f}&quot;</span>))</span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> align <span class="op">==</span> <span class="st">&quot;left&quot;</span>:</span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>        colorbar.ax.yaxis.set_ticks_position(<span class="st">&quot;left&quot;</span>)</span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>        colorbar.ax.yaxis.set_label_position(<span class="st">&quot;left&quot;</span>)</span>
-<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> colorbar</span>
-<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_snapshot(</span>
-<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>    field_data: FieldData,</span>
-<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>    facets,</span>
-<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>    bounds: DomainBounds,</span>
-<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>    snapshot: SnapshotInfo,</span>
-<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>    style: PlotStyle,</span>
-<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> <span class="va">None</span>:</span></code></pre></div></div>
-                <p>Render and persist a single snapshot figure.</p>
-                <p>All artist construction lives here so multiprocessing
-                workers only need to fetch data and call this
-                function.</p>
-                <p>Parameters: field_data: Structured arrays for
-                strain-rate and velocity. facets: Line segments
-                representing the interface. bounds: Domain extents that
-                keep axes square. snapshot: Metadata describing time and
-                output file. style: Plotting choices centralised in
-                PlotStyle.</p>
+                class="sourceCode python"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>    Attach a vertical colorbar on the requested side of the axis.</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    Using manual axes lets us keep the main axis square <span class="cf">while</span> still showing two</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    distinct colour scales.</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    Parameters:</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>        fig: Figure hosting the axes.</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>        ax: Primary axes sharing its bounding box.</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>        mappable: The image<span class="op">/</span>artist the colorbar describes.</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>        align: <span class="st">&#39;left&#39;</span> <span class="kw">or</span> <span class="st">&#39;right&#39;</span> relative to the plotting axis.</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>        label: Axis label to display.</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>        style: PlotStyle values <span class="cf">for</span> spacing <span class="kw">and</span> typography.</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>    Returns:</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>        matplotlib.colorbar.Colorbar: The constructed colorbar.</span></code></pre></div></div>
+                <p>l, b, w, h = ax.get_position().bounds if align ==
+                “left”: position = [l - style.left_colorbar_offset, b,
+                style.colorbar_width, h] else: position = [l + w +
+                style.right_colorbar_offset, b, style.colorbar_width, h]
+                cb_ax = fig.add_axes(position) colorbar =
+                plt.colorbar(mappable, cax=cb_ax,
+                orientation=“vertical”) colorbar.set_label(label,
+                fontsize=style.tick_label_size, labelpad=5)
+                colorbar.ax.tick_params(labelsize=style.tick_label_size)
+                colorbar.ax.yaxis.set_major_formatter(StrMethodFormatter(“{x:,.2f}”))
+                if align == “left”:
+                colorbar.ax.yaxis.set_ticks_position(“left”)
+                colorbar.ax.yaxis.set_label_position(“left”) return
+                colorbar</p>
+                <p>def plot_snapshot( field_data: FieldData, facets,
+                bounds: DomainBounds, snapshot: SnapshotInfo, style:
+                PlotStyle, ) -&gt; None:</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
-                class="sourceCode python"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>    fig, ax <span class="op">=</span> plt.subplots()</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    fig.set_size_inches(<span class="op">*</span>style.figure_size)</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    draw_domain_outline(ax, bounds, style)</span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    line_segments <span class="op">=</span> LineCollection(</span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>        facets, linewidths<span class="op">=</span><span class="dv">4</span>, colors<span class="op">=</span>style.interface_color, linestyle<span class="op">=</span><span class="st">&quot;solid&quot;</span></span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>    ax.add_collection(line_segments)</span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>    rminp, rmaxp <span class="op">=</span> field_data.radial_extent</span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>    zminp, zmaxp <span class="op">=</span> field_data.axial_extent</span>
-<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>    cntrl1 <span class="op">=</span> ax.imshow(</span>
-<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>        field_data.strain_rate,</span>
-<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>        cmap<span class="op">=</span><span class="st">&quot;hot_r&quot;</span>,</span>
-<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>        interpolation<span class="op">=</span><span class="st">&quot;Bilinear&quot;</span>,</span>
-<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>        origin<span class="op">=</span><span class="st">&quot;lower&quot;</span>,</span>
-<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>        extent<span class="op">=</span>[<span class="op">-</span>rminp, <span class="op">-</span>rmaxp, zminp, zmaxp],</span>
-<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>        vmax<span class="op">=</span><span class="fl">0.0</span>,</span>
-<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>        vmin<span class="op">=-</span><span class="fl">4.0</span>,</span>
-<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>    cntrl2 <span class="op">=</span> ax.imshow(</span>
-<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>        field_data.velocity,</span>
-<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>        interpolation<span class="op">=</span><span class="st">&quot;Bilinear&quot;</span>,</span>
-<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a>        cmap<span class="op">=</span><span class="st">&quot;Purples&quot;</span>,</span>
-<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a>        origin<span class="op">=</span><span class="st">&quot;lower&quot;</span>,</span>
-<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a>        extent<span class="op">=</span>[rminp, rmaxp, zminp, zmaxp],</span>
-<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a>        vmax<span class="op">=</span><span class="fl">1.0</span>,</span>
-<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a>        vmin<span class="op">=</span><span class="fl">0.0</span>,</span>
-<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb16-32"><a href="#cb16-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-33"><a href="#cb16-33" aria-hidden="true" tabindex="-1"></a>    ax.set_aspect(<span class="st">&quot;equal&quot;</span>)</span>
-<span id="cb16-34"><a href="#cb16-34" aria-hidden="true" tabindex="-1"></a>    ax.set_xlim(bounds.rmin, bounds.rmax)</span>
-<span id="cb16-35"><a href="#cb16-35" aria-hidden="true" tabindex="-1"></a>    ax.set_ylim(bounds.zmin, bounds.zmax)</span>
-<span id="cb16-36"><a href="#cb16-36" aria-hidden="true" tabindex="-1"></a>    ax.set_title(<span class="ss">f&quot;$t/</span><span class="ch">\\</span><span class="ss">tau_</span><span class="ch">\\</span><span class="ss">gamma$ = </span><span class="sc">{</span>snapshot<span class="sc">.</span>time<span class="sc">:4.3f}</span><span class="ss">&quot;</span>, fontsize<span class="op">=</span>style.tick_label_size)</span>
-<span id="cb16-37"><a href="#cb16-37" aria-hidden="true" tabindex="-1"></a>    ax.axis(<span class="st">&quot;off&quot;</span>)</span>
-<span id="cb16-38"><a href="#cb16-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-39"><a href="#cb16-39" aria-hidden="true" tabindex="-1"></a>    add_colorbar(</span>
-<span id="cb16-40"><a href="#cb16-40" aria-hidden="true" tabindex="-1"></a>        fig,</span>
-<span id="cb16-41"><a href="#cb16-41" aria-hidden="true" tabindex="-1"></a>        ax,</span>
-<span id="cb16-42"><a href="#cb16-42" aria-hidden="true" tabindex="-1"></a>        cntrl1,</span>
-<span id="cb16-43"><a href="#cb16-43" aria-hidden="true" tabindex="-1"></a>        align<span class="op">=</span><span class="st">&quot;left&quot;</span>,</span>
-<span id="cb16-44"><a href="#cb16-44" aria-hidden="true" tabindex="-1"></a>        label<span class="op">=</span><span class="vs">r&quot;$\left(\boldsymbol{\mathcal</span><span class="sc">{D}</span><span class="vs">:\mathcal</span><span class="sc">{D}</span><span class="vs">}\right)$&quot;</span>,</span>
-<span id="cb16-45"><a href="#cb16-45" aria-hidden="true" tabindex="-1"></a>        style<span class="op">=</span>style,</span>
-<span id="cb16-46"><a href="#cb16-46" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb16-47"><a href="#cb16-47" aria-hidden="true" tabindex="-1"></a>    add_colorbar(</span>
-<span id="cb16-48"><a href="#cb16-48" aria-hidden="true" tabindex="-1"></a>        fig,</span>
-<span id="cb16-49"><a href="#cb16-49" aria-hidden="true" tabindex="-1"></a>        ax,</span>
-<span id="cb16-50"><a href="#cb16-50" aria-hidden="true" tabindex="-1"></a>        cntrl2,</span>
-<span id="cb16-51"><a href="#cb16-51" aria-hidden="true" tabindex="-1"></a>        align<span class="op">=</span><span class="st">&quot;right&quot;</span>,</span>
-<span id="cb16-52"><a href="#cb16-52" aria-hidden="true" tabindex="-1"></a>        label<span class="op">=</span><span class="vs">r&quot;$\|\boldsymbol</span><span class="sc">{u}</span><span class="vs">\|$&quot;</span>,</span>
-<span id="cb16-53"><a href="#cb16-53" aria-hidden="true" tabindex="-1"></a>        style<span class="op">=</span>style,</span>
-<span id="cb16-54"><a href="#cb16-54" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb16-55"><a href="#cb16-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-56"><a href="#cb16-56" aria-hidden="true" tabindex="-1"></a>    plt.savefig(snapshot.target, bbox_inches<span class="op">=</span><span class="st">&quot;tight&quot;</span>)</span>
-<span id="cb16-57"><a href="#cb16-57" aria-hidden="true" tabindex="-1"></a>    plt.close(fig)</span>
-<span id="cb16-58"><a href="#cb16-58" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-59"><a href="#cb16-59" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-60"><a href="#cb16-60" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> process_timestep(index: <span class="bu">int</span>, config: RuntimeConfig, style: PlotStyle) <span class="op">-&gt;</span> <span class="va">None</span>:</span></code></pre></div></div>
-                <p>Worker executed for every timestep index.</p>
-                <p>Performs availability checks, loads helper outputs,
-                and calls plot_snapshot.</p>
-                <p>Parameters: index: Integer timestep index relative to
-                tsnap. config: Runtime configuration shared across
-                workers. style: Plotting style shared by all frames.</p>
+                class="sourceCode python"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>    Render <span class="kw">and</span> persist a single snapshot figure.</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    All artist construction lives here so multiprocessing workers only need to</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    fetch data <span class="kw">and</span> call this function.</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    Parameters:</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>        field_data: Structured arrays <span class="cf">for</span> strain<span class="op">-</span>rate <span class="kw">and</span> velocity.</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>        facets: Line segments representing the interface.</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>        bounds: Domain extents that keep axes square.</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>        snapshot: Metadata describing time <span class="kw">and</span> output <span class="bu">file</span>.</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>        style: Plotting choices centralised <span class="kw">in</span> PlotStyle.</span></code></pre></div></div>
+                <p>fig, ax = plt.subplots()
+                fig.set_size_inches(*style.figure_size)</p>
+                <p>draw_domain_outline(ax, bounds, style) line_segments
+                = LineCollection( facets, linewidths=4,
+                colors=style.interface_color, linestyle=“solid” )
+                ax.add_collection(line_segments)</p>
+                <p>rminp, rmaxp = field_data.radial_extent zminp, zmaxp
+                = field_data.axial_extent</p>
+                <p>cntrl1 = ax.imshow( field_data.strain_rate,
+                cmap=“hot_r”, interpolation=“Bilinear”, origin=“lower”,
+                extent=[-rminp, -rmaxp, zminp, zmaxp], vmax=0.0,
+                vmin=-4.0, )</p>
+                <p>cntrl2 = ax.imshow( field_data.velocity,
+                interpolation=“Bilinear”, cmap=“Purples”,
+                origin=“lower”, extent=[rminp, rmaxp, zminp, zmaxp],
+                vmax=1.0, vmin=0.0, )</p>
+                <p>ax.set_aspect(“equal”) ax.set_xlim(bounds.rmin,
+                bounds.rmax) ax.set_ylim(bounds.zmin, bounds.zmax)
+                ax.set_title(f”<span
+                class="math inline">\(t/\\tau_0\)</span> =
+                {snapshot.time:4.3f}“, fontsize=style.tick_label_size)
+                ax.axis(”off”)</p>
+                <p>add_colorbar( fig, ax, cntrl1, align=“left”,
+                label=r”<span
+                class="math inline">\(\left(\boldsymbol{\mathcal{D}:\mathcal{D}}\right)\)</span>“,
+                style=style, ) add_colorbar( fig, ax, cntrl2,
+                align=”right”, label=r”<span
+                class="math inline">\(\|\boldsymbol{u}\|\)</span>“,
+                style=style, )</p>
+                <p>plt.savefig(snapshot.target, bbox_inches=“tight”)
+                plt.close(fig)</p>
+                <p>def process_timestep(index: int, config:
+                RuntimeConfig, style: PlotStyle) -&gt; None:</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
-                class="sourceCode python"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>    snapshot <span class="op">=</span> build_snapshot_info(index, config)</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> os.path.exists(snapshot.source):</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f&quot;</span><span class="sc">{</span>snapshot<span class="sc">.</span>source<span class="sc">}</span><span class="ss"> File not found!&quot;</span>)</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> os.path.exists(snapshot.target):</span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f&quot;</span><span class="sc">{</span>snapshot<span class="sc">.</span>target<span class="sc">}</span><span class="ss"> Image present!&quot;</span>)</span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span></span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    facets <span class="op">=</span> get_facets(snapshot.source)</span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>    nr <span class="op">=</span> <span class="bu">int</span>(config.grids_per_r <span class="op">*</span> config.rmax)</span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    field_data <span class="op">=</span> get_field(snapshot.source, config.zmin, config.zmax, config.rmax, nr)</span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>    plot_snapshot(field_data, facets, config.bounds, snapshot, style)</span>
-<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> main():</span></code></pre></div></div>
-                <p>Entry point used by the documentation tooling and
-                CLI.</p>
+                class="sourceCode python"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>    Worker executed <span class="cf">for</span> every timestep index.</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    Performs availability checks, loads helper outputs, <span class="kw">and</span> calls plot_snapshot.</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    Parameters:</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>        index: Integer timestep index relative to tsnap.</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>        config: Runtime configuration shared across workers.</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>        style: Plotting style shared by <span class="bu">all</span> frames.</span></code></pre></div></div>
+                <p>snapshot = build_snapshot_info(index, config) if not
+                os.path.exists(snapshot.source): log_status(f”Missing
+                snapshot: {snapshot.source}“, level=”WARN”) return if
+                os.path.exists(snapshot.target): log_status(f”Frame
+                already exists, skipping: {snapshot.target}“) return</p>
+                <p>log_status(f”Processing snapshot
+                index={snapshot.index}, t={snapshot.time:.4f}“)</p>
+                <p>try: facets = get_facets(snapshot.source) nr =
+                int(config.grids_per_r * config.rmax) field_data =
+                get_field( snapshot.source, config.zmin, config.zmax,
+                config.rmax, nr ) plot_snapshot(field_data, facets,
+                config.bounds, snapshot, style) except Exception as err:
+                log_status( f”Error while processing {snapshot.source}:
+                {err}“, level=”ERROR” ) raise</p>
+                <p>log_status(f”Saved frame: {snapshot.target}“)</p>
+                <p>def main():</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
-                class="sourceCode python"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>    config <span class="op">=</span> parse_arguments()</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    ensure_directory(config.output_dir)</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> mp.Pool(processes<span class="op">=</span>config.cpus) <span class="im">as</span> pool:</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>        worker <span class="op">=</span> partial(process_timestep, config<span class="op">=</span>config, style<span class="op">=</span>PLOT_STYLE)</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>        pool.<span class="bu">map</span>(worker, <span class="bu">range</span>(config.n_snapshots))</span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="va">__name__</span> <span class="op">==</span> <span class="st">&quot;__main__&quot;</span>:</span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>    main()</span></code></pre></div></div>
+                class="sourceCode python"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>    Entry point used by the documentation tooling <span class="kw">and</span> CLI.</span></code></pre></div></div>
+                <div class="code-block-container"><pre><code>config = parse_arguments()
+ensure_directory(config.output_dir)
+
+with mp.Pool(processes=config.cpus) as pool:
+    worker = partial(process_timestep, config=config, style=PLOT_STYLE)
+    pool.map(worker, range(config.n_snapshots))</code></pre></div>
+                <p>if <strong>name</strong> == “<strong>main</strong>”:
+                main()</p>
             </div>
         </main>
 

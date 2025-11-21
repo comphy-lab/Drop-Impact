@@ -777,9 +777,12 @@
                 otherwise initializes from scratch.</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
                 class="sourceCode c"><code class="sourceCode c"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>event init<span class="op">(</span>t <span class="op">=</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(!</span>restore<span class="op">(</span>file <span class="op">=</span> <span class="st">&quot;restart&quot;</span><span class="op">))</span> <span class="op">{</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>        <span class="co">// No restart file found - initialize from scratch</span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>        fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">Initializing simulation from initial conditions...</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span></code></pre></div></div>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">char</span> restart_path<span class="op">[</span><span class="dv">512</span><span class="op">];</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    snprintf<span class="op">(</span>restart_path<span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span>restart_path<span class="op">),</span> <span class="st">&quot;%s/restart&quot;</span><span class="op">,</span> params<span class="op">.</span>output_dir<span class="op">);</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(!</span>restore<span class="op">(</span>file <span class="op">=</span> restart_path<span class="op">))</span> <span class="op">{</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>        <span class="co">// No restart file found - initialize from scratch</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>        fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">Initializing simulation from initial conditions...</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span></code></pre></div></div>
                 <h3 id="grid-refinement">Grid Refinement</h3>
                 <p>Refine grid around drop for accurate interface
                 resolution. Uses 5% margin beyond drop radius.</p>

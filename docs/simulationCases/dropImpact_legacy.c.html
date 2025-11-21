@@ -489,8 +489,8 @@
 <span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>  X0<span class="op">=</span><span class="fl">0.</span><span class="op">;</span> Y0<span class="op">=</span><span class="fl">0.</span><span class="op">;</span></span>
 <span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>  init_grid <span class="op">(</span><span class="dv">1</span> <span class="op">&lt;&lt;</span> <span class="op">(</span><span class="dv">6</span><span class="op">));</span></span>
 <span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>  <span class="dt">char</span> comm<span class="op">[</span><span class="dv">80</span><span class="op">];</span></span>
-<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>  sprintf <span class="op">(</span>comm<span class="op">,</span> <span class="st">&quot;mkdir -p intermediate&quot;</span><span class="op">);</span></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>  <span class="dt">char</span> comm<span class="op">[</span><span class="dv">4096</span><span class="op">];</span></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>  snprintf<span class="op">(</span>comm<span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span>comm<span class="op">),</span> <span class="st">&quot;mkdir -p intermediate&quot;</span><span class="op">);</span></span>
 <span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>  system<span class="op">(</span>comm<span class="op">);</span></span>
 <span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>  rho1 <span class="op">=</span> <span class="fl">1.0</span><span class="op">;</span> mu1 <span class="op">=</span> Ohd<span class="op">/</span>sqrt<span class="op">(</span>We<span class="op">);</span></span>
@@ -527,8 +527,8 @@
 <span id="cb1-87"><a href="#cb1-87" aria-hidden="true" tabindex="-1"></a><span class="co">// static</span></span>
 <span id="cb1-88"><a href="#cb1-88" aria-hidden="true" tabindex="-1"></a>event writingFiles <span class="op">(</span>t <span class="op">=</span> <span class="dv">0</span><span class="op">,</span> t <span class="op">+=</span> tsnap<span class="op">;</span> t <span class="op">&lt;=</span> tmax<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb1-89"><a href="#cb1-89" aria-hidden="true" tabindex="-1"></a>  dump <span class="op">(</span>file <span class="op">=</span> <span class="st">&quot;restart&quot;</span><span class="op">);</span></span>
-<span id="cb1-90"><a href="#cb1-90" aria-hidden="true" tabindex="-1"></a>  <span class="dt">char</span> nameOut<span class="op">[</span><span class="dv">80</span><span class="op">];</span></span>
-<span id="cb1-91"><a href="#cb1-91" aria-hidden="true" tabindex="-1"></a>  sprintf <span class="op">(</span>nameOut<span class="op">,</span> <span class="st">&quot;intermediate/snapshot-%5.4f&quot;</span><span class="op">,</span> t<span class="op">);</span></span>
+<span id="cb1-90"><a href="#cb1-90" aria-hidden="true" tabindex="-1"></a>  <span class="dt">char</span> nameOut<span class="op">[</span><span class="dv">4096</span><span class="op">];</span></span>
+<span id="cb1-91"><a href="#cb1-91" aria-hidden="true" tabindex="-1"></a>  snprintf<span class="op">(</span>nameOut<span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span>nameOut<span class="op">),</span> <span class="st">&quot;intermediate/snapshot-%5.4f&quot;</span><span class="op">,</span> t<span class="op">);</span></span>
 <span id="cb1-92"><a href="#cb1-92" aria-hidden="true" tabindex="-1"></a>  dump <span class="op">(</span>file <span class="op">=</span> nameOut<span class="op">);</span></span>
 <span id="cb1-93"><a href="#cb1-93" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
 <span id="cb1-94"><a href="#cb1-94" aria-hidden="true" tabindex="-1"></a></span>
