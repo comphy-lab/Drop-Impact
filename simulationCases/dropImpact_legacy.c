@@ -58,8 +58,8 @@ int main(int argc, char const *argv[]) {
   X0=0.; Y0=0.;
   init_grid (1 << (6));
 
-  char comm[80];
-  sprintf (comm, "mkdir -p intermediate");
+  char comm[4096];
+  snprintf(comm, sizeof(comm), "mkdir -p intermediate");
   system(comm);
 
   rho1 = 1.0; mu1 = Ohd/sqrt(We);
@@ -96,8 +96,8 @@ event adapt(i++){
 // static
 event writingFiles (t = 0, t += tsnap; t <= tmax) {
   dump (file = "restart");
-  char nameOut[80];
-  sprintf (nameOut, "intermediate/snapshot-%5.4f", t);
+  char nameOut[4096];
+  snprintf(nameOut, sizeof(nameOut), "intermediate/snapshot-%5.4f", t);
   dump (file = nameOut);
 }
 

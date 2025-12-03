@@ -7,7 +7,7 @@
 # ============================================================
 # Case number for folder naming (4-digit: 1000-9999)
 # Output will be created in simulationCases/<CaseNo>/
-CaseNo=1000
+CaseNo=1001
 
 # ============================================================
 # Physical Parameters (Dimensionless Numbers)
@@ -16,7 +16,7 @@ CaseNo=1000
 We=10.0
 
 # Ohnesorge number (drop): Oh = μ/√(ρσR) (viscous vs surface tension)
-Ohd=1.0e-3
+Ohd=1.0e-2 
 
 # Ohnesorge number (surrounding gas)
 Ohs=1.0e-5
@@ -30,7 +30,7 @@ rho_ratio=1.0e-3
 # Geometry Configuration
 # ============================================================
 # Domain size in drop radii (must be >> drop radius to avoid boundary effects)
-Ldomain=8.0
+Ldomain=4.0
 
 # Initial drop center position (radial coordinate, in drop radii)
 # Should be > 0 to avoid axis, and > drop_radius to avoid overlap with surface
@@ -53,7 +53,7 @@ impact_velocity=-1.0
 # Maximum refinement level (2^MAXlevel cells at finest resolution)
 # Level 10 → 1024 cells, Level 11 → 2048 cells, etc.
 # Higher = more accurate but slower
-MAXlevel=12
+MAXlevel=10 
 
 # Minimum refinement level (coarsest allowed)
 # Typically 4-5 for axisymmetric simulations
@@ -80,7 +80,7 @@ VelErr=1.0e-2
 # ============================================================
 # Maximum simulation time (in dimensionless time units)
 # Typical impact time scale: R/U = 1
-tmax=1e1
+tmax=8e0
 
 # Snapshot interval for dump files
 # Balance between temporal resolution and storage

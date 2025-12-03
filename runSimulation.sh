@@ -67,7 +67,7 @@ Examples:
     # Debug mode with memory checking
     $0 --debug default.params
 
-For more information, see CLAUDE.md
+For more information, see README.md
 EOF
 }
 

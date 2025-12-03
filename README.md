@@ -46,16 +46,23 @@ vim sweep.params        # Set CASE_START, CASE_END, sweep variables
 ## Repository Structure
 
 ```
-├── src-local/          Modular header files
-│   ├── params.h        Parameter structures and parsing
-│   ├── geometry.h      Drop geometry and initialization
-│   └── diagnostics.h   Statistics and output handling
-├── simulationCases/    Case-based simulation outputs
-│   └── dropImpact.c    Main simulation case
-├── runSimulation.sh    Single case runner
-├── runParameterSweep.sh    Parameter sweep runner
-├── default.params          Single-case configuration
-└── sweep.params            Sweep configuration
+├── src-local/              Modular header files
+│   ├── params.h           Parameter structures and parsing
+│   ├── geometry.h         Drop geometry and initialization
+│   └── diagnostics.h      Statistics and output handling
+├── postProcess/           Post-processing tools and visualization
+│   ├── getData-generic.c  Field extraction on structured grids
+│   ├── getFacet.c        Interface geometry extraction
+│   ├── getFootPrint.c    Footprint height analysis
+│   ├── getFootPrint.py   Multi-cutoff footprint time-series
+│   ├── plotFootPrint.py  Publication-quality footprint plots
+│   └── Video-generic.py  Frame-by-frame visualization pipeline
+├── simulationCases/       Case-based simulation outputs
+│   └── dropImpact.c      Main simulation case
+├── runSimulation.sh       Single case runner
+├── runParameterSweep.sh   Parameter sweep runner
+├── default.params         Single-case configuration
+└── sweep.params           Sweep configuration
 ```
 
 ## Key Parameters
@@ -78,10 +85,13 @@ vim sweep.params        # Set CASE_START, CASE_END, sweep variables
 ### Key Publications
 
 - **Sanjay, V. & Lohse, D.** (2025). *Unifying theory of scaling in drop impact: forces and maximum spreading diameter*. Physical Review Letters, 134(10), 104003. [DOI](https://doi.org/10.1103/PhysRevLett.134.104003)
+  - Comprehensive scaling theory for drop impact forces and maximum spreading
 
 - **Josserand, C. & Thoroddsen, S. T.** (2016). *Drop impact on a solid surface*. Annual Review of Fluid Mechanics, 48, 365-391. [DOI](https://doi.org/10.1146/annurev-fluid-122414-034401)
+  - Comprehensive review of drop impact phenomena
 
 - **Yarin, A. L.** (2006). *Drop impact dynamics: Splashing, spreading, receding, bouncing...*. Annual Review of Fluid Mechanics, 38, 159-192. [DOI](https://doi.org/10.1146/annurev.fluid.38.050304.092144)
+  - Classical review of drop impact dynamics
 
 ## Documentation
 
