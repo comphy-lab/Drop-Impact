@@ -368,7 +368,7 @@ def get_field(filename: str, zmin: float, zmax: float, rmax: float, nr: int) -> 
     vel = np.asarray(veltemp)
     nz = int(len(Z) / nr)
 
-    log_status(f"{filename}: nz = {nz}")
+    log_status(f"{os.path.basename(filename)}: nz = {nz}")
 
     R.resize((nz, nr))
     Z.resize((nz, nr))
@@ -567,13 +567,13 @@ def process_timestep(index: int, config: RuntimeConfig, style: PlotStyle) -> Non
     """
     snapshot = build_snapshot_info(index, config)
     if not os.path.exists(snapshot.source):
-        log_status(f"Missing snapshot: {snapshot.source}", level="WARN")
+        log_status(f"Missing: {os.path.basename(snapshot.source)}", level="WARN")
         return
     if os.path.exists(snapshot.target):
-        log_status(f"Frame already exists, skipping: {snapshot.target}")
+        log_status(f"Exists, skipping: {os.path.basename(snapshot.target)}")
         return
 
-    log_status(f"Processing snapshot index={snapshot.index}, t={snapshot.time:.4f}")
+    log_status(f"Processing t={snapshot.time:.4f}")
 
     try:
         facets = get_facets(snapshot.source)
@@ -584,11 +584,11 @@ def process_timestep(index: int, config: RuntimeConfig, style: PlotStyle) -> Non
         plot_snapshot(field_data, facets, config.bounds, snapshot, style)
     except Exception as err:
         log_status(
-            f"Error while processing {snapshot.source}: {err}", level="ERROR"
+            f"Error at t={snapshot.time:.4f}: {err}", level="ERROR"
         )
         raise
 
-    log_status(f"Saved frame: {snapshot.target}")
+    log_status(f"Saved: {os.path.basename(snapshot.target)}")
 
 
 def main():
