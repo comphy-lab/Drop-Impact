@@ -2,7 +2,7 @@
 # runParameterSweep.sh - Run parameter sweep with auto-incrementing CaseNo
 # Generates parameter combinations and runs simulations in simulationCases/<CaseNo>/
 
-set -e  # Exit on error
+set -euo pipefail  # Exit on error, unset variables, pipeline failures
 
 # ============================================================
 # Configuration

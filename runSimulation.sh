@@ -2,7 +2,7 @@
 # runSimulation.sh - Run single drop impact simulation from root directory
 # Creates case folder in simulationCases/<CaseNo>/ and runs simulation there
 
-set -e  # Exit on error
+set -euo pipefail  # Exit on error, unset variables, pipeline failures
 
 # ============================================================
 # Configuration

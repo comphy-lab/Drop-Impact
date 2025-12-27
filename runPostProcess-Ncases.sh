@@ -5,7 +5,7 @@
 # CoMPhy Lab — Durham University
 # Last updated: Dec 2025
 
-set -e  # Exit on error
+set -euo pipefail  # Exit on error, unset variables, pipeline failures
 
 # ============================================================
 # Configuration
@@ -277,23 +277,21 @@ run_video() {
     local results_dir="${CASES_DIR}/${case_no}/results"
     local video_dir="${results_dir}/Video"
 
-    local cmd="python ${VIDEO_SCRIPT} \
-        --caseToProcess ${results_dir} \
-        --folderToSave ${video_dir} \
-        --CPUs ${CPUS} \
-        --nGFS ${NGFS} \
-        --tsnap ${TSNAP} \
-        --GridsPerR ${GRIDS_PER_R} \
-        --ZMAX ${ZMAX} \
-        --RMAX ${RMAX} \
-        --ZMIN ${ZMIN}"
-
     if [ $VERBOSE -eq 1 ] || [ $DRY_RUN -eq 1 ]; then
-        echo "  CMD: $cmd"
+        echo "  CMD: python ${VIDEO_SCRIPT} --caseToProcess ${results_dir} --folderToSave ${video_dir} --CPUs ${CPUS} --nGFS ${NGFS} --tsnap ${TSNAP} --GridsPerR ${GRIDS_PER_R} --ZMAX ${ZMAX} --RMAX ${RMAX} --ZMIN ${ZMIN}"
     fi
 
     if [ $DRY_RUN -eq 0 ]; then
-        eval "$cmd"
+        python "${VIDEO_SCRIPT}" \
+            --caseToProcess "${results_dir}" \
+            --folderToSave "${video_dir}" \
+            --CPUs "${CPUS}" \
+            --nGFS "${NGFS}" \
+            --tsnap "${TSNAP}" \
+            --GridsPerR "${GRIDS_PER_R}" \
+            --ZMAX "${ZMAX}" \
+            --RMAX "${RMAX}" \
+            --ZMIN "${ZMIN}"
     fi
 }
 
@@ -301,18 +299,16 @@ run_footprint() {
     local case_no="$1"
     local results_dir="${CASES_DIR}/${case_no}/results"
 
-    local cmd="python ${FOOTPRINT_SCRIPT} \
-        --caseToProcess ${results_dir} \
-        --CPUs ${CPUS} \
-        --nGFS ${NGFS} \
-        --tsnap ${TSNAP}"
-
     if [ $VERBOSE -eq 1 ] || [ $DRY_RUN -eq 1 ]; then
-        echo "  CMD: $cmd"
+        echo "  CMD: python ${FOOTPRINT_SCRIPT} --caseToProcess ${results_dir} --CPUs ${CPUS} --nGFS ${NGFS} --tsnap ${TSNAP}"
     fi
 
     if [ $DRY_RUN -eq 0 ]; then
-        eval "$cmd"
+        python "${FOOTPRINT_SCRIPT}" \
+            --caseToProcess "${results_dir}" \
+            --CPUs "${CPUS}" \
+            --nGFS "${NGFS}" \
+            --tsnap "${TSNAP}"
     fi
 }
 
@@ -320,14 +316,12 @@ run_plot() {
     local case_no="$1"
     local results_dir="${CASES_DIR}/${case_no}/results"
 
-    local cmd="python ${PLOT_SCRIPT} --resultsDir ${results_dir}"
-
     if [ $VERBOSE -eq 1 ] || [ $DRY_RUN -eq 1 ]; then
-        echo "  CMD: $cmd"
+        echo "  CMD: python ${PLOT_SCRIPT} --resultsDir ${results_dir}"
     fi
 
     if [ $DRY_RUN -eq 0 ]; then
-        eval "$cmd"
+        python "${PLOT_SCRIPT}" --resultsDir "${results_dir}"
     fi
 }
 
