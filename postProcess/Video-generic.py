@@ -591,7 +591,10 @@ def process_timestep(index: int, config: RuntimeConfig, style: PlotStyle) -> Non
         log_status(f"Exists, skipping: {os.path.basename(snapshot.target)}")
         return
 
-    log_status(f"Processing t={snapshot.time:.4f}")
+    # Show relative path: CaseNo/results/intermediate/filename
+    src_parts = snapshot.source.split(os.sep)
+    src_rel = os.sep.join(src_parts[-4:]) if len(src_parts) >= 4 else snapshot.source
+    log_status(f"Processing {src_rel}")
 
     try:
         facets = get_facets(snapshot.source)
@@ -601,15 +604,15 @@ def process_timestep(index: int, config: RuntimeConfig, style: PlotStyle) -> Non
         )
         plot_snapshot(field_data, facets, config.bounds, snapshot, style)
     except Exception as err:
-        # Show partial path: CaseNo/results/intermediate/filename
-        path_parts = snapshot.source.split(os.sep)
-        partial_path = os.sep.join(path_parts[-4:]) if len(path_parts) >= 4 else snapshot.source
         log_status(
-            f"Error at {partial_path} (t={snapshot.time:.4f}): {err}", level="ERROR"
+            f"Error at {src_rel} (t={snapshot.time:.4f}): {err}", level="ERROR"
         )
         raise
 
-    log_status(f"Saved: {os.path.basename(snapshot.target)}")
+    # Show relative path: CaseNo/results/Video/filename
+    tgt_parts = snapshot.target.split(os.sep)
+    tgt_rel = os.sep.join(tgt_parts[-4:]) if len(tgt_parts) >= 4 else snapshot.target
+    log_status(f"Saved: {tgt_rel}")
 
 
 def encode_video(config: RuntimeConfig) -> None:
