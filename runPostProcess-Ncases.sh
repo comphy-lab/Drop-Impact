@@ -201,6 +201,13 @@ for case_no in "${CASE_NUMBERS[@]}"; do
     fi
 done
 
+# Check if all processing steps are skipped
+if [ $SKIP_VIDEO -eq 1 ] && [ $SKIP_FOOTPRINT -eq 1 ] && [ $SKIP_PLOT -eq 1 ]; then
+    echo "ERROR: All processing steps are skipped (--skip-video, --skip-footprint, --skip-plot)" >&2
+    echo "       At least one processing step must be enabled." >&2
+    exit 1
+fi
+
 # Check Python availability
 if ! command -v python &> /dev/null; then
     echo "ERROR: python not found in PATH" >&2

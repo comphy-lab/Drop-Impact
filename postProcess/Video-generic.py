@@ -583,8 +583,11 @@ def process_timestep(index: int, config: RuntimeConfig, style: PlotStyle) -> Non
         )
         plot_snapshot(field_data, facets, config.bounds, snapshot, style)
     except Exception as err:
+        # Show partial path: CaseNo/results/intermediate/filename
+        path_parts = snapshot.source.split(os.sep)
+        partial_path = os.sep.join(path_parts[-4:]) if len(path_parts) >= 4 else snapshot.source
         log_status(
-            f"Error at t={snapshot.time:.4f}: {err}", level="ERROR"
+            f"Error at {partial_path} (t={snapshot.time:.4f}): {err}", level="ERROR"
         )
         raise
 
