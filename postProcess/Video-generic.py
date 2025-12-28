@@ -90,6 +90,9 @@ class RuntimeConfig:
     rmax: float
     case_dir: str
     output_dir: str
+    skip_video_encode: bool
+    framerate: int
+    output_fps: int
 
     @property
     def rmin(self) -> float:
@@ -217,6 +220,18 @@ def parse_arguments() -> RuntimeConfig:
     parser.add_argument(
         "--folderToSave", type=str, default="simulationCases/1000/results/Video", help="Folder to save"
     )
+    parser.add_argument(
+        "--skip-video-encode", action="store_true",
+        help="Skip ffmpeg video encoding after frame generation"
+    )
+    parser.add_argument(
+        "--framerate", type=int, default=90,
+        help="Input framerate for ffmpeg (default: 90)"
+    )
+    parser.add_argument(
+        "--output-fps", type=int, default=30,
+        help="Output video framerate (default: 30)"
+    )
     args = parser.parse_args()
 
     return RuntimeConfig(
@@ -229,6 +244,9 @@ def parse_arguments() -> RuntimeConfig:
         rmax=args.RMAX,
         case_dir=args.caseToProcess,
         output_dir=args.folderToSave,
+        skip_video_encode=args.skip_video_encode,
+        framerate=args.framerate,
+        output_fps=args.output_fps,
     )
 
 
@@ -368,7 +386,7 @@ def get_field(filename: str, zmin: float, zmax: float, rmax: float, nr: int) -> 
     vel = np.asarray(veltemp)
     nz = int(len(Z) / nr)
 
-    log_status(f"{filename}: nz = {nz}")
+    log_status(f"{os.path.basename(filename)}: nz = {nz}")
 
     R.resize((nz, nr))
     Z.resize((nz, nr))
@@ -513,8 +531,8 @@ def plot_snapshot(
         interpolation="Bilinear",
         origin="lower",
         extent=[-rminp, -rmaxp, zminp, zmaxp],
-        vmax=0.0,
-        vmin=-4.0,
+        vmax=2.0,
+        vmin=-2.0,
     )
 
     cntrl2 = ax.imshow(
@@ -567,13 +585,16 @@ def process_timestep(index: int, config: RuntimeConfig, style: PlotStyle) -> Non
     """
     snapshot = build_snapshot_info(index, config)
     if not os.path.exists(snapshot.source):
-        log_status(f"Missing snapshot: {snapshot.source}", level="WARN")
+        log_status(f"Missing: {os.path.basename(snapshot.source)}", level="WARN")
         return
     if os.path.exists(snapshot.target):
-        log_status(f"Frame already exists, skipping: {snapshot.target}")
+        log_status(f"Exists, skipping: {os.path.basename(snapshot.target)}")
         return
 
-    log_status(f"Processing snapshot index={snapshot.index}, t={snapshot.time:.4f}")
+    # Show relative path: CaseNo/results/intermediate/filename
+    src_parts = snapshot.source.split(os.sep)
+    src_rel = os.sep.join(src_parts[-4:]) if len(src_parts) >= 4 else snapshot.source
+    log_status(f"Processing {src_rel}")
 
     try:
         facets = get_facets(snapshot.source)
@@ -584,24 +605,71 @@ def process_timestep(index: int, config: RuntimeConfig, style: PlotStyle) -> Non
         plot_snapshot(field_data, facets, config.bounds, snapshot, style)
     except Exception as err:
         log_status(
-            f"Error while processing {snapshot.source}: {err}", level="ERROR"
+            f"Error at {src_rel} (t={snapshot.time:.4f}): {err}", level="ERROR"
         )
         raise
 
-    log_status(f"Saved frame: {snapshot.target}")
+    # Show relative path: CaseNo/results/Video/filename
+    tgt_parts = snapshot.target.split(os.sep)
+    tgt_rel = os.sep.join(tgt_parts[-4:]) if len(tgt_parts) >= 4 else snapshot.target
+    log_status(f"Saved: {tgt_rel}")
+
+
+def encode_video(config: RuntimeConfig) -> None:
+    """
+    Run ffmpeg to stitch PNG frames into an MP4 video.
+
+    The output video is saved in the results directory (parent of Video folder)
+    with the case number as filename (e.g., results/1006.mp4).
+
+    Parameters:
+        config: Runtime configuration containing paths and encoding settings.
+
+    Raises:
+        RuntimeError: If ffmpeg fails to encode the video.
+    """
+    # Extract case number from path (e.g., simulationCases/1006/results -> 1006)
+    case_no = os.path.basename(os.path.dirname(config.case_dir))
+
+    # Output path: results/1006.mp4 (parent of Video folder)
+    output_path = os.path.join(config.case_dir, f"{case_no}.mp4")
+    input_pattern = os.path.join(config.output_dir, "*.png")
+
+    cmd = [
+        "ffmpeg", "-y",
+        "-framerate", str(config.framerate),
+        "-pattern_type", "glob",
+        "-i", input_pattern,
+        "-vf", "pad=ceil(iw/2)*2:ceil(ih/2)*2",
+        "-c:v", "libx264",
+        "-r", str(config.output_fps),
+        "-pix_fmt", "yuv420p",
+        output_path
+    ]
+
+    log_status(f"Encoding video: {output_path}")
+    result = sp.run(cmd, capture_output=True, text=True)
+    if result.returncode != 0:
+        log_status(f"ffmpeg error: {result.stderr}", level="ERROR")
+        raise RuntimeError(f"ffmpeg failed with code {result.returncode}")
+    log_status(f"Video saved: {output_path}")
 
 
 def main():
     """
     Entry point used by the documentation tooling and CLI.
     """
-    
+
     config = parse_arguments()
     ensure_directory(config.output_dir)
 
     with mp.Pool(processes=config.cpus) as pool:
         worker = partial(process_timestep, config=config, style=PLOT_STYLE)
         pool.map(worker, range(config.n_snapshots))
+
+    # Encode video unless skipped
+    if not config.skip_video_encode:
+        encode_video(config)
 
 
 if __name__ == "__main__":
