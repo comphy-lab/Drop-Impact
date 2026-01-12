@@ -187,7 +187,7 @@ if ! qcc --version > /dev/null 2>&1; then
     echo "\033[0;31mError: qcc is not working properly.\033[0m"
     echo "Please ensure you have Xcode Command Line Tools installed."
     echo "You can install them by running: xcode-select --install"
-    echo "For more details, visit: https://basilisk.fr/src/INSTALL"
+    echo "For more details, visit: http://basilisk.fr/src/INSTALL"
     exit 1
 else
     echo "\033[0;32mqcc is properly installed.\033[0m"
