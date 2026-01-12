@@ -185,6 +185,6 @@ event adapt (i++)
 /**
 ## See also
 
-* [Same test with Gerris](http://gerris.dalembert.upmc.fr/gerris/tests/tests/plateau.html)
-* [3D plateau example with Gerris](http://gerris.dalembert.upmc.fr/gerris/examples/examples/plateau.html)
+* [Same test with Gerris](https://gerris.dalembert.upmc.fr/gerris/tests/tests/plateau.html)
+* [3D plateau example with Gerris](https://gerris.dalembert.upmc.fr/gerris/examples/examples/plateau.html)
 */

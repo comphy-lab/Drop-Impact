@@ -1,15 +1,13 @@
 #!/bin/bash
-#SBATCH --job-name=dropImpactSweep
 #SBATCH --nodes=1
 #SBATCH --ntasks=48
 #SBATCH --cpus-per-task=1
 #SBATCH --time=100:00:00
 #SBATCH --partition=genoa
 #SBATCH --mail-type=ALL
-#SBATCH --mail-user=vatsal.sanjay@comphy-lab.org
+#SBATCH --mail-user=vatsal.sanjay@durham.ac.uk
 #SBATCH --output=slurm-%j.out
 #SBATCH --error=slurm-%j.err
-#SBATCH --chdir=/gpfs/work2/0/nctt0620/vatsal/2025-11-17-DropImpact/Drop-Impact
 
 # ============================================================
 # Drop Impact - HPC Parameter Sweep Runner
@@ -66,6 +64,8 @@ echo ""
 # Setup Basilisk Environment
 # ============================================================
 echo "Setting up Basilisk environment..."
+echo "Rebuilding Basilisk (hard)..."
+bash "${SCRIPT_DIR}/reset_install_requirements-no-darcs-no-git.sh" --hard
 if [ -f "${SCRIPT_DIR}/.project_config" ]; then
     source "${SCRIPT_DIR}/.project_config"
     echo "Basilisk environment loaded from .project_config"

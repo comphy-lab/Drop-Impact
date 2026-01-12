@@ -237,7 +237,7 @@ event init (i = 0)
     /**
     The terrain uses the ETOPO2 bathymetric KDT database, which needs
     to be generated first. See the [*xyz2kdt*
-    manual](http://gerris.dalembert.upmc.fr/xyz2kdt.html) for
+    manual](https://gerris.dalembert.upmc.fr/xyz2kdt.html) for
     instructions. */
     
     terrain (zbs, "~/terrain/etopo2", NULL);

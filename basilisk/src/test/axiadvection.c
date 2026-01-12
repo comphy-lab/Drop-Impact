@@ -88,5 +88,5 @@ event adapt (i++) {
 /**
 ## See also
 
-* [Same test with Gerris](http://gerris.dalembert.upmc.fr/gerris/tests/tests/axiadvection.html)
+* [Same test with Gerris](https://gerris.dalembert.upmc.fr/gerris/tests/tests/axiadvection.html)
 */

@@ -767,7 +767,7 @@ void output_grd (scalar f,
 ## *output_gfs()*: Gerris simulation format
 
 The function writes simulation data in the format used in
-[Gerris](http://gerris.dalembert.upmc.fr) simulation files. These
+[Gerris](https://gerris.dalembert.upmc.fr) simulation files. These
 files can be read with GfsView.
 
 The arguments and their default values are:

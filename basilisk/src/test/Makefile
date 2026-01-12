@@ -250,6 +250,11 @@ view.3D.tst: CC = mpicc -D_MPI=4
 
 coarsen.vtst: CFLAGS = -DMTRACE=3 -progress
 
+facefraction3D.tst: CFLAGS += -grid=multigrid3D
+facefraction3D.c: facefraction.c
+	ln -sf facefraction.c facefraction3D.c
+facefraction.tst: facefraction3D.tst
+
 # Axisymmetric tests
 
 axi-tests: axiadvection.tst axi.tst poiseuille-axi.tst \

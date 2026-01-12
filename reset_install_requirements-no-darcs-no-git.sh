@@ -1,7 +1,7 @@
 #!/bin/bash
-# Linux/macOS version - uses git instead of darcs
-# Clones basilisk-source from comphy-lab/basilisk-C GitHub repo
-# Ensures that we are always using the latest version from our fork
+# Linux/macOS version - uses wget and tar instead of darcs
+# Based on https://basilisk.fr/src/INSTALL
+# Ensures that we are always using the latest version of basilisk from basilisk.fr
 
 # Check if --hard flag is passed
 HARD_RESET=false
@@ -33,12 +33,30 @@ check_prerequisites() {
         printf "\033[0;32m✓ gawk is installed\033[0m\n"
     fi
 
-    # Check for git
-    if ! command -v git > /dev/null 2>&1; then
-        missing_tools+=("git")
+    # Check for wget
+    if ! command -v wget > /dev/null 2>&1; then
+        missing_tools+=("wget")
     else
-        found_tools+=("git")
-        printf "\033[0;32m✓ git is installed\033[0m\n"
+        found_tools+=("wget")
+        printf "\033[0;32m✓ wget is installed\033[0m\n"
+    fi
+
+    # Check for curl (needed for applying patches on macOS)
+    if ! command -v curl > /dev/null 2>&1; then
+        if [[ "$OSTYPE" == "darwin"* ]]; then
+            missing_tools+=("curl")
+        fi
+    else
+        found_tools+=("curl")
+        printf "\033[0;32m✓ curl is installed\033[0m\n"
+    fi
+
+    # Check for tar
+    if ! command -v tar > /dev/null 2>&1; then
+        missing_tools+=("tar")
+    else
+        found_tools+=("tar")
+        printf "\033[0;32m✓ tar is installed\033[0m\n"
     fi
 
     # Check for gcc
@@ -59,7 +77,7 @@ check_prerequisites() {
             # macOS installation instructions
             echo "To install missing tools on macOS:"
             echo "  xcode-select --install"
-            echo "  brew install gawk"
+            echo "  brew install gawk wget"
         else
             # Linux installation instructions
             echo "To install missing tools on Linux:"
@@ -123,31 +141,26 @@ apply_patches() {
     echo ""
 }
 
-# Function to install basilisk using git sparse checkout from GitHub
+# Function to install basilisk using wget
 install_basilisk() {
-    local REPO_URL="https://github.com/comphy-lab/basilisk-C.git"
-
-    printf "\033[0;36mCloning basilisk-source from comphy-lab/basilisk-C (sparse checkout)...\033[0m\n"
-
-    # Use sparse checkout to only get basilisk-source directory
-    git clone --depth 1 --filter=blob:none --sparse "$REPO_URL" basilisk-C-temp
+    printf "\033[0;36mDownloading basilisk using wget...\033[0m\n"
+    wget https://basilisk.fr/basilisk/basilisk.tar.gz
 
     if [[ $? -ne 0 ]]; then
-        printf "\033[0;31mError: Failed to clone repository\033[0m\n"
-        echo "URL: $REPO_URL"
+        printf "\033[0;31mError: Failed to download basilisk.tar.gz\033[0m\n"
         exit 1
     fi
 
-    cd basilisk-C-temp || { printf "\033[0;31mError: Failed to change directory to basilisk-C-temp\033[0m\n" >&2; exit 1; }
-    git sparse-checkout set basilisk-source
-    cd ..
+    printf "\033[0;36mExtracting basilisk.tar.gz...\033[0m\n"
+    tar xzf basilisk.tar.gz
 
-    # Move basilisk-source to basilisk
-    printf "\033[0;36mSetting up basilisk directory...\033[0m\n"
-    mv basilisk-C-temp/basilisk-source basilisk
+    if [[ $? -ne 0 ]]; then
+        printf "\033[0;31mError: Failed to extract basilisk.tar.gz\033[0m\n"
+        exit 1
+    fi
 
-    # Clean up temp clone
-    rm -rf basilisk-C-temp
+    # Clean up the tar file
+    rm basilisk.tar.gz
 
     # Apply comphy-lab patches (macOS only)
     apply_patches "basilisk"

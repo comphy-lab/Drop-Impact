@@ -66,7 +66,7 @@ display ("squares (color = 'u.x', spread = -1);", true);
 */
 
 #ifndef DISPLAY_JS
-# define DISPLAY_JS "http://basilisk.fr/three.js/editor/index.html"
+# define DISPLAY_JS "http://basilisk.ida.upmc.fr/three.js/editor/index.html"
 #endif
 
 #ifndef DISPLAY_HOST
