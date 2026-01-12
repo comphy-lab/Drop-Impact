@@ -52,7 +52,7 @@ plot 'log' index 'F0 = 0.1' u 1:3 w l t 'C grid (Ro = 0.1)', \
 ## See also
 
 * [Same test with
-  Gerris](http://gerris.dalembert.upmc.fr/gerris/tests/tests/nonlinear.html)
+  Gerris](https://gerris.dalembert.upmc.fr/gerris/tests/tests/nonlinear.html)
 */
 
 #include "grid/multigrid.h"

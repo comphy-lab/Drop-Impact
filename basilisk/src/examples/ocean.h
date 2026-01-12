@@ -147,7 +147,7 @@ event init (i = 0)
     /**
     The terrain uses the ETOPO2 bathymetric KDT database, which needs
     to be generated first. See the [*xyz2kdt*
-    manual](http://gerris.dalembert.upmc.fr/xyz2kdt.html) for
+    manual](https://gerris.dalembert.upmc.fr/xyz2kdt.html) for
     instructions. */
     
     terrain (zb, "~/terrain/etopo2", NULL);
@@ -265,7 +265,7 @@ Alternatively, you can directly retrieve the preprocessed files for
 the HR climatology with something like
 
 ~~~bash
-wget http://basilisk.fr/src/examples/gulf-stream/wind.tgz
+wget https://basilisk.fr/src/examples/gulf-stream/wind.tgz
 tar xzvf wind.tgz
 ~~~
 */
