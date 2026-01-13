@@ -186,6 +186,13 @@ int main(int argc, char const *argv[]) {
     }
 
     /**
+    ### Physics-Based Parameter Scaling
+
+    Convert tmax from convective time units to simulation time: tmax_sim = tmax * sqrt(We)
+    */
+    apply_physics_scaling(&params);
+
+    /**
     ### Parameter Validation
 
     Check physical constraints and consistency before starting simulation.

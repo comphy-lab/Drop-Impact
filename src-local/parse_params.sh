@@ -37,7 +37,7 @@ parse_param_file() {
 # Usage: get_param <key> [default]
 get_param() {
     local key=$1
-    local default=$2
+    local default=${2:-}
     local var_name="PARAM_${key}"
     echo "${!var_name:-$default}"
 }

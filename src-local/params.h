@@ -304,6 +304,24 @@ static inline int validate_params(const struct SimulationParams *p) {
 }
 
 /**
+ * @brief Apply physics-based scaling to parameters
+ *
+ * Scales tmax by sqrt(We) to convert from convective time units
+ * (user-specified) to simulation time units.
+ *
+ * Physical basis: The convective/inertial timescale is τ_c = R/U.
+ * With We = ρU²R/σ, we have τ_c ~ sqrt(We) in the normalized units.
+ * User specifies time in units of τ_c; this converts to simulation time.
+ */
+static inline void apply_physics_scaling(struct SimulationParams *p) {
+    double tmax_input = p->tmax;
+    p->tmax = tmax_input * sqrt(p->We);
+
+    fprintf(stderr, "INFO: tmax scaled: %.4g * sqrt(We=%.3g) = %.4g\n",
+            tmax_input, p->We, p->tmax);
+}
+
+/**
  * @brief Print parameter summary
  * @param p Pointer to parameter structure
  * @param fp File pointer for output (e.g., stderr or log file)
