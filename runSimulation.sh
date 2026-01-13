@@ -76,6 +76,7 @@ EOF
 # ============================================================
 COMPILE_ONLY=0
 DEBUG_FLAGS=""
+QCC_FLAGS="${QCC_FLAGS:-}"
 VERBOSE=0
 MPI_ENABLED=0
 MPI_CORES=4
