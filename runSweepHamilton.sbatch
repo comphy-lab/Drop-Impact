@@ -1,40 +1,66 @@
 #!/bin/bash
-#SBATCH --nodes=1
-#SBATCH --ntasks=48
-#SBATCH --cpus-per-task=1
-#SBATCH --time=100:00:00
-#SBATCH --partition=genoa
-#SBATCH --mail-type=ALL
-#SBATCH --mail-user=vatsal.sanjay@durham.ac.uk
+#SBATCH --job-name=dropImpactSweep
+#SBATCH -N 1
+#SBATCH -n 128
+#SBATCH -c 1
+#SBATCH --mem=240G
+#SBATCH --time=3-00:00:00
+#SBATCH --gres=tmp:100G
+#SBATCH -p multi
+#SBATCH --mail-type=END,FAIL
+#SBATCH --mail-user=your.email@durham.ac.uk
 #SBATCH --output=slurm-%j.out
 #SBATCH --error=slurm-%j.err
 
 # ============================================================
-# Drop Impact - HPC Parameter Sweep Runner
+# Drop Impact - HPC Parameter Sweep Runner (Hamilton)
 # ============================================================
-# This script runs parameter sweeps on Snellius HPC.
+# This script runs Drop Impact parameter sweeps on Durham University's Hamilton HPC.
 # Each case runs sequentially but uses MPI parallelization.
 #
 # BEFORE RUNNING:
-# 1. Edit sweep.params to set parameter ranges and case numbers
-# 2. Adjust SBATCH parameters above (especially --ntasks, --time)
-# 3. Submit with: sbatch runSweepSnellius.sbatch
+# 1. Clone repo to /nobackup/$USER/ (NOT home directory)
+# 2. Basilisk is installed/verified automatically (ref-locked):
+#    ./reset_install_basilisk.sh --mode=4 --ref=v2026-01-13
+# 3. Edit sweep.params to set parameter ranges and case numbers
+# 4. Update --mail-user above with your Durham email
+# 5. Submit with: sbatch runSweepHamilton.sbatch
 #
-# SBATCH Parameters to Customize:
-#   --ntasks: Number of MPI tasks per case (currently 192)
-#   --time: Wall time for entire sweep (currently 100 hours)
-#   --partition: Compute partition (currently genoa)
-#   --mail-user: Email for job notifications
+# SBATCH Parameters (Hamilton-specific):
+#   -n 128: Number of MPI tasks (whole node = 128 cores)
+#   --mem=240G: Memory per node (max 250G on standard nodes)
+#   --time=3-00:00:00: Max wall time (3 days for multi partition)
+#   --gres=tmp:100G: Temporary disk space ($TMPDIR)
+#   -p multi: Partition for whole-node jobs
 # ============================================================
 
-set -e  # Exit on error (but we'll handle case failures gracefully)
+set -euo pipefail  # Exit on error, unset variables, pipeline failures
 
 # ============================================================
 # Configuration
 # ============================================================
 # Use SLURM_SUBMIT_DIR (directory where sbatch was called) as the project root
-SCRIPT_DIR="${SLURM_SUBMIT_DIR}"
+SCRIPT_DIR="${SLURM_SUBMIT_DIR:-$(pwd)}"
 SWEEP_FILE="${SCRIPT_DIR}/sweep.params"
+
+# Source file to compile inside each case directory
+SOURCE_FILE_NAME="dropImpact.c"
+EXECUTABLE_NAME="${SOURCE_FILE_NAME%.c}"
+
+# Number of MPI tasks per case
+MPI_TASKS="${SLURM_NTASKS:-128}"
+
+# ============================================================
+# Validate Working Directory
+# ============================================================
+if [[ ! "$SCRIPT_DIR" =~ ^/nobackup/ ]]; then
+    echo "WARNING: Running from $SCRIPT_DIR"
+    echo "         Consider using /nobackup/\$USER/ for better performance"
+    echo "         Home directory has only 10GB quota and is slower"
+    echo ""
+fi
+
+cd "$SCRIPT_DIR"
 
 # ============================================================
 # Print Job Information
@@ -45,9 +71,11 @@ echo "============================================="
 echo "Job started at: $(date)"
 echo "Running on node: $(hostname)"
 echo "Working directory: $(pwd)"
-echo "Job ID: ${SLURM_JOB_ID}"
-echo "Number of MPI tasks: ${SLURM_NTASKS}"
-echo "Partition: ${SLURM_JOB_PARTITION}"
+echo "Job ID: ${SLURM_JOB_ID:-unknown}"
+echo "Number of MPI tasks: ${MPI_TASKS}"
+echo "Partition: ${SLURM_JOB_PARTITION:-unknown}"
+echo "Memory allocated: ${SLURM_MEM_PER_NODE:-unknown}MB"
+echo "TMPDIR: ${TMPDIR:-not set}"
 echo ""
 
 # ============================================================
@@ -55,8 +83,8 @@ echo ""
 # ============================================================
 echo "Loading modules..."
 module purge
-module load 2024
-module load OpenMPI/5.0.3-GCC-13.3.0
+module load gcc
+module load openmpi
 echo "Modules loaded successfully"
 echo ""
 
@@ -82,12 +110,13 @@ if [ ! -f "$LOCK_FILE" ] || [ "$LOCK_REF" != "$BASILISK_REF" ]; then
 else
     (cd "${SCRIPT_DIR}" && ./reset_install_basilisk.sh --mode=4 --ref="$BASILISK_REF")
 fi
+
 if [ -f "${SCRIPT_DIR}/.project_config" ]; then
     source "${SCRIPT_DIR}/.project_config"
     echo "Basilisk environment loaded from .project_config"
-    echo "BASILISK: $BASILISK"
+    echo "BASILISK: ${BASILISK:-unset}"
 else
-    echo "ERROR: .project_config not found" >&2
+    echo "ERROR: .project_config not found after Basilisk install" >&2
     exit 1
 fi
 echo ""
@@ -121,12 +150,12 @@ echo "Parsing sweep configuration..."
 source "$SWEEP_FILE"
 
 # Validate required variables
-if [ -z "$BASE_CONFIG" ]; then
+if [ -z "${BASE_CONFIG:-}" ]; then
     echo "ERROR: BASE_CONFIG not defined in sweep file" >&2
     exit 1
 fi
 
-if [ -z "$CASE_START" ] || [ -z "$CASE_END" ]; then
+if [ -z "${CASE_START:-}" ] || [ -z "${CASE_END:-}" ]; then
     echo "ERROR: CASE_START and CASE_END must be defined in sweep file" >&2
     exit 1
 fi
@@ -189,21 +218,15 @@ echo ""
 # Generate Parameter Combinations
 # ============================================================
 echo "Generating parameter combinations..."
-echo "DEBUG: SCRIPT_DIR = $SCRIPT_DIR"
-echo "DEBUG: Creating temp directory..."
 
 # Create temporary directory for generated parameter files
-# HPC note: Don't use /tmp - use local work directory instead
+# Use work directory, not /tmp (node-local on Hamilton)
 TEMP_DIR="${SCRIPT_DIR}/.sweep_tmp_$$"
-echo "DEBUG: TEMP_DIR = $TEMP_DIR"
-
 mkdir -p "$TEMP_DIR" || {
     echo "ERROR: Failed to create temp directory: $TEMP_DIR" >&2
     exit 1
 }
-echo "DEBUG: Temp directory created successfully"
-
-trap "rm -rf $TEMP_DIR" EXIT
+trap 'rm -rf "$TEMP_DIR"' EXIT
 
 CASE_NUM=$CASE_START
 COMBINATION_COUNT=0
@@ -211,69 +234,37 @@ CASE_FILES=()
 
 # Recursive function to generate all combinations
 generate_combinations() {
-    echo "DEBUG: generate_combinations called with depth=$1" >&2
     local depth=$1
     shift
     local current_values=("$@")
-    echo "DEBUG: depth=$depth, SWEEP_VARS array size=${#SWEEP_VARS[@]}" >&2
 
-    if [ $depth -eq ${#SWEEP_VARS[@]} ]; then
-        echo "DEBUG: Base case reached, creating case file" >&2
+    if [ "$depth" -eq ${#SWEEP_VARS[@]} ]; then
         # Base case: all variables assigned, create parameter file
-        local case_file="${TEMP_DIR}/case_$(printf "%04d" $CASE_NUM).params"
-        echo "DEBUG: case_file=$case_file" >&2
-        echo "DEBUG: BASE_CONFIG=$BASE_CONFIG" >&2
-        echo "DEBUG: Checking if BASE_CONFIG exists..." >&2
-        ls -la "$BASE_CONFIG" >&2 || echo "DEBUG: BASE_CONFIG file not found!" >&2
+        local case_file="${TEMP_DIR}/case_$(printf "%04d" "$CASE_NUM").params"
 
         # Copy base config
-        echo "DEBUG: Copying base config..." >&2
-        cp "$BASE_CONFIG" "$case_file" || {
-            echo "ERROR: Failed to copy $BASE_CONFIG to $case_file" >&2
-            exit 1
-        }
-        echo "DEBUG: Copy successful" >&2
+        cp "$BASE_CONFIG" "$case_file"
 
         # Override CaseNo
-        echo "DEBUG: Overriding CaseNo to ${CASE_NUM}..." >&2
         if grep -q "^CaseNo=" "$case_file"; then
-            echo "DEBUG: CaseNo found, using sed to replace..." >&2
-            sed -i'.bak' "s|^CaseNo=.*|CaseNo=${CASE_NUM}|" "$case_file" || {
-                echo "ERROR: sed failed" >&2
-                exit 1
-            }
-            echo "DEBUG: sed completed" >&2
+            sed -i'.bak' "s|^CaseNo=.*|CaseNo=${CASE_NUM}|" "$case_file"
         else
-            echo "DEBUG: CaseNo not found, appending..." >&2
             echo "CaseNo=${CASE_NUM}" >> "$case_file"
         fi
-        echo "DEBUG: Removing backup file..." >&2
         rm -f "${case_file}.bak"
-        echo "DEBUG: CaseNo override complete" >&2
 
         # Override with sweep values
-        echo "DEBUG: Overriding sweep values..." >&2
         for i in "${!SWEEP_VARS[@]}"; do
             local var="${SWEEP_VARS[$i]}"
             local val="${current_values[$i]}"
-            echo "DEBUG: Processing var=$var, val=$val" >&2
 
             if grep -q "^${var}=" "$case_file"; then
-                echo "DEBUG: Found $var in file, replacing with sed..." >&2
-                sed -i'.bak' "s|^${var}=.*|${var}=${val}|" "$case_file" || {
-                    echo "ERROR: sed failed for $var" >&2
-                    exit 1
-                }
-                echo "DEBUG: sed completed for $var" >&2
+                sed -i'.bak' "s|^${var}=.*|${var}=${val}|" "$case_file"
             else
-                echo "DEBUG: $var not found, appending..." >&2
                 echo "${var}=${val}" >> "$case_file"
             fi
-            echo "DEBUG: Removing backup file for $var..." >&2
             rm -f "${case_file}.bak"
-            echo "DEBUG: Completed $var" >&2
         done
-        echo "DEBUG: All sweep values overridden" >&2
 
         CASE_FILES+=("$case_file")
         ((COMBINATION_COUNT++)) || true
@@ -300,12 +291,8 @@ generate_combinations() {
 }
 
 # Start recursion
-echo "DEBUG: About to start recursion with CASE_START=$CASE_START"
-echo "DEBUG: SWEEP_VARS=(${SWEEP_VARS[@]})"
-echo "DEBUG: SWEEP_VALUES=(${SWEEP_VALUES[@]})"
 generate_combinations 0
 
-echo "DEBUG: Recursion completed"
 echo "Generated $COMBINATION_COUNT parameter combinations"
 
 # Check if number of combinations matches the range
@@ -328,7 +315,7 @@ echo ""
 echo "============================================="
 echo "Running $COMBINATION_COUNT Simulations"
 echo "============================================="
-echo "Each case runs with ${SLURM_NTASKS} MPI tasks"
+echo "Each case runs with ${MPI_TASKS} MPI tasks"
 echo ""
 
 # Counters for tracking
@@ -337,6 +324,9 @@ FAILED_CASES=0
 
 for param_file in "${CASE_FILES[@]}"; do
     # Parse parameter file to get CaseNo
+    if compgen -v PARAM_ > /dev/null; then
+        unset "${!PARAM_@}"
+    fi
     parse_param_file "$param_file"
     CASE_NO=$(get_param "CaseNo")
 
@@ -364,10 +354,9 @@ for param_file in "${CASE_FILES[@]}"; do
     cp "$param_file" "$CASE_DIR/case.params"
     echo "Parameter file copied to case directory"
 
-    # Copy source file to case directory
-    SRC_FILE_ORIG="${SCRIPT_DIR}/simulationCases/dropImpact.c"
-    SRC_FILE_LOCAL="$CASE_DIR/dropImpact.c"
-    EXECUTABLE="$CASE_DIR/dropImpact"
+    # Copy source file to case directory if needed
+    SRC_FILE_ORIG="${SCRIPT_DIR}/simulationCases/${SOURCE_FILE_NAME}"
+    SRC_FILE_LOCAL="$CASE_DIR/$SOURCE_FILE_NAME"
 
     if [ ! -f "$SRC_FILE_ORIG" ]; then
         echo "ERROR: Source file $SRC_FILE_ORIG not found" >&2
@@ -378,14 +367,16 @@ for param_file in "${CASE_FILES[@]}"; do
     cp "$SRC_FILE_ORIG" "$SRC_FILE_LOCAL"
     echo "Source file copied to case directory"
 
-    # Change to case directory for compilation
+    # Change to case directory
     cd "$CASE_DIR"
 
-    # Compile with MPI
+    # ============================================================
+    # Compile + Run (MPI)
+    # ============================================================
     echo "Compiling with MPI..."
     if CC99='mpicc -std=c99 -D_GNU_SOURCE=1' qcc -I../../src-local \
         -Wall -O2 -D_MPI=1 -disable-dimensions \
-        dropImpact.c -o dropImpact -lm 2>&1; then
+        "$SOURCE_FILE_NAME" -o "$EXECUTABLE_NAME" -lm 2>&1; then
         echo "Compilation successful"
     else
         echo "ERROR: Compilation failed for case $CASE_NO" >&2
@@ -394,17 +385,16 @@ for param_file in "${CASE_FILES[@]}"; do
         continue
     fi
 
-    # Check for restart file
     if [ -f "restart" ]; then
         echo "Restart file found - simulation will resume from checkpoint"
     fi
 
-    # Run simulation with srun
-    echo "Running simulation with ${SLURM_NTASKS} MPI tasks..."
-    echo "Command: srun -n ${SLURM_NTASKS} ./dropImpact case.params"
+    # Run simulation with mpirun (Hamilton uses mpirun, not srun)
+    echo "Running simulation with ${MPI_TASKS} MPI tasks..."
+    echo "Command: mpirun -np ${MPI_TASKS} ./$EXECUTABLE_NAME case.params"
     echo ""
 
-    if srun -n ${SLURM_NTASKS} ./dropImpact case.params; then
+    if mpirun -np "${MPI_TASKS}" ./"$EXECUTABLE_NAME" case.params; then
         echo ""
         echo "Case $CASE_NO completed successfully"
         ((SUCCESSFUL_CASES++)) || true
