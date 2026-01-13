@@ -93,6 +93,9 @@ slurm-*.err
 !*.sh
 !*.sbatch
 
+# Local install scripts (do not commit)
+reset_install_*.sh
+
 # Documentation generation artifacts
 **/__pycache__/
 **/*.pyc
