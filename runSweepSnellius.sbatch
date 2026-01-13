@@ -65,7 +65,7 @@ echo ""
 # ============================================================
 echo "Setting up Basilisk environment..."
 echo "Rebuilding Basilisk (hard)..."
-bash "${SCRIPT_DIR}/reset_install_requirements-no-darcs-no-git.sh" --hard
+bash "${SCRIPT_DIR}/reset_install_basilisk-no-darcs-no-git.sh" --hard
 if [ -f "${SCRIPT_DIR}/.project_config" ]; then
     source "${SCRIPT_DIR}/.project_config"
     echo "Basilisk environment loaded from .project_config"
