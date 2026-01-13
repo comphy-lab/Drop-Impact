@@ -2,6 +2,20 @@
 
 Computational fluid dynamics simulations for drop impact studies using the Basilisk C framework.
 
+## Basilisk (Required)
+
+First-time install (or reinstall):
+```bash
+curl -sL https://raw.githubusercontent.com/comphy-lab/basilisk-C/main/reset_install_basilisk-ref-locked.sh | bash -s -- --ref=v2026-01-13 --hard
+```
+
+Subsequent runs (reuses existing `basilisk/` if same ref):
+```bash
+curl -sL https://raw.githubusercontent.com/comphy-lab/basilisk-C/main/reset_install_basilisk-ref-locked.sh | bash -s -- --ref=v2026-01-13
+```
+
+> **Note**: Replace `v2026-01-13` with the [latest release tag](https://github.com/comphy-lab/basilisk-C/releases).
+
 ## Overview
 
 This repository contains axisymmetric two-phase flow simulations with adaptive mesh refinement for studying drop impact phenomena. The simulations use the Volume-of-Fluid (VOF) method to track the interface between the drop and surrounding fluid, with automatic mesh refinement focused on regions of interest.
@@ -75,7 +89,7 @@ vim sweep.params        # Set CASE_START, CASE_END, sweep variables
 
 ## Requirements
 
-- **Basilisk Framework**: Open-source CFD solver ([basilisk.fr](https://basilisk.fr))
+- **Basilisk Framework**: Install via the ref-locked script above (upstream docs: [basilisk.fr](https://basilisk.fr))
 - **MPI** (optional): For parallel execution
   - macOS: `brew install open-mpi`
   - Linux: `sudo apt-get install libopenmpi-dev`

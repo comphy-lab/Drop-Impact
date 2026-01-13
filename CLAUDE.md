@@ -8,6 +8,20 @@ This repository contains computational fluid dynamics simulations for drop impac
 
 **Recent Update (2025)**: The codebase has been refactored for improved maintainability, modularity, and HPC compatibility. See [Modular Structure](#modular-structure-2025-restructuring) below.
 
+## Basilisk (Required)
+
+First-time install (or reinstall):
+```bash
+curl -sL https://raw.githubusercontent.com/comphy-lab/basilisk-C/main/reset_install_basilisk-ref-locked.sh | bash -s -- --ref=v2026-01-13 --hard
+```
+
+Subsequent runs (reuses existing `basilisk/` if same ref):
+```bash
+curl -sL https://raw.githubusercontent.com/comphy-lab/basilisk-C/main/reset_install_basilisk-ref-locked.sh | bash -s -- --ref=v2026-01-13
+```
+
+> **Note**: Replace `v2026-01-13` with the [latest release tag](https://github.com/comphy-lab/basilisk-C/releases).
+
 ## Purpose
 
 This document outlines the coding standards, project structure, and best practices for computational fluid dynamics simulations using the Basilisk framework. Following these standards ensures code readability, maintainability, and reproducibility across the CoMPhy Lab's research projects.
@@ -22,7 +36,7 @@ The code has been completely reorganized with case-based folder management and r
 Drop-Impact/
 ├── .project_config          # Basilisk environment setup
 ├── CLAUDE.md               # This file
-├── basilisk/               # Basilisk framework (submodule/copy)
+├── basilisk/               # Basilisk framework (local-only; ignored by git)
 │
 ├── src-local/              # Modular header files
 │   ├── params.h           # Parameter structures and parsing with CaseNo
@@ -177,13 +191,13 @@ Key framework files are located in `basilisk/src/`.
 
 ## Project Configuration
 
-The `.project_config` file sets up the Basilisk environment:
+The `.project_config` file sets up the Basilisk environment (typically created locally by the install script above and ignored by git):
 ```bash
 export BASILISK=/path/to/basilisk/src
 export PATH=$PATH:$BASILISK
 ```
 
-This must be sourced before running simulations to access the `qcc` compiler.
+This must be sourced before running simulations to access the `qcc` compiler. The runner scripts will error if `.project_config` is missing.
 
 ## Building and Running Simulations
 
