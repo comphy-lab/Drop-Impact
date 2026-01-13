@@ -41,17 +41,22 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://test.comphy-lab.org/reset_install_requirements-no-darcs.sh.html</loc>
+    <loc>https://test.comphy-lab.org/reset_install_basilisk-no-darcs-no-git.sh.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://test.comphy-lab.org/reset_install_requirements.sh.html</loc>
+    <loc>https://test.comphy-lab.org/reset_install_basilisk.sh.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://test.comphy-lab.org/runParameterSweep.sh.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://test.comphy-lab.org/runPostProcess-Ncases.sh.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -67,16 +72,6 @@
   </url>
   <url>
     <loc>https://test.comphy-lab.org/simulationCases/1000/dropImpact.c.html</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://test.comphy-lab.org/simulationCases/1001/case.params.html</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://test.comphy-lab.org/simulationCases/1001/dropImpact.c.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
