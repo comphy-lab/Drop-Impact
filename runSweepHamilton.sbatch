@@ -21,7 +21,7 @@
 # BEFORE RUNNING:
 # 1. Clone repo to /nobackup/$USER/ (NOT home directory)
 # 2. Basilisk is installed/verified automatically (ref-locked):
-#    ./reset_install_basilisk.sh --mode=4 --ref=v2026-01-13
+#    curl -sL https://raw.githubusercontent.com/comphy-lab/basilisk-C/main/reset_install_basilisk-ref-locked.sh | bash -s -- --ref=v2026-01-13
 # 3. Edit sweep.params to set parameter ranges and case numbers
 # 4. Update --mail-user above with your Durham email
 # 5. Submit with: sbatch runSweepHamilton.sbatch
@@ -92,13 +92,14 @@ echo ""
 # Setup Basilisk Environment
 # ============================================================
 echo "Setting up Basilisk environment..."
-if [ ! -x "${SCRIPT_DIR}/reset_install_basilisk.sh" ]; then
-    echo "ERROR: reset_install_basilisk.sh not found or not executable in: ${SCRIPT_DIR}" >&2
+if ! command -v curl &> /dev/null; then
+    echo "ERROR: curl not found (required for Basilisk install)" >&2
     exit 1
 fi
 
 echo "Installing Basilisk (ref-locked: v2026-01-13)..."
 BASILISK_REF="v2026-01-13"
+BASILISK_INSTALL_URL="https://raw.githubusercontent.com/comphy-lab/basilisk-C/main/reset_install_basilisk-ref-locked.sh"
 LOCK_FILE="${SCRIPT_DIR}/basilisk/.comphy-lock"
 LOCK_REF=""
 if [ -f "$LOCK_FILE" ]; then
@@ -106,9 +107,9 @@ if [ -f "$LOCK_FILE" ]; then
 fi
 if [ ! -f "$LOCK_FILE" ] || [ "$LOCK_REF" != "$BASILISK_REF" ]; then
     echo "Lock mismatch or missing (found ref='${LOCK_REF:-none}') - performing hard install..."
-    (cd "${SCRIPT_DIR}" && ./reset_install_basilisk.sh --mode=4 --ref="$BASILISK_REF" --hard)
+    curl -fsSL "$BASILISK_INSTALL_URL" | bash -s -- --ref="$BASILISK_REF" --hard
 else
-    (cd "${SCRIPT_DIR}" && ./reset_install_basilisk.sh --mode=4 --ref="$BASILISK_REF")
+    curl -fsSL "$BASILISK_INSTALL_URL" | bash -s -- --ref="$BASILISK_REF"
 fi
 
 if [ -f "${SCRIPT_DIR}/.project_config" ]; then
