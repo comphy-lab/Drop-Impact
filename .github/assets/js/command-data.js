@@ -1,4 +1,11 @@
 // Command data for website command palette
+//
+// NOTE: This file contains organization-specific navigation links and commands.
+// When copying the .github folder to a new repository, customize the following:
+// - Navigation commands (lines 28-66): Update domain URLs for your organization
+// - External links (lines 86-132): Update social media and external profile links
+// - GitHub organization link (line 86): Uses window.githubOrg if available, or falls back to hardcoded value
+//
 (function() {
   // Debug flag - set to false in production
   const DEBUG = false;
@@ -83,7 +90,10 @@
     {
       id: "github",
       title: "Visit GitHub",
-      handler: () => { window.open('https://github.com/comphy-lab', '_blank'); },
+      handler: () => {
+        const githubOrg = window.githubOrg || 'comphy-lab';
+        window.open(`https://github.com/${githubOrg}`, '_blank');
+      },
       section: "External Links",
       icon: '<i class="fa-brands fa-github"></i>'
     },

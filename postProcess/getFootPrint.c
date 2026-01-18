@@ -1,33 +1,34 @@
-/* Title: Footprint height extraction
-# Author: Vatsal Sanjay
-# vatsal.sanjay@comphy-lab.org
-# CoMPhy Lab
-# Durham University
-# Last updated: Nov 17, 2025
+/**
+# getFootPrint
+
+Extract the maximum interface height along the substrate from a Basilisk
+VOF snapshot by scanning reconstructed facets within an x cutoff.
+
+## Output
+CSV streamed to stderr:
+```
+t,y_max
+```
+
+## Usage
+```
+./getFootPrint <snapshot-file> <xCutoff>
+```
+
+## Notes
+- Uses PLIC/MYC facet reconstruction to locate the interface.
+- Searches only for cells with `0 < f < 1` and `x < xCutoff`.
+
+## Author
+Vatsal Sanjay (vatsal.sanjay@comphy-lab.org)
+CoMPhy Lab, Durham University
+Last updated: Nov 17, 2025
 */
 
 #include "utils.h"
 #include "output.h"
 #include "fractions.h"
 #include <stdbool.h>
-
-/**
- * Probe interface heights along the substrate (axis) to report the maximum
- * elevation of the footprint/contact point. The VOF `f` is interpreted through
- * MYC/PLIC reconstruction via `facets`, so the geometry is completely driven by
- * Basilisk's native routines.
- *
- * Output format (CSV piped to `stderr` for gnuplot/pandas):
- *   t,y_max
- *
- * Usage: ./getFootPrint <snapshot-file> <xCutoff>
- *   snapshot-file  Basilisk dump restored via `restore(file=...)`
- *   xCutoff        Upper bound in x for the search window (axisymmetric radius)
- *
- * The code is intentionally single-file but decomposed into helpers so that
- * extending it (different statistics, filtering, etc.) only requires editing
- * small, well-documented functions.
- */
 
 scalar f[];
 
@@ -92,9 +93,9 @@ static void restore_snapshot(const footprint_config *cfg)
 static void configure_vof_boundary(void)
 {
   /**
-   * Boundary: no fluid at the axis (left) with proper VOF prolongation.
-   * Keeping it in one routine avoids repeated `f[...]` ceremony.
-   */
+  Boundary: no fluid at the axis (left) with proper VOF prolongation.
+  Keeping it in one routine avoids repeated `f[...]` ceremony.
+  */
   f[left] = dirichlet(0.);
   f.prolongation = fraction_refine;
   f.dirty = true;
@@ -115,9 +116,9 @@ static inline double segment_midpoint(double cell_center, double delta,
 static double compute_maximum_interface_height(double x_cutoff)
 {
   /**
-   * Search x<x_cutoff for the highest facet midpoint. `facets` returns up to
-   * two points per cell, which we immediately collapse to a midpoint.
-   */
+  Search x<x_cutoff for the highest facet midpoint. `facets` returns up to
+  two points per cell, which we immediately collapse to a midpoint.
+  */
   double y_max = 0.;
   face vector s = {{-1}};
 

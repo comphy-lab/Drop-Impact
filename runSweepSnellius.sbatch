@@ -9,6 +9,22 @@
 #SBATCH --output=slurm-%j.out
 #SBATCH --error=slurm-%j.err
 
+# # runSweepSnellius.sbatch
+#
+# Run a parameter sweep on the Snellius HPC system. Each case is compiled
+# and executed sequentially with MPI using the SLURM allocation.
+#
+# ## Usage
+# `sbatch runSweepSnellius.sbatch`
+#
+# ## Inputs
+# - `sweep.params` (edited before submission)
+# - `simulationCases/dropImpact.c`
+#
+# ## Outputs
+# - Case directories under `simulationCases/`
+# - SLURM logs: `slurm-%j.out` and `slurm-%j.err`
+#
 # ============================================================
 # Drop Impact - HPC Parameter Sweep Runner
 # ============================================================

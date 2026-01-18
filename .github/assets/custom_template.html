@@ -386,8 +386,9 @@
                             </svg>
                         </div>
                     </li>
+                    <!-- NOTE: The following links are organization-specific. Customize for your organization. -->
                     <li style="background: none;"><a href="https://scholar.google.com/citations?user=tHb_qZoAAAAJ&hl=en" style="background: none; padding: 0;" aria-label="Google Scholar Profile"><i class="ai ai-google-scholar" style="font-size: 1.75em;"></i></a></li>
-                    <li style="background: none;"><a href="https://github.com/comphy-lab" style="background: none; padding: 0;" aria-label="GitHub Organization"><i class="fa-brands fa-github" style="font-size: 1.75em"></i></a></li>
+                    <li style="background: none;"><a href="https://github.com/$github_org$" style="background: none; padding: 0;" aria-label="GitHub Organization"><i class="fa-brands fa-github" style="font-size: 1.75em"></i></a></li>
                     <li><a href="https://comphy-lab.org/#about" class="smoothscroll">About</a></li>
                     <li><a href="https://comphy-lab.org/team/">Team</a></li>
                     <li><a href="https://comphy-lab.org/research">Research</a></li>
@@ -435,7 +436,7 @@
                 
                 $if(source_path)$
                 <div class="raw-file-button-container">
-                    <a href="https://github.com/comphy-lab/$reponame$/raw/main/$source_path$" class="raw-file-button" target="_blank" rel="noopener noreferrer">
+                    <a href="https://github.com/$github_org$/$reponame$/raw/main/$source_path$" class="raw-file-button" target="_blank" rel="noopener noreferrer">
                         <i class="fa-brands fa-github"></i> See raw file
                     </a>
                 </div>
@@ -467,10 +468,11 @@
               </p>
             </div>
             <div class="footer-right">
+              <!-- NOTE: Social media links below are organization-specific. Customize for your organization. -->
               <a href="https://scholar.google.com/citations?user=tHb_qZoAAAAJ&hl=en" target="_blank" rel="noopener noreferrer" aria-label="Google Scholar Profile">
                 <i class="ai ai-google-scholar" style="font-size: 2.5em; color: white;"></i>
               </a>
-              <a href="https://github.com/comphy-lab" target="_blank" rel="noopener noreferrer" aria-label="GitHub Organization">
+              <a href="https://github.com/$github_org$" target="_blank" rel="noopener noreferrer" aria-label="GitHub Organization">
                 <i class="fa-brands fa-github" style="font-size: 2.5em; color: white;"></i>
               </a>
               <a href="https://www.youtube.com/@CoMPhyLab" target="_blank" rel="noopener noreferrer" aria-label="YouTube Channel">
@@ -482,8 +484,8 @@
               <a href="https://bsky.app/profile/comphy-lab.org" target="_blank" rel="noopener noreferrer" aria-label="Bluesky Profile">
                 <i class="fa-brands fa-bluesky" style="font-size: 2.5em; color: white;"></i>
               </a>
-              <a href="https://github.com/comphy-lab/$if(reponame)$$reponame$$else$Documentation$endif$" class="edit-link" aria-label="Edit this page on GitHub">
-                <i class="fa-brands fa-github"></i> Edit this page
+              <a href="https://github.com/$github_org$/$if(reponame)$$reponame$$else$Documentation$endif$$if(source_path)$/edit/main/$source_path$$endif$" class="edit-link" aria-label="Edit this page on GitHub">
+                <i class="fa-brands fa-github"></i> $if(source_path)$Edit this page$else$View repository$endif$
               </a>
             </div>
           </footer>

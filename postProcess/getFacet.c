@@ -1,27 +1,31 @@
-/* Title: Getting Facets
-# Author: Vatsal Sanjay
-# vatsal.sanjay@comphy-lab.org
-# CoMPhy Lab
-# Durham University
-# Last updated: Nov 17, 2025
+/**
+# getFacet
+
+Extract interface facets from Basilisk VOF snapshots using PLIC/MYC
+reconstruction and stream line segments to stderr.
+
+## Output
+Each facet is written as gnuplot-compatible line segments:
+```
+x1 y1
+x2 y2
+
+```
+
+## Usage
+```
+./getFacet <snapshot-file>
+```
+
+## Author
+Vatsal Sanjay (vatsal.sanjay@comphy-lab.org)
+CoMPhy Lab, Durham University
+Last updated: Nov 17, 2025
 */
 
 #include "utils.h"
 #include "output.h"
 #include "fractions.h"
-
-/**
- * Utility for extracting interface facets from Basilisk VOF snapshots using
- * piecewise linear interface reconstruction (PLIC/MYC approximation).
- *
- * Output format (gnuplot-compatible line segments to stderr):
- *   x1 y1
- *   x2 y2
- *   [blank line]
- *   ...
- *
- * Usage: ./getFacet <snapshot-file>
- */
 
 scalar f[];
 char filename[4096];

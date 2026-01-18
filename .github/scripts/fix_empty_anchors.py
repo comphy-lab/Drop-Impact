@@ -98,7 +98,7 @@ def fix_html_file(file_path, verbose=False, dry_run=False):
 
     Returns:
         FixResult: Tuple containing the approximate number of replacements and
-            whether the file processing failed due to an OSError
+            whether the file processing failed due to an OSError or UnicodeError
     """
     try:
         # Read the file
@@ -146,9 +146,9 @@ def fix_html_file(file_path, verbose=False, dry_run=False):
             print(f"  No empty anchors found in {file_path}")
         
         return FixResult(replacements=replacements, failed=False)
-        
-    except OSError as e:
-        print(f"I/O error fixing {file_path}: {e}")
+
+    except (OSError, UnicodeError) as e:
+        print(f"I/O or encoding error fixing {file_path}: {e}")
         return FixResult(replacements=0, failed=True)
 
 def main():

@@ -1,4 +1,29 @@
 #!/bin/bash
+# build.sh - Documentation build script for GitHub Pages
+#
+# Description:
+#   Builds HTML documentation from source files using Pandoc and Basilisk's
+#   literate-c processor. Creates a complete static site in docs/ directory.
+#
+# Workflow:
+#   1. Detect GitHub organization from git remote
+#   2. Clone search database (optional, org-specific)
+#   3. Set up Python virtual environment
+#   4. Install dependencies from requirements.txt
+#   5. Run generate_docs.py to build HTML pages
+#   6. Clean HTML files (remove empty anchors)
+#
+# Usage:
+#   .github/scripts/build.sh [--force-rebuild]
+#
+# Options:
+#   --force-rebuild  Rebuild all HTML files even if source unchanged
+#
+# Environment:
+#   SEARCH_REPO  Override search database repository name (default: comphy-search)
+#
+# Author: Vatsal Sanjay
+# Organization: CoMPhy Lab, Durham University
 
 # Exit immediately if a command exits with a non-zero status.
 set -e
@@ -26,11 +51,32 @@ PROJECT_ROOT=$(dirname "$(dirname "$SCRIPT_DIR")") # Go two levels up from scrip
 # Change to project root to ensure paths work correctly
 cd "$PROJECT_ROOT"
 
-# Use shallow clone (--depth=1) for better performance
-git clone --depth=1 https://github.com/comphy-lab/comphy-search.git
-mkdir -p .github/assets/js
-cp comphy-search/search_db.json .github/assets/js/search_db.json
-rm -rf comphy-search
+# Auto-detect GitHub organization from git remote
+GITHUB_ORG=$(git remote get-url origin 2>/dev/null | sed -n 's|.*[:/]\([^/]*\)/.*|\1|p')
+if [ -z "$GITHUB_ORG" ]; then
+    echo "Warning: Could not detect GitHub organization from git remote. Using fallback: comphy-lab"
+    GITHUB_ORG="comphy-lab"
+fi
+echo "Detected GitHub organization: $GITHUB_ORG"
+
+# Try to clone search database (optional - may not exist for all orgs)
+# Allow override via SEARCH_REPO environment variable
+SEARCH_REPO="${SEARCH_REPO:-comphy-search}"
+echo "Attempting to clone search database from ${GITHUB_ORG}/${SEARCH_REPO}..."
+
+if git clone --depth=1 "https://github.com/${GITHUB_ORG}/${SEARCH_REPO}.git" 2>/dev/null; then
+    mkdir -p .github/assets/js
+    if [ -f "${SEARCH_REPO}/search_db.json" ]; then
+        cp "${SEARCH_REPO}/search_db.json" .github/assets/js/search_db.json
+        echo "Search database copied successfully"
+    else
+        echo "Warning: search_db.json not found in ${SEARCH_REPO} repository"
+    fi
+    rm -rf "$SEARCH_REPO"
+else
+    echo "Warning: Could not clone ${GITHUB_ORG}/${SEARCH_REPO}. Search functionality may be limited."
+    echo "This is expected if the search repository doesn't exist for your organization."
+fi
 DOCS_DIR="$PROJECT_ROOT/docs"
 PYTHON_SCRIPT="$PROJECT_ROOT/.github/scripts/generate_docs.py"
 

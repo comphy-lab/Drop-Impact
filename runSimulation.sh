@@ -1,6 +1,24 @@
 #!/bin/bash
-# runSimulation.sh - Run single drop impact simulation from root directory
-# Creates case folder in simulationCases/<CaseNo>/ and runs simulation there
+# # runSimulation.sh
+#
+# Run a single drop impact simulation from the repository root. The script
+# creates `simulationCases/<CaseNo>/`, copies the parameter file and source,
+# compiles the case, and runs it (serial or MPI).
+#
+# ## Usage
+# `./runSimulation.sh [options] [params_file]`
+#
+# ## Inputs
+# - `params_file`: parameter file (default: `default.params`)
+# - `QCC_FLAGS`: extra `qcc` compiler flags
+#
+# ## Outputs
+# - `simulationCases/<CaseNo>/` containing `case.params`, compiled executable,
+#   and simulation results
+#
+# ## Related
+# - `runParameterSweep.sh`
+# - `src-local/parse_params.sh`
 
 set -euo pipefail  # Exit on error, unset variables, pipeline failures
 

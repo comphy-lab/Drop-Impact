@@ -36,10 +36,14 @@ This repository contains axisymmetric two-phase flow simulations with adaptive m
 ```bash
 # Edit parameters
 vim default.params      # Set CaseNo, We, Oh, etc.
+```
 
+```bash
 # Run simulation (serial)
 ./runSimulation.sh
+```
 
+```bash
 # Run with MPI (4 cores)
 ./runSimulation.sh --mpi
 ```
@@ -49,10 +53,14 @@ vim default.params      # Set CaseNo, We, Oh, etc.
 ```bash
 # Configure sweep
 vim sweep.params        # Set CASE_START, CASE_END, sweep variables
+```
 
+```bash
 # Run sweep (serial)
 ./runParameterSweep.sh
+```
 
+```bash
 # Run sweep with MPI (4 cores per case)
 ./runParameterSweep.sh --mpi
 ```

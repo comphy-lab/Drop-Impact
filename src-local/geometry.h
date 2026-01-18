@@ -1,15 +1,18 @@
 /**
- * @file geometry.h
- * @brief Geometry and initialization functions for drop impact simulations
- * @author Vatsal Sanjay (vatsal.sanjay@comphy-lab.org)
- * CoMPhy Lab, Durham University
- *
- * This header provides modular functions for:
- * - Drop geometry calculations
- * - Initial grid refinement
- * - Initial condition setup
- * - Extensible for complex geometries
- */
+# geometry.h
+
+Geometry helpers and initialization macros for drop impact simulations.
+
+## Provides
+- Drop geometry calculations
+- Initial grid refinement
+- Initial condition setup
+- Hooks for custom shapes
+
+## Author
+Vatsal Sanjay (vatsal.sanjay@comphy-lab.org)
+CoMPhy Lab, Durham University
+*/
 
 #ifndef GEOMETRY_H
 #define GEOMETRY_H
@@ -17,26 +20,33 @@
 #include "params.h"
 
 /**
- * @brief Calculate squared distance from drop center
- * @param x Radial coordinate
- * @param y Axial coordinate
- * @param p Parameter structure containing drop position
- * @return Squared distance from drop center
- *
- * For axisymmetric coordinates, distance from drop center at (drop_x, drop_y)
- *
- * Implemented as macro for compatibility with Basilisk's qcc preprocessor.
- */
+### drop_distance_squared()
+
+Squared distance from the drop center in axisymmetric coordinates.
+
+#### Parameters
+- `x`: radial coordinate
+- `y`: axial coordinate
+- `p`: parameter structure containing `drop_x`, `drop_y`
+
+#### Returns
+Squared distance from the drop center.
+
+Implemented as a macro for compatibility with Basilisk's `qcc` preprocessor.
+*/
 #define drop_distance_squared(x, y, p) \
     ((x - (p)->drop_x) * (x - (p)->drop_x) + (y - (p)->drop_y) * (y - (p)->drop_y))
 
 /**
- * @brief Check if point is inside drop
- * @param x Radial coordinate
- * @param y Axial coordinate
- * @param p Parameter structure
- * @return 1 if inside drop, 0 otherwise
- */
+### is_inside_drop()
+
+Return 1 if a point is inside the drop, 0 otherwise.
+
+#### Parameters
+- `x`: radial coordinate
+- `y`: axial coordinate
+- `p`: parameter structure
+*/
 static inline int is_inside_drop(double x, double y, const struct SimulationParams *p) {
     double r_sq = drop_distance_squared(x, y, p);
     double radius_sq = p->drop_radius * p->drop_radius;
@@ -44,21 +54,24 @@ static inline int is_inside_drop(double x, double y, const struct SimulationPara
 }
 
 /**
- * Macros for initialization (must be macros to work with Basilisk grid context)
- *
- * These are defined as macros rather than functions because they use Basilisk's
- * grid traversal macros (refine, fraction, foreach) which must be expanded
- * in the correct context.
- */
+## Initialization Macros
+
+These are macros rather than functions because they use Basilisk grid
+traversal constructs (`refine`, `fraction`, `foreach`) that must be expanded
+in the calling context.
+*/
 
 /**
- * @brief Refine initial grid around drop
- *
- * Creates adaptive initial grid with fine resolution near drop interface.
- * Refinement region extends slightly beyond drop radius for smoother interface.
- *
- * Usage: REFINE_INITIAL_GRID(¶ms);
- */
+### REFINE_INITIAL_GRID()
+
+Refine the initial grid around the drop interface. The refinement region
+extends slightly beyond the drop radius for a smoother interface.
+
+#### Usage
+```
+REFINE_INITIAL_GRID(params);
+```
+*/
 #define REFINE_INITIAL_GRID(p) do { \
     const double _margin = 1.05; \
     const double _refine_r_sq = _margin * _margin * (p)->drop_radius * (p)->drop_radius; \
@@ -67,19 +80,18 @@ static inline int is_inside_drop(double x, double y, const struct SimulationPara
 } while(0)
 
 /**
- * @brief Setup initial drop shape and velocity field
- *
- * Initializes:
- * - VOF field f (1 inside drop, 0 outside)
- * - Velocity field (impact velocity inside drop, zero outside)
- *
- * Extensible for:
- * - Different drop shapes (ellipsoids, etc.)
- * - Variable velocity profiles
- * - Multiple drops
- *
- * Usage: SETUP_INITIAL_DROP(¶ms);
- */
+### SETUP_INITIAL_DROP()
+
+Initialize the VOF field and velocity field for the drop:
+- `f = 1` inside the drop, `0` outside
+- `u.x` set to the impact velocity inside the drop
+- `u.y` set to zero everywhere
+
+#### Usage
+```
+SETUP_INITIAL_DROP(params);
+```
+*/
 #define SETUP_INITIAL_DROP(p) do { \
     fraction(f, (p)->drop_radius * (p)->drop_radius - drop_distance_squared(x, y, (p))); \
     foreach() { \
@@ -93,15 +105,11 @@ static inline int is_inside_drop(double x, double y, const struct SimulationPara
 } while(0)
 
 /**
- * @brief Alternative: Setup drop with custom shape function
- * @param shape_func Function pointer defining drop shape
- * @param p Parameter structure
- *
- * Example for future extensibility:
- * - Ellipsoidal drops
- * - Deformed drops
- * - Multiple drops
- */
+### Custom Shapes (optional)
+
+Enable `ENABLE_CUSTOM_SHAPES` to supply a custom shape function for the drop.
+Potential extensions include ellipsoids, deformed drops, or multiple drops.
+*/
 #ifdef ENABLE_CUSTOM_SHAPES
 typedef double (*ShapeFunction)(double x, double y, const struct SimulationParams *p);
 
