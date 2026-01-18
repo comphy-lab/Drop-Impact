@@ -1,6 +1,7 @@
-# Drop Impact Simulation - Default Parameters
-# Format: key=value (one per line, # for comments)
-# This file provides a typical water-air drop impact configuration
+# # default.params
+# Default parameter set for drop impact simulations.
+# Format: key=value (one per line, # for comments).
+# This file provides a typical water-air drop impact configuration.
 
 # ============================================================
 # Case Identification

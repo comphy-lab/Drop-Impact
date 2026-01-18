@@ -1,5 +1,5 @@
-# Parameter Sweep Configuration
-# This file defines a parameter sweep for batch simulations
+# # sweep.params
+# Parameter sweep configuration for batch simulations.
 
 # ============================================================
 # Base Configuration

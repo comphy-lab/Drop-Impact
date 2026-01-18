@@ -12,6 +12,22 @@
 #SBATCH --output=slurm-%j.out
 #SBATCH --error=slurm-%j.err
 
+# # runSweepHamilton.sbatch
+#
+# Run a parameter sweep on Durham University's Hamilton HPC system.
+# Each case is compiled and executed sequentially with MPI.
+#
+# ## Usage
+# `sbatch runSweepHamilton.sbatch`
+#
+# ## Inputs
+# - `sweep.params` (edited before submission)
+# - `simulationCases/dropImpact.c`
+#
+# ## Outputs
+# - Case directories under `simulationCases/`
+# - SLURM logs: `slurm-%j.out` and `slurm-%j.err`
+#
 # ============================================================
 # Drop Impact - HPC Parameter Sweep Runner (Hamilton)
 # ============================================================

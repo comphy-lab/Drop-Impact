@@ -1,15 +1,18 @@
 /**
- * @file diagnostics.h
- * @brief Statistics and output functions for drop impact simulations
- * @author Vatsal Sanjay (vatsal.sanjay@comphy-lab.org)
- * CoMPhy Lab, Durham University
- *
- * This header provides modular output handling:
- * - File handle management (no repeated open/close)
- * - Statistics calculations (kinetic energy, etc.)
- * - Snapshot management
- * - Extensible for additional diagnostics
- */
+# diagnostics.h
+
+Statistics and output helpers for drop impact simulations.
+
+## Provides
+- File handle management (open once, write many)
+- Statistics calculations (kinetic energy, etc.)
+- Snapshot management
+- Extension hooks for additional diagnostics
+
+## Author
+Vatsal Sanjay (vatsal.sanjay@comphy-lab.org)
+CoMPhy Lab, Durham University
+*/
 
 #ifndef DIAGNOSTICS_H
 #define DIAGNOSTICS_H
@@ -20,13 +23,18 @@
 static FILE *log_fp = NULL;
 
 /**
- * @brief Open log files and write headers
- * @param p Parameter structure
- * @return 0 on success, -1 on error
- *
- * Opens log file once and keeps handle open for entire simulation.
- * This fixes the performance bug in original code.
- */
+### open_log_files()
+
+Open log files and write headers. The log file stays open for the entire
+simulation to avoid repeated open/close overhead.
+
+#### Parameters
+- `p`: parameter structure
+
+#### Returns
+- `0` on success
+- `-1` on error
+*/
 static inline int open_log_files(const struct SimulationParams *p) {
     // Create intermediate directory for snapshots
     char intermediate_dir[512];
@@ -61,11 +69,13 @@ static inline int open_log_files(const struct SimulationParams *p) {
 }
 
 /**
- * @brief Calculate total kinetic energy in the system
- * @return Total kinetic energy (integrated over domain)
- *
- * For axisymmetric flow: KE = ∫ 2πy * 0.5*ρ*(u_x² + u_y²) dV
- */
+### calculate_kinetic_energy()
+
+Return total kinetic energy integrated over the domain.
+
+For axisymmetric flow:
+`KE = ∫ 2πy * 0.5 ρ (u_x^2 + u_y^2) dV`
+*/
 static inline double calculate_kinetic_energy(void) {
     double ke = 0.0;
 
@@ -81,15 +91,17 @@ static inline double calculate_kinetic_energy(void) {
 }
 
 /**
- * @brief Write statistics to log file
- * @param iter Current iteration number
- * @param time Current simulation time
- * @param timestep Current timestep size
- * @param p Parameter structure
- *
- * Writes: iteration, dt, time, kinetic_energy
- * File handle stays open - no performance penalty
- */
+### write_statistics()
+
+Write iteration, timestep, time, and kinetic energy to the log file.
+The file handle stays open for performance.
+
+#### Parameters
+- `iter`: current iteration number
+- `time`: current simulation time
+- `timestep`: current timestep size
+- `p`: parameter structure
+*/
 static inline void write_statistics(int iter, double time, double timestep,
                                      const struct SimulationParams *p) {
     if (!log_fp) {
@@ -111,12 +123,14 @@ static inline void write_statistics(int iter, double time, double timestep,
 }
 
 /**
- * @brief Save simulation snapshot (dump file)
- * @param time Current simulation time
- * @param p Parameter structure
- *
- * Creates dump files for restart and post-processing
- */
+### save_snapshot()
+
+Save simulation snapshots for restart and post-processing.
+
+#### Parameters
+- `time`: current simulation time
+- `p`: parameter structure
+*/
 static inline void save_snapshot(double time, const struct SimulationParams *p) {
     char filename[512];
 
@@ -132,10 +146,10 @@ static inline void save_snapshot(double time, const struct SimulationParams *p) 
 }
 
 /**
- * @brief Close all log files
- *
- * Called at end of simulation to properly close files
- */
+### close_log_files()
+
+Close any open log files at the end of the simulation.
+*/
 static inline void close_log_files(void) {
     if (log_fp) {
         fclose(log_fp);
@@ -145,21 +159,22 @@ static inline void close_log_files(void) {
 }
 
 /**
- * @brief Additional diagnostics for future extensibility
- *
- * Placeholder functions for future diagnostic capabilities:
- * - Drop spreading radius
- * - Contact line position
- * - Interface area
- * - Pressure forces
- * - Energy dissipation
- */
+## Optional Diagnostics (ENABLE_ADVANCED_DIAGNOSTICS)
+
+Placeholder routines for future extensions:
+- Drop spreading radius
+- Contact line position
+- Interface area
+- Pressure forces
+- Energy dissipation
+*/
 #ifdef ENABLE_ADVANCED_DIAGNOSTICS
 
 /**
- * @brief Calculate drop spreading radius
- * @return Maximum radial extent of drop
- */
+### calculate_spreading_radius()
+
+Return the maximum radial extent of the drop.
+*/
 static inline double calculate_spreading_radius(void) {
     double r_max = 0.0;
 
@@ -173,9 +188,10 @@ static inline double calculate_spreading_radius(void) {
 }
 
 /**
- * @brief Calculate contact line position (y-coordinate where drop meets surface)
- * @return Contact line y-position
- */
+### calculate_contact_line_y()
+
+Return the contact line y-position (placeholder implementation).
+*/
 static inline double calculate_contact_line_y(void) {
     double y_contact = 0.0;
     // Implementation depends on surface definition
@@ -184,9 +200,10 @@ static inline double calculate_contact_line_y(void) {
 }
 
 /**
- * @brief Calculate total interface area
- * @return Interface area (2D: length, 3D: area)
- */
+### calculate_interface_area()
+
+Return total interface area (2D: length, 3D: area).
+*/
 static inline double calculate_interface_area(void) {
     double area = 0.0;
 

@@ -1,8 +1,25 @@
 #!/bin/bash
-# runPostProcess-Ncases.sh - Run post-processing pipeline on multiple simulation cases
-# Author: Vatsal Sanjay
-# vatsal.sanjay@comphy-lab.org
-# CoMPhy Lab — Durham University
+# # runPostProcess-Ncases.sh
+#
+# Run the post-processing pipeline on multiple simulation cases:
+# `Video-generic.py` -> `getFootPrint.py` -> `plotFootPrint.py`.
+#
+# ## Usage
+# `./runPostProcess-Ncases.sh [options] CASE_NO [CASE_NO ...]`
+#
+# ## Inputs
+# - Case directories under `simulationCases/<CaseNo>/results`
+# - Compiled helpers: `postProcess/getFacet`, `postProcess/getData-generic`,
+#   `postProcess/getFootPrint` (depending on which steps are enabled)
+#
+# ## Outputs
+# - `results/Video/` frames
+# - `results/rFootvsTime_*.csv` footprint data
+# - `results/footprint_evolution.pdf` plot
+#
+# ## Author
+# Vatsal Sanjay (vatsal.sanjay@comphy-lab.org)
+# CoMPhy Lab, Durham University
 # Last updated: Dec 2025
 
 set -euo pipefail  # Exit on error, unset variables, pipeline failures

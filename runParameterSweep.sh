@@ -1,6 +1,22 @@
 #!/bin/bash
-# runParameterSweep.sh - Run parameter sweep with auto-incrementing CaseNo
-# Generates parameter combinations and runs simulations in simulationCases/<CaseNo>/
+# # runParameterSweep.sh
+#
+# Generate a parameter sweep from `sweep.params` (or a custom sweep file) and
+# run each case sequentially in `simulationCases/<CaseNo>/`.
+#
+# ## Usage
+# `./runParameterSweep.sh [options] [sweep_file]`
+#
+# ## Inputs
+# - `sweep_file`: sweep configuration (default: `sweep.params`)
+# - `BASE_CONFIG` inside the sweep file (starting parameter set)
+#
+# ## Outputs
+# - Case directories under `simulationCases/`
+#
+# ## Related
+# - `runSimulation.sh`
+# - `src-local/parse_params.sh`
 
 set -euo pipefail  # Exit on error, unset variables, pipeline failures
 

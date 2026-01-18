@@ -10,6 +10,17 @@
 #SBATCH --output=slurm-%j.out
 #SBATCH --error=slurm-%j.err
 
+# # runSnellius_legacy.sbatch
+#
+# Legacy SLURM submission script for Snellius. Compiles and runs
+# `dropImpact_legacy.c` with fixed parameters.
+#
+# ## Usage
+# `sbatch runSnellius_legacy.sbatch`
+#
+# ## Outputs
+# - SLURM logs: `slurm-%j.out` and `slurm-%j.err`
+#
 set -euo pipefail
 
 # ============================================================

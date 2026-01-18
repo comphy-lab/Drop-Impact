@@ -1,6 +1,18 @@
 #!/bin/bash
-# parse_params.sh - Shell library for parameter file parsing
-# Source this file: source lib/parse_params.sh
+# # parse_params.sh
+#
+# Shell library for parsing key=value parameter files and generating sweep
+# case files. Source this file in scripts that need `parse_param_file()` and
+# related helpers.
+#
+# ## Usage
+# `source src-local/parse_params.sh`
+#
+# ## Provides
+# - `parse_param_file`: load parameters into `PARAM_*` variables
+# - `get_param`: query a parameter with a default
+# - `generate_sweep_cases`: build a temp directory of sweep cases
+# - `validate_required_params`: ensure required keys exist
 
 # Parse a parameter file and export all parameters as environment variables
 # Usage: parse_param_file <file>

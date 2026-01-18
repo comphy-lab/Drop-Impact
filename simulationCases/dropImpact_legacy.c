@@ -1,10 +1,21 @@
 /**
- * @file dropImpact.c
- * @author Vatsal Sanjay (vatsal.sanjay@comphy-lab.org)
- * CoMPhy Lab
- * Durham University
- * @date 2022-02-08
- * 
+# dropImpact_legacy.c
+
+Legacy axisymmetric drop-impact simulation in a single Basilisk file.
+
+## Usage (legacy CLI)
+```
+./dropImpact_legacy <MAXlevel> <tmax> <We> <Ohd> <Ohs> <Ldomain>
+```
+
+## Notes
+- Uses fixed error tolerances and a hard-coded initial drop location.
+- Writes snapshots to `intermediate/` and logs to `log`.
+
+## Author
+Vatsal Sanjay (vatsal.sanjay@comphy-lab.org)
+CoMPhy Lab, Durham University
+Original date: 2022-02-08
 */
 
 // 1 is drop

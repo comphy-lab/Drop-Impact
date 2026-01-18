@@ -1,12 +1,15 @@
 /**
- * @file params.h
- * @brief Parameter management for drop impact simulations
- * @author Vatsal Sanjay (vatsal.sanjay@comphy-lab.org)
- * CoMPhy Lab, Durham University
- *
- * This header defines configuration structures and parameter handling functions
- * for modular, maintainable simulations.
- */
+# params.h
+
+Parameter management for drop impact simulations.
+
+Defines the configuration structure plus helpers to parse, validate,
+scale, and print parameters.
+
+## Author
+Vatsal Sanjay (vatsal.sanjay@comphy-lab.org)
+CoMPhy Lab, Durham University
+*/
 
 #ifndef PARAMS_H
 #define PARAMS_H
@@ -18,15 +21,14 @@
 #include <errno.h>      // For errno
 
 /**
- * @struct SimulationParams
- * @brief Complete simulation configuration
- *
- * Consolidates all simulation parameters in one structure for:
- * - Easy parameter passing
- * - Configuration file I/O
- * - Parameter validation
- * - Self-documenting code
- */
+## SimulationParams
+
+Consolidates all simulation parameters in one structure for:
+- Easy parameter passing
+- Configuration file I/O
+- Parameter validation
+- Self-documenting code
+*/
 struct SimulationParams {
     // Case identification
     int CaseNo;        /**< Case number for folder naming (4-digit: 1000-9999) */
@@ -66,11 +68,11 @@ struct SimulationParams {
 };
 
 /**
- * @brief Default parameter values
- *
- * Provides sensible defaults for typical drop impact simulations
- * (water drop impacting solid surface in air)
- */
+### set_default_params()
+
+Populate the parameter structure with default values representative of a
+water drop impacting a solid surface in air.
+*/
 static inline void set_default_params(struct SimulationParams *p) {
     // Case identification
     p->CaseNo = 1000;  // Default case number
@@ -110,13 +112,18 @@ static inline void set_default_params(struct SimulationParams *p) {
 }
 
 /**
- * @brief Parse parameters from configuration file
- * @param filename Path to parameter file (key=value format)
- * @param p Pointer to parameter structure to populate
- * @return 0 on success, -1 on error
- *
- * File format: key=value (one per line, # for comments)
- */
+### parse_params_from_file()
+
+Parse parameters from a key=value configuration file.
+
+#### Parameters
+- `filename`: path to parameter file
+- `p`: parameter structure to populate
+
+#### Returns
+- `0` on success
+- `-1` on error
+*/
 static inline int parse_params_from_file(const char *filename, struct SimulationParams *p) {
     FILE *fp = fopen(filename, "r");
     if (!fp) {
@@ -192,14 +199,22 @@ static inline int parse_params_from_file(const char *filename, struct Simulation
 }
 
 /**
- * @brief Parse parameters from command line arguments (legacy mode)
- * @param argc Argument count
- * @param argv Argument values
- * @param p Pointer to parameter structure to populate
- * @return 0 on success, -1 on error
- *
- * Legacy format: MAXlevel tmax We Ohd Ohs Ldomain [drop_x] [drop_y] [impact_vel]
- */
+### parse_params_from_cli()
+
+Parse parameters from legacy CLI arguments.
+
+#### Parameters
+- `argc`: argument count
+- `argv`: argument values
+- `p`: parameter structure to populate
+
+#### Returns
+- `0` on success
+- `-1` on error
+
+Legacy format:
+`MAXlevel tmax We Ohd Ohs Ldomain [drop_x] [drop_y] [impact_vel]`
+*/
 static inline int parse_params_from_cli(int argc, char **argv, struct SimulationParams *p) {
     // Start with defaults
     set_default_params(p);
@@ -228,12 +243,17 @@ static inline int parse_params_from_cli(int argc, char **argv, struct Simulation
 }
 
 /**
- * @brief Validate parameter values
- * @param p Pointer to parameter structure
- * @return 1 if valid, 0 if invalid
- *
- * Checks physical constraints and consistency
- */
+### validate_params()
+
+Check physical constraints and consistency.
+
+#### Parameters
+- `p`: parameter structure
+
+#### Returns
+- `1` if valid
+- `0` if invalid
+*/
 static inline int validate_params(const struct SimulationParams *p) {
     int valid = 1;
 
@@ -304,15 +324,14 @@ static inline int validate_params(const struct SimulationParams *p) {
 }
 
 /**
- * @brief Apply physics-based scaling to parameters
- *
- * Scales tmax by sqrt(We) to convert from convective time units
- * (user-specified) to simulation time units.
- *
- * Physical basis: The convective/inertial timescale is τ_c = R/U.
- * With We = ρU²R/σ, we have τ_c ~ sqrt(We) in the normalized units.
- * User specifies time in units of τ_c; this converts to simulation time.
- */
+### apply_physics_scaling()
+
+Scale `tmax` by `sqrt(We)` to convert from convective time units to the
+simulation time units.
+
+Physical basis: the convective timescale is `tau_c = R/U`, which corresponds
+to `sqrt(We)` in the normalized units used here.
+*/
 static inline void apply_physics_scaling(struct SimulationParams *p) {
     double tmax_input = p->tmax;
     p->tmax = tmax_input * sqrt(p->We);
@@ -322,12 +341,14 @@ static inline void apply_physics_scaling(struct SimulationParams *p) {
 }
 
 /**
- * @brief Print parameter summary
- * @param p Pointer to parameter structure
- * @param fp File pointer for output (e.g., stderr or log file)
- *
- * Prints formatted parameter summary for logging and verification
- */
+### print_params()
+
+Print a formatted parameter summary for logging and verification.
+
+#### Parameters
+- `p`: parameter structure
+- `fp`: file pointer for output (stderr or log file)
+*/
 static inline void print_params(const struct SimulationParams *p, FILE *fp) {
     fprintf(fp, "\n");
     fprintf(fp, "========================================\n");
@@ -373,10 +394,17 @@ static inline void print_params(const struct SimulationParams *p, FILE *fp) {
 }
 
 /**
- * @brief Create output directory if it doesn't exist
- * @param dirname Directory path
- * @return 0 on success, -1 on error
- */
+### create_output_directory()
+
+Create an output directory if it does not exist.
+
+#### Parameters
+- `dirname`: directory path
+
+#### Returns
+- `0` on success
+- `-1` on error
+*/
 static inline int create_output_directory(const char *dirname) {
     struct stat st = {0};
 
