@@ -446,12 +446,12 @@ window.baseDomain = "https://comphy-lab.org/Drop-Impact";
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># ============================================================</span></span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Starting case number (4-digit: 1000-9999)</span></span>
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Each parameter combination gets auto-incremented CaseNo</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="dt">CASE_START</span><span class="ot">=</span><span class="dv">1000</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="dt">CASE_START</span><span class="ot">=</span><span class="dv">1306</span></span>
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Ending case number (inclusive)</span></span>
 <span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Number of combinations should equal CASE_END - CASE_START + 1</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co"># For this sweep: 4 We × 3 Oh = 12 combinations, so CASE_END = 1011</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="dt">CASE_END</span><span class="ot">=</span><span class="dv">1041</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co"># For this sweep: 16 We × 16 Oh = 256 combinations, so CASE_END = 1561</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="dt">CASE_END</span><span class="ot">=</span><span class="dv">1561</span></span>
 <span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="co"># ============================================================</span></span>
 <span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Sweep Variables</span></span>
@@ -460,10 +460,10 @@ window.baseDomain = "https://comphy-lab.org/Drop-Impact";
 <span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="co"># The sweep will generate all combinations (cartesian product)</span></span>
 <span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Sweep Weber number (vary impact velocity / surface tension)</span></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="dt">SWEEP_We</span><span class="ot">=</span><span class="st">1.0,4.0,10.0,20.0,40.0,50.0</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="dt">SWEEP_We</span><span class="ot">=</span><span class="st">50,60,70,80,90,100,126,158,200,251,316,398,501,631,794,1000</span></span>
 <span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="co"># Sweep Ohnesorge number (vary viscosity)</span></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="dt">SWEEP_Ohd</span><span class="ot">=</span><span class="st">1.0e-3,3e-3,1.0e-2,3e-2,1.0e-1,3e-1,1e0</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="dt">SWEEP_Ohd</span><span class="ot">=</span><span class="st">1e-3,3e-3,1e-2,1.7e-2,2.9e-2,4.9e-2,8.4e-2,1.43e-1,2.43e-1,4.13e-1,7.02e-1,1.19,2.03,3.45,5.87,1e1</span></span>
 <span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="co"># Optional: sweep other parameters</span></span>
 <span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="co"># SWEEP_MAXlevel=9,10,11</span></span>

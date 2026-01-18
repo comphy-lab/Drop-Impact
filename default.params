@@ -31,7 +31,7 @@ rho_ratio=1.0e-3
 # Geometry Configuration
 # ============================================================
 # Domain size in drop radii (must be >> drop radius to avoid boundary effects)
-Ldomain=4.0
+Ldomain=12.0
 
 # Initial drop center position (radial coordinate, in drop radii)
 # Should be > 0 to avoid axis, and > drop_radius to avoid overlap with surface
@@ -54,7 +54,7 @@ impact_velocity=-1.0
 # Maximum refinement level (2^MAXlevel cells at finest resolution)
 # Level 10 → 1024 cells, Level 11 → 2048 cells, etc.
 # Higher = more accurate but slower
-MAXlevel=10 
+MAXlevel=14 
 
 # Minimum refinement level (coarsest allowed)
 # Typically 4-5 for axisymmetric simulations

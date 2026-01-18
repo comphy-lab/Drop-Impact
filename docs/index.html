@@ -470,23 +470,23 @@ window.baseDomain = "https://comphy-lab.org/Drop-Impact";
                 <h3 id="single-simulation">Single Simulation</h3>
                 <div class="code-block-container"><div class="code-block-container"><pre
                 class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Edit parameters</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">vim</span> default.params      <span class="co"># Set CaseNo, We, Oh, etc.</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Run simulation (serial)</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="ex">./runSimulation.sh</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Run with MPI (4 cores)</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="ex">./runSimulation.sh</span> <span class="at">--mpi</span></span></code></pre></div></div>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">vim</span> default.params      <span class="co"># Set CaseNo, We, Oh, etc.</span></span></code></pre></div></div>
+                <div class="code-block-container"><div class="code-block-container"><pre
+                class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Run simulation (serial)</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./runSimulation.sh</span></span></code></pre></div></div>
+                <div class="code-block-container"><div class="code-block-container"><pre
+                class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Run with MPI (4 cores)</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./runSimulation.sh</span> <span class="at">--mpi</span></span></code></pre></div></div>
                 <h3 id="parameter-sweep">Parameter Sweep</h3>
                 <div class="code-block-container"><div class="code-block-container"><pre
-                class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Configure sweep</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">vim</span> sweep.params        <span class="co"># Set CASE_START, CASE_END, sweep variables</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Run sweep (serial)</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="ex">./runParameterSweep.sh</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Run sweep with MPI (4 cores per case)</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="ex">./runParameterSweep.sh</span> <span class="at">--mpi</span></span></code></pre></div></div>
+                class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Configure sweep</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">vim</span> sweep.params        <span class="co"># Set CASE_START, CASE_END, sweep variables</span></span></code></pre></div></div>
+                <div class="code-block-container"><div class="code-block-container"><pre
+                class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Run sweep (serial)</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./runParameterSweep.sh</span></span></code></pre></div></div>
+                <div class="code-block-container"><div class="code-block-container"><pre
+                class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Run sweep with MPI (4 cores per case)</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./runParameterSweep.sh</span> <span class="at">--mpi</span></span></code></pre></div></div>
                 <h2 id="repository-structure">Repository Structure</h2>
                 <div class="repository-structure">
                 <ul>
