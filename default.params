@@ -17,7 +17,7 @@ CaseNo=1000
 We=10.0
 
 # Ohnesorge number (drop): Oh = μ/√(ρσR) (viscous vs surface tension)
-Ohd=1.0e-2 
+Ohd=1.0e-2
 
 # Ohnesorge number (surrounding gas)
 Ohs=1.0e-5
@@ -31,7 +31,7 @@ rho_ratio=1.0e-3
 # Geometry Configuration
 # ============================================================
 # Domain size in drop radii (must be >> drop radius to avoid boundary effects)
-Ldomain=12.0
+Ldomain=8.0
 
 # Initial drop center position (radial coordinate, in drop radii)
 # Should be > 0 to avoid axis, and > drop_radius to avoid overlap with surface
@@ -54,7 +54,7 @@ impact_velocity=-1.0
 # Maximum refinement level (2^MAXlevel cells at finest resolution)
 # Level 10 → 1024 cells, Level 11 → 2048 cells, etc.
 # Higher = more accurate but slower
-MAXlevel=14 
+MAXlevel=14
 
 # Minimum refinement level (coarsest allowed)
 # Typically 4-5 for axisymmetric simulations
@@ -105,10 +105,10 @@ log_interval=1
 # ============================================================
 # Advanced: Outflow Boundary Control
 # ============================================================
-# Unrefine mesh if x > outflow_x_frac * Ldomain
+# Unrefine mesh if x > outflow_x_max (in drop radii)
 # Prevents wasted resolution far from drop
-outflow_x_frac=0.95
+outflow_x_max=4.0
 
-# Unrefine mesh if y > outflow_y_max
+# Unrefine mesh if y > outflow_y_max (in drop radii)
 # Far-field boundary where solution should be simple
-outflow_y_max=4.0
+outflow_y_max=8.0

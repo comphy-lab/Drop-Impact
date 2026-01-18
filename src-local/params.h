@@ -63,8 +63,8 @@ struct SimulationParams {
     int log_interval;      /**< Write statistics every N iterations */
 
     // Outflow boundary control
-    double outflow_x_frac; /**< Unrefine if x > this fraction of Ldomain */
-    double outflow_y_max;  /**< Unrefine if y > this value */
+    double outflow_x_max;  /**< Unrefine if x > this value (in drop radii) */
+    double outflow_y_max;  /**< Unrefine if y > this value (in drop radii) */
 };
 
 /**
@@ -107,7 +107,7 @@ static inline void set_default_params(struct SimulationParams *p) {
     p->log_interval = 1;
 
     // Outflow boundaries
-    p->outflow_x_frac = 0.95;
+    p->outflow_x_max = 11.0;
     p->outflow_y_max = 4.0;
 }
 
@@ -187,7 +187,7 @@ static inline int parse_params_from_file(const char *filename, struct Simulation
         else if (strcmp(key, "tsnap") == 0) p->tsnap = atof(value);
         else if (strcmp(key, "output_dir") == 0) strncpy(p->output_dir, value, sizeof(p->output_dir)-1);
         else if (strcmp(key, "log_interval") == 0) p->log_interval = atoi(value);
-        else if (strcmp(key, "outflow_x_frac") == 0) p->outflow_x_frac = atof(value);
+        else if (strcmp(key, "outflow_x_max") == 0) p->outflow_x_max = atof(value);
         else if (strcmp(key, "outflow_y_max") == 0) p->outflow_y_max = atof(value);
         else {
             fprintf(stderr, "WARNING: Unknown parameter '%s' at line %d\n", key, line_num);

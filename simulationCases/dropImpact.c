@@ -342,7 +342,7 @@ event adapt(i++) {
     Prevent spurious refinement near outflow boundaries where solution
     should be smooth (no drop, low velocities).
     */
-    unrefine(x > params.outflow_x_frac * params.Ldomain ||
+    unrefine(x > params.outflow_x_max ||
              y > params.outflow_y_max);
 }
 
