@@ -66,16 +66,6 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://comphy-lab.org/Drop-Impact/simulationCases/1000/case.params.html</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://comphy-lab.org/Drop-Impact/simulationCases/1000/dropImpact.c.html</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://comphy-lab.org/Drop-Impact/simulationCases/dropImpact.c.html</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>

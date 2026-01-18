@@ -429,6 +429,8 @@ def find_source_files(root_dir: Path, source_dirs: List[str]) -> List[Path]:
     """
     valid_exts = {'.c', '.h', '.py', '.sh', '.sbatch', '.ipynb', '.params'}
     valid_names = {'Makefile'}
+    # Exclude 4-digit numeric case folders (e.g., simulationCases/1000/)
+    numeric_case_pattern = re.compile(r'/\d{4}/')
     files = set()
 
     for dir_name in source_dirs:
@@ -436,6 +438,9 @@ def find_source_files(root_dir: Path, source_dirs: List[str]) -> List[Path]:
         if src_path.is_dir():
             for f in src_path.rglob('*'):
                 if f.is_file():
+                    # Skip files in numeric case folders
+                    if numeric_case_pattern.search(str(f)):
+                        continue
                     if f.name in valid_names:
                         files.add(f)
                     elif f.suffix in valid_exts and not f.name.endswith('.dat'):
