@@ -202,7 +202,7 @@
   </style>
 
   <!-- Critical Meta Tags -->
-  <meta name="description" content="set -e Exit on error">
+  <meta name="description" content="set -euo pipefail Exit on error, unset variables, pipeline failures">
   <meta name="author" content="CoMPhy Lab">
   <meta name="robots" content="index, follow">
   <meta name="keywords" content="runparametersweep">
@@ -337,7 +337,11 @@
   </script>
 </head>
 <body id="top">
-<script>window.repoName = "Drop-Impact";</script>
+<script>
+window.repoName = "Drop-Impact";
+window.githubOrg = "comphy-lab";
+window.baseDomain = "https://comphy-lab.org/Drop-Impact";
+</script>
 
 
     <!-- Preloader with theme variables applied -->
@@ -388,6 +392,7 @@
                             </svg>
                         </div>
                     </li>
+                    <!-- NOTE: The following links are organization-specific. Customize for your organization. -->
                     <li style="background: none;"><a href="https://scholar.google.com/citations?user=tHb_qZoAAAAJ&hl=en" style="background: none; padding: 0;" aria-label="Google Scholar Profile"><i class="ai ai-google-scholar" style="font-size: 1.75em;"></i></a></li>
                     <li style="background: none;"><a href="https://github.com/comphy-lab" style="background: none; padding: 0;" aria-label="GitHub Organization"><i class="fa-brands fa-github" style="font-size: 1.75em"></i></a></li>
                     <li><a href="https://comphy-lab.org/#about" class="smoothscroll">About</a></li>
@@ -418,12 +423,6 @@
                 
                                 <h1 class="page-title">runParameterSweep.sh</h1>
                 
-                                <nav class="table-of-contents" id="TOC">
-                    <ul>
-                    <li><a href="#runparametersweep.sh"
-                    id="toc-runparametersweep.sh">runParameterSweep.sh</a></li>
-                    </ul>
-                </nav>
                                 
                                 <div class="raw-file-button-container">
                     <a href="https://github.com/comphy-lab/Drop-Impact/raw/main/runParameterSweep.sh" class="raw-file-button" target="_blank" rel="noopener noreferrer">
@@ -437,7 +436,7 @@
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># runParameterSweep.sh - Run parameter sweep with auto-incrementing CaseNo</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Generates parameter combinations and runs simulations in simulationCases/&lt;CaseNo&gt;/</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="bu">set</span> <span class="at">-e</span>  <span class="co"># Exit on error</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="bu">set</span> <span class="at">-euo</span> pipefail  <span class="co"># Exit on error, unset variables, pipeline failures</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># ============================================================</span></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Configuration</span></span>
@@ -803,6 +802,7 @@
               </p>
             </div>
             <div class="footer-right">
+              <!-- NOTE: Social media links below are organization-specific. Customize for your organization. -->
               <a href="https://scholar.google.com/citations?user=tHb_qZoAAAAJ&hl=en" target="_blank" rel="noopener noreferrer" aria-label="Google Scholar Profile">
                 <i class="ai ai-google-scholar" style="font-size: 2.5em; color: white;"></i>
               </a>
@@ -818,7 +818,7 @@
               <a href="https://bsky.app/profile/comphy-lab.org" target="_blank" rel="noopener noreferrer" aria-label="Bluesky Profile">
                 <i class="fa-brands fa-bluesky" style="font-size: 2.5em; color: white;"></i>
               </a>
-              <a href="https://github.com/comphy-lab/Drop-Impact" class="edit-link" aria-label="Edit this page on GitHub">
+              <a href="https://github.com/comphy-lab/Drop-Impact/edit/main/runParameterSweep.sh" class="edit-link" aria-label="Edit this page on GitHub">
                 <i class="fa-brands fa-github"></i> Edit this page
               </a>
             </div>

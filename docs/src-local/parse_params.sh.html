@@ -337,7 +337,11 @@
   </script>
 </head>
 <body id="top">
-<script>window.repoName = "Drop-Impact";</script>
+<script>
+window.repoName = "Drop-Impact";
+window.githubOrg = "comphy-lab";
+window.baseDomain = "https://comphy-lab.org/Drop-Impact";
+</script>
 
 
     <!-- Preloader with theme variables applied -->
@@ -388,6 +392,7 @@
                             </svg>
                         </div>
                     </li>
+                    <!-- NOTE: The following links are organization-specific. Customize for your organization. -->
                     <li style="background: none;"><a href="https://scholar.google.com/citations?user=tHb_qZoAAAAJ&hl=en" style="background: none; padding: 0;" aria-label="Google Scholar Profile"><i class="ai ai-google-scholar" style="font-size: 1.75em;"></i></a></li>
                     <li style="background: none;"><a href="https://github.com/comphy-lab" style="background: none; padding: 0;" aria-label="GitHub Organization"><i class="fa-brands fa-github" style="font-size: 1.75em"></i></a></li>
                     <li><a href="https://comphy-lab.org/#about" class="smoothscroll">About</a></li>
@@ -418,12 +423,6 @@
                 
                                 <h1 class="page-title">src-local/parse_params.sh</h1>
                 
-                                <nav class="table-of-contents" id="TOC">
-                    <ul>
-                    <li><a href="#parse_params.sh"
-                    id="toc-parse_params.sh">parse_params.sh</a></li>
-                    </ul>
-                </nav>
                                 
                                 <div class="raw-file-button-container">
                     <a href="https://github.com/comphy-lab/Drop-Impact/raw/main/src-local/parse_params.sh" class="raw-file-button" target="_blank" rel="noopener noreferrer">
@@ -472,7 +471,7 @@
 <span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="co"># Usage: get_param &lt;key&gt; [default]</span></span>
 <span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="fu">get_param()</span> <span class="kw">{</span></span>
 <span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>    <span class="bu">local</span> <span class="va">key</span><span class="op">=</span><span class="dt">\$</span>1</span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>    <span class="bu">local</span> <span class="va">default</span><span class="op">=</span><span class="dt">\$</span>2</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>    <span class="bu">local</span> <span class="va">default</span><span class="op">=</span><span class="dt">\$</span>{2:-}</span>
 <span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>    <span class="bu">local</span> <span class="va">var_name</span><span class="op">=</span><span class="st">&quot;PARAM_</span><span class="dt">\$</span><span class="st">{key}&quot;</span></span>
 <span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">&quot;</span><span class="dt">\$</span><span class="st">{!var_name:-</span><span class="dt">\$</span><span class="st">default}&quot;</span></span>
 <span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span></span>
@@ -639,6 +638,7 @@
               </p>
             </div>
             <div class="footer-right">
+              <!-- NOTE: Social media links below are organization-specific. Customize for your organization. -->
               <a href="https://scholar.google.com/citations?user=tHb_qZoAAAAJ&hl=en" target="_blank" rel="noopener noreferrer" aria-label="Google Scholar Profile">
                 <i class="ai ai-google-scholar" style="font-size: 2.5em; color: white;"></i>
               </a>
@@ -654,7 +654,7 @@
               <a href="https://bsky.app/profile/comphy-lab.org" target="_blank" rel="noopener noreferrer" aria-label="Bluesky Profile">
                 <i class="fa-brands fa-bluesky" style="font-size: 2.5em; color: white;"></i>
               </a>
-              <a href="https://github.com/comphy-lab/Drop-Impact" class="edit-link" aria-label="Edit this page on GitHub">
+              <a href="https://github.com/comphy-lab/Drop-Impact/edit/main/src-local/parse_params.sh" class="edit-link" aria-label="Edit this page on GitHub">
                 <i class="fa-brands fa-github"></i> Edit this page
               </a>
             </div>

@@ -1,7 +1,68 @@
 #!/usr/bin/env python3
+"""
+Documentation Generator for Basilisk-based CFD Projects.
+
+This script generates HTML documentation from source files using Pandoc and
+Basilisk's literate-c processor. It creates a complete static documentation
+site with search functionality, syntax highlighting, and responsive design.
+
+Features
+--------
+- Converts C/H files using Basilisk literate programming conventions
+- Renders Python files with syntax highlighting
+- Embeds Jupyter notebooks with nbconvert or nbviewer fallback
+- Generates SEO metadata (description, keywords) automatically
+- Creates navigation sidebar from directory structure
+- Supports incremental builds (only rebuilds changed files)
+
+Architecture
+------------
+The generation pipeline follows these stages:
+
+1. ``validate_config()`` - Check dependencies (Basilisk, Pandoc, template)
+2. ``find_source_files()`` - Discover all source files to process
+3. ``process_*()`` - Convert each file type to intermediate Markdown/HTML
+4. ``convert_to_html()`` - Run Pandoc with custom template
+5. ``generate_index()`` - Create index.html with navigation sidebar
+
+Supported File Types
+--------------------
+- ``.c``, ``.h`` - C source files (processed via literate-c)
+- ``.py`` - Python scripts (syntax highlighted)
+- ``.sh`` - Shell scripts (syntax highlighted)
+- ``.sbatch`` - SLURM batch scripts (syntax highlighted)
+- ``.ipynb`` - Jupyter notebooks (nbconvert or nbviewer embed)
+- ``.params`` - Parameter files (INI-style highlighting)
+- ``Makefile`` - Build files (syntax highlighted)
+
+Dependencies
+------------
+Required:
+    - Basilisk with darcsit/literate-c script
+    - Pandoc for Markdown to HTML conversion
+
+Optional:
+    - nbconvert: For local Jupyter notebook rendering
+    - BeautifulSoup4: For enhanced notebook HTML processing
+
+Usage
+-----
+::
+
+    python generate_docs.py [--debug] [--force-rebuild]
+
+Options:
+    --debug          Enable verbose debug output
+    --force-rebuild  Rebuild all HTML files even if source unchanged
+
+Author: Vatsal Sanjay
+Organization: CoMPhy Lab, Durham University
+"""
+import ast
+import inspect
 import os, subprocess, re, shutil, argparse, html, json
 from pathlib import Path
-from typing import Dict, List, Optional, Any, Union
+from typing import Dict, List, Tuple
 try:
     from nbconvert import HTMLExporter
     NBCONVERT_AVAILABLE = True
@@ -145,6 +206,56 @@ def extract_seo_metadata(file_path: Path, content: str) -> Dict[str, str]:
 
     return metadata
 
+def parse_git_remote() -> Tuple[str, str]:
+    """
+    Parses the git remote URL to extract GitHub organization and repository name.
+
+    Supports both SSH (git@github.com:org/repo.git) and HTTPS (https://github.com/org/repo.git) formats.
+
+    Returns:
+        A tuple of (organization, repository_name). If parsing fails or git remote is not configured,
+        returns ("comphy-lab", "unknown-repo") as fallback defaults.
+    """
+    try:
+        result = subprocess.run(
+            ['git', 'remote', 'get-url', 'origin'],
+            capture_output=True,
+            text=True,
+            check=True,
+            cwd=Path(__file__).parent.parent.parent
+        )
+        remote_url = result.stdout.strip()
+        debug_print(f"Git remote URL: {remote_url}")
+
+        # Parse SSH format: git@github.com:org/repo.git
+        ssh_match = re.match(r'git@github\.com:([^/]+)/(.+?)(?:\.git)?$', remote_url)
+        if ssh_match:
+            org = ssh_match.group(1)
+            repo = ssh_match.group(2)
+            debug_print(f"Parsed from SSH format: org={org}, repo={repo}")
+            return (org, repo)
+
+        # Parse HTTPS format: https://github.com/org/repo.git
+        https_match = re.match(r'https://github\.com/([^/]+)/(.+?)(?:\.git)?$', remote_url)
+        if https_match:
+            org = https_match.group(1)
+            repo = https_match.group(2)
+            debug_print(f"Parsed from HTTPS format: org={org}, repo={repo}")
+            return (org, repo)
+
+        print(f"Warning: Could not parse git remote URL: {remote_url}")
+        print("Using fallback values: org=comphy-lab, repo=unknown-repo")
+        return ("comphy-lab", "unknown-repo")
+
+    except subprocess.CalledProcessError as e:
+        print(f"Warning: Could not get git remote URL: {e}")
+        print("Using fallback values: org=comphy-lab, repo=unknown-repo")
+        return ("comphy-lab", "unknown-repo")
+    except Exception as e:
+        print(f"Warning: Unexpected error parsing git remote: {e}")
+        print("Using fallback values: org=comphy-lab, repo=unknown-repo")
+        return ("comphy-lab", "unknown-repo")
+
 # Configuration
 REPO_ROOT = Path(__file__).parent.parent.parent
 SOURCE_DIRS = ['src-local', 'simulationCases', 'postProcess']
@@ -161,13 +272,22 @@ CSS_PATH = REPO_ROOT / '.github' / 'assets' / 'css' / 'custom_styles.css'
 # Get repository name from directory
 REPO_NAME = REPO_ROOT.name
 
-# Read domain from CNAME file or use default
+# Auto-detect GitHub organization and repository from git remote
+GITHUB_ORG, GITHUB_REPO = parse_git_remote()
+debug_print(f"Auto-detected: GitHub org={GITHUB_ORG}, repo={GITHUB_REPO}")
+
+# Read domain from CNAME file or use default (org domain + repo path for project sites)
 try:
     CNAME_PATH = REPO_ROOT / 'CNAME'
-    BASE_DOMAIN = f"https://{CNAME_PATH.read_text().strip()}" if CNAME_PATH.exists() else "https://test.comphy-lab.org"
+    if CNAME_PATH.exists():
+        # Custom domain points directly to this repo
+        BASE_DOMAIN = f"https://{CNAME_PATH.read_text().strip()}"
+    else:
+        # GitHub Pages project site: org domain + repo path
+        BASE_DOMAIN = f"https://comphy-lab.org/{GITHUB_REPO}"
 except Exception as e:
     print(f"Warning: Could not read CNAME file: {e}")
-    BASE_DOMAIN = "https://test.comphy-lab.org"
+    BASE_DOMAIN = f"https://comphy-lab.org/{GITHUB_REPO}"
 
 def extract_h1_from_readme(readme_path: Path) -> str:
     """
@@ -210,17 +330,56 @@ def process_template_for_assets(template_path: Path) -> str:
         print(f"Error processing template: {e}")
         return ""
 
+def install_basilisk() -> bool:
+    """
+    Auto-install basilisk from comphy-lab/basilisk-C using mode=4 (ref-locked).
+
+    Downloads and runs the reset_install_basilisk.sh script with mode=4 to fetch
+    pre-built binaries from a specific release tag. Cleans up the install script
+    after successful installation.
+
+    Returns:
+        True if installation succeeded; False otherwise.
+    """
+    print("Basilisk not found. Installing from comphy-lab/basilisk-C...")
+
+    cmds = [
+        "curl -sLO https://raw.githubusercontent.com/comphy-lab/basilisk-C/main/reset_install_basilisk.sh",
+        "chmod +x reset_install_basilisk.sh",
+        "./reset_install_basilisk.sh --mode=4 --ref=v2026-01-13 --hard"
+    ]
+
+    for cmd in cmds:
+        result = subprocess.run(cmd, shell=True, cwd=REPO_ROOT)
+        if result.returncode != 0:
+            print(f"Failed to install basilisk: {cmd}")
+            return False
+
+    # Clean up install script
+    install_script = REPO_ROOT / "reset_install_basilisk.sh"
+    if install_script.exists():
+        install_script.unlink()
+
+    print("Basilisk installed successfully.")
+    return True
+
 def validate_config() -> bool:
     """
     Validates the existence of essential directories and files required for documentation generation.
-    
+
     Checks for the presence of core directories and files, processes the HTML template for Pandoc, and creates a temporary template file for use during conversion. Updates the global template path if successful.
-    
+    Auto-installs basilisk from comphy-lab/basilisk-C if not found.
+
     Returns:
         True if all required paths exist and the template is processed successfully; False otherwise.
     """
     global TEMPLATE_PATH
-    
+
+    # Check if basilisk needs to be installed
+    if not LITERATE_C_SCRIPT.is_file():
+        if not install_basilisk():
+            return False
+
     essential_paths = [
         (BASILISK_DIR, "BASILISK_DIR"),
         (DARCSIT_DIR, "DARCSIT_DIR"),
@@ -258,17 +417,17 @@ def validate_config() -> bool:
 def find_source_files(root_dir: Path, source_dirs: List[str]) -> List[Path]:
     """
     Finds all supported source files in the specified directories and root directory.
-    
+
     Searches recursively within each source directory and non-recursively in the root directory for files with supported extensions (.c, .h, .py, .sh, .ipynb, .params) or named 'Makefile', excluding files ending with '.dat'.
-    
+
     Args:
         root_dir: The root directory to search for source files.
         source_dirs: List of subdirectory names to search recursively.
-    
+
     Returns:
         A sorted list of Paths to the discovered source files.
     """
-    valid_exts = {'.c', '.h', '.py', '.sh', '.ipynb', '.params'}
+    valid_exts = {'.c', '.h', '.py', '.sh', '.sbatch', '.ipynb', '.params'}
     valid_names = {'Makefile'}
     files = set()
 
@@ -456,11 +615,11 @@ def process_jupyter_notebook(file_path: Path) -> str:
         <a href="{notebook_filename}" download class="notebook-btn download-btn">
             <i class="fa-solid fa-download"></i> Download Notebook
         </a>
-        <a href="https://nbviewer.org/github/comphy-lab/{REPO_NAME}/blob/main/{notebook_path}" 
+        <a href="https://nbviewer.org/github/{GITHUB_ORG}/{REPO_NAME}/blob/main/{notebook_path}"
            target="_blank" class="notebook-btn view-btn">
             <i class="fa-solid fa-eye"></i> View in nbviewer
         </a>
-        <a href="https://colab.research.google.com/github/comphy-lab/{REPO_NAME}/blob/main/{notebook_path}" 
+        <a href="https://colab.research.google.com/github/{GITHUB_ORG}/{REPO_NAME}/blob/main/{notebook_path}"
            target="_blank" class="notebook-btn colab-btn">
             <i class="fa-solid fa-play"></i> Open in Colab
         </a>
@@ -576,11 +735,11 @@ def process_jupyter_notebook(file_path: Path) -> str:
         <a href="{notebook_filename}" download class="notebook-btn download-btn">
             <i class="fa-solid fa-download"></i> Download Notebook
         </a>
-        <a href="https://nbviewer.org/github/comphy-lab/{REPO_NAME}/blob/main/{notebook_path}" 
+        <a href="https://nbviewer.org/github/{GITHUB_ORG}/{REPO_NAME}/blob/main/{notebook_path}"
            target="_blank" class="notebook-btn view-btn">
             <i class="fa-solid fa-eye"></i> View in nbviewer
         </a>
-        <a href="https://colab.research.google.com/github/comphy-lab/{REPO_NAME}/blob/main/{notebook_path}" 
+        <a href="https://colab.research.google.com/github/{GITHUB_ORG}/{REPO_NAME}/blob/main/{notebook_path}"
            target="_blank" class="notebook-btn colab-btn">
             <i class="fa-solid fa-play"></i> Open in Colab
         </a>
@@ -604,8 +763,8 @@ def process_jupyter_notebook(file_path: Path) -> str:
     <div class="embedded-notebook">
         <h3>Notebook Preview</h3>
         <div id="notebook-container-{notebook_filename.replace('.', '-')}" >
-            <iframe id="notebook-iframe-{notebook_filename.replace('.', '-')}" 
-                    src="https://nbviewer.org/github/comphy-lab/{REPO_NAME}/blob/main/{notebook_path}" 
+            <iframe id="notebook-iframe-{notebook_filename.replace('.', '-')}"
+                    src="https://nbviewer.org/github/{GITHUB_ORG}/{REPO_NAME}/blob/main/{notebook_path}"
                     width="100%" height="800px" frameborder="0"
                     onload="checkIframeLoaded('{notebook_filename.replace('.', '-')}')"
                     onerror="handleIframeError('{notebook_filename.replace('.', '-')}')"></iframe>
@@ -681,69 +840,66 @@ def process_python_file(file_path: Path) -> str:
     Returns:
         A Markdown-formatted string with docstrings as paragraphs and code as Python code blocks.
     """
-    with open(file_path, 'r', encoding='utf-8') as f:
-        file_content = f.read()
-    
-    lines = file_content.split('\n')
-    processed_lines = []
-    in_code_block = False
-    code_block = []
-    in_docstring = False
-    docstring_lines = []
-    
-    for line in lines:
-        if line.strip().startswith('"""') or line.strip().startswith("'''"):
-            if in_docstring:
-                in_docstring = False
-                clean_docstring = []
-                for doc_line in docstring_lines:
-                    if doc_line.strip() in ('"""', "'''"):
-                        continue
-                    doc_line = doc_line.strip()
-                    if doc_line.startswith('"""') or doc_line.startswith("'''"):
-                        doc_line = doc_line[3:]
-                    if doc_line.endswith('"""') or doc_line.endswith("'''"):
-                        doc_line = doc_line[:-3]
-                    clean_docstring.append(doc_line.strip())
-                
-                if clean_docstring:
-                    processed_lines.append("")
-                    processed_lines.extend(clean_docstring)
-                    processed_lines.append("")
-                docstring_lines = []
-            else:
-                in_docstring = True
-                if in_code_block:
-                    processed_lines.append("```python")
-                    processed_lines.extend(code_block)
-                    processed_lines.append("```")
-                    code_block = []
-                    in_code_block = False
+    file_content = file_path.read_text(encoding="utf-8")
+
+    try:
+        tree = ast.parse(file_content)
+    except SyntaxError as exc:
+        debug_print(f"  [Debug] SyntaxError parsing {file_path}: {exc}")
+        return f"# {file_path.name}\n\n```python\n{file_content}\n```"
+
+    lines = file_content.split("\n")
+
+    doc_blocks: List[Tuple[int, int, str]] = []
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Expr):
             continue
-        
-        if in_docstring:
-            docstring_lines.append(line)
-            continue
-        
-        if not in_code_block and line.strip():
-            in_code_block = True
-            code_block.append(line)
-        elif in_code_block:
-            code_block.append(line)
-        else:
-            processed_lines.append(line)
-    
-    if in_code_block:
+
+        value = node.value
+        if isinstance(value, ast.Constant) and isinstance(value.value, str):
+            start = node.lineno
+            end = getattr(node, "end_lineno", node.lineno)
+            doc_blocks.append((start, end, value.value))
+
+    doc_blocks.sort(key=lambda block: block[0])
+
+    def trim_blank_edges(segment: List[str]) -> List[str]:
+        start = 0
+        end = len(segment)
+        while start < end and not segment[start].strip():
+            start += 1
+        while end > start and not segment[end - 1].strip():
+            end -= 1
+        return segment[start:end]
+
+    processed_lines: List[str] = []
+    current_line = 1  # 1-based
+
+    def emit_code_segment(segment: List[str]) -> None:
+        segment = trim_blank_edges(segment)
+        if not any(line.strip() for line in segment):
+            return
         processed_lines.append("```python")
-        processed_lines.extend(code_block)
+        processed_lines.extend(segment)
         processed_lines.append("```")
-    
-    if in_docstring:
         processed_lines.append("")
-        processed_lines.extend(docstring_lines)
-        processed_lines.append("")
-    
-    return '\n'.join(processed_lines)
+
+    for start, end, text in doc_blocks:
+        if start < current_line:
+            continue
+
+        emit_code_segment(lines[current_line - 1 : start - 1])
+
+        doc_text = inspect.cleandoc(text).strip()
+        if doc_text:
+            processed_lines.append(doc_text)
+            processed_lines.append("")
+
+        current_line = end + 1
+
+    emit_code_segment(lines[current_line - 1 :])
+
+    return "\n".join(processed_lines).rstrip() + "\n"
 
 def process_c_file(file_path: Path, literate_c_script: Path) -> str:
     """
@@ -782,17 +938,19 @@ def process_c_file(file_path: Path, literate_c_script: Path) -> str:
 def prepare_pandoc_input(file_path: Path, literate_c_script: Path) -> str:
     """
     Prepares the content of a source file for Pandoc conversion based on its type.
-    
+
     Selects the appropriate processing function for the given file, converting it to Markdown or HTML as needed for Pandoc input. Supports Markdown, Python, shell scripts, parameter files (.params), Jupyter notebooks, Makefiles, and C/C++ files.
     """
     file_suffix = file_path.suffix.lower()
     file_name = file_path.name
-    
+
     if file_suffix == '.md':
         return process_markdown_file(file_path)
     elif file_suffix == '.py':
         return process_python_file(file_path)
     elif file_suffix == '.sh':
+        return process_shell_file(file_path)
+    elif file_suffix == '.sbatch':
         return process_shell_file(file_path)
     elif file_suffix == '.params':
         return process_params_file(file_path)
@@ -833,15 +991,13 @@ def run_pandoc(pandoc_input: str, output_html_path: Path, template_path: Path,
         seo_metadata = {}
     
     # Determine if this is for a shell script file
-    is_shell_script = output_html_path.name.endswith('.sh.html') or output_html_path.name == 'Makefile.html'
+    is_shell_script = output_html_path.name.endswith(('.sh.html', '.sbatch.html')) or output_html_path.name == 'Makefile.html'
     
     pandoc_cmd = [
         'pandoc',
         '-f', 'markdown+smart+raw_html+tex_math_dollars',
         '-t', 'html5',
         '--standalone',
-        '--toc',
-        '--toc-depth=3',
         '--mathjax',
         '--template', str(template_path),
         '-V', f'base={base_url}',
@@ -854,6 +1010,9 @@ def run_pandoc(pandoc_input: str, output_html_path: Path, template_path: Path,
         '-V', f'image={seo_metadata.get("image", "")}',
         '-V', f'asset_path_prefix={asset_path_prefix}',
         '-V', f'repo_name={REPO_NAME}',
+        '-V', f'github_org={GITHUB_ORG}',
+        '-V', f'github_repo={GITHUB_REPO}',
+        '-V', f'base_domain={BASE_DOMAIN}',
         '-V', f'source_path={source_path if source_path else ""}',
     ]
     
@@ -994,7 +1153,7 @@ def post_process_python_shell_html(html_content: str) -> str:
                 href.startswith('#') or href.endswith('.html')):
                 return link_tag
                 
-            if re.search(r'\.(c|h|py|sh|md)$', href):
+            if re.search(r'\.(c|h|py|sh|sbatch|md)$', href):
                 return re.sub(r'href="([^"]+)"', f'href="{href}.html"', link_tag)
         
         return link_tag
@@ -1011,8 +1170,14 @@ def post_process_python_shell_html(html_content: str) -> str:
     processed_html = re.sub(r'<script[^>]*>\s*window\.basePath\s*=.*?</script>', '', processed_html, flags=re.DOTALL)
     processed_html = re.sub(r'<script[^>]*>\s*function\s+assetPath.*?</script>', '', processed_html, flags=re.DOTALL)
 
-    # Add repoName variable
-    repo_script = f'\n<script>window.repoName = "{REPO_NAME}";</script>\n'
+    # Add repository and organization metadata variables
+    repo_script = f'''
+<script>
+window.repoName = "{REPO_NAME}";
+window.githubOrg = "{GITHUB_ORG}";
+window.baseDomain = "{BASE_DOMAIN}";
+</script>
+'''
     processed_html = re.sub(r'<body[^>]*>', lambda m: m.group(0) + repo_script, processed_html)
 
     return processed_html
@@ -1179,11 +1344,17 @@ def post_process_c_html(html_content: str, file_path: Path,
     cleaned_html = re.sub(r'<script[^>]*>\s*// Helper function to create dynamic asset paths.*?</script>', '', cleaned_html, flags=re.DOTALL)
     cleaned_html = re.sub(r'<script[^>]*>\s*window\.basePath\s*=.*?</script>', '', cleaned_html, flags=re.DOTALL)
     cleaned_html = re.sub(r'<script[^>]*>\s*function\s+assetPath.*?</script>', '', cleaned_html, flags=re.DOTALL)
-    
-    # Add repoName variable
-    repo_script = f'\n<script>window.repoName = "{REPO_NAME}";</script>\n'
+
+    # Add repository and organization metadata variables
+    repo_script = f'''
+<script>
+window.repoName = "{REPO_NAME}";
+window.githubOrg = "{GITHUB_ORG}";
+window.baseDomain = "{BASE_DOMAIN}";
+</script>
+'''
     cleaned_html = re.sub(r'<body[^>]*>', lambda m: m.group(0) + repo_script, cleaned_html)
-    
+
     return cleaned_html
 
 def insert_css_link_in_html(html_file_path: Path, css_path: Path, is_root: bool = True) -> bool:
@@ -1434,7 +1605,7 @@ def process_file_with_page2html_logic(file_path: Path, output_html_path: Path, r
         
         # Determine file type for post-processing
         is_python_file = file_path.suffix.lower() == '.py'
-        is_shell_file = file_path.suffix.lower() == '.sh'
+        is_shell_file = file_path.suffix.lower() in {'.sh', '.sbatch'}
         is_params_file = file_path.suffix.lower() == '.params'
         is_markdown_file = file_path.suffix.lower() == '.md'
 
@@ -1678,7 +1849,20 @@ def generate_directory_index(directory_name: str, directory_path: Path, generate
         # Replace asset prefix based on depth
         asset_path_prefix = calculate_asset_prefix(index_path, docs_dir)
         html_content = html_content.replace("$asset_path_prefix$", asset_path_prefix)
-        
+
+        # Replace GitHub organization and repository variables
+        html_content = html_content.replace("$github_org$", GITHUB_ORG)
+        html_content = html_content.replace("$github_repo$", GITHUB_REPO)
+        html_content = html_content.replace("$base_domain$", BASE_DOMAIN)
+        html_content = html_content.replace("$reponame$", REPO_NAME)
+
+        # Handle source_path conditionals - directory index pages have no source file
+        # Replace specific known patterns to avoid regex issues with nested variables
+        # 1. The href edit path: $if(source_path)$/edit/main/$source_path$$endif$ -> empty
+        html_content = html_content.replace('$if(source_path)$/edit/main/$source_path$$endif$', '')
+        # 2. The link text with else: keep "View repository"
+        html_content = html_content.replace('$if(source_path)$Edit this page$else$View repository$endif$', 'View repository')
+
         # Handle conditional blocks
         if "$if(tabs)$" in html_content:
             html_content = re.sub(r'\$if\(tabs\)\$(.*?)\$tabs\$(.*?)\$endif\$', '', html_content, flags=re.DOTALL)
@@ -1795,6 +1979,9 @@ def generate_index(readme_path: Path, index_path: Path, generated_files: Dict[Pa
         '--template', str(TEMPLATE_PATH),
         '-V', f'wikititle={WIKI_TITLE}',
         '-V', f'reponame={REPO_NAME}',
+        '-V', f'github_org={GITHUB_ORG}',
+        '-V', f'github_repo={GITHUB_REPO}',
+        '-V', f'base_domain={BASE_DOMAIN}',
         '-V', 'base=/',
         '-V', 'notitle=true',
         '-V', f'pagetitle={WIKI_TITLE}',

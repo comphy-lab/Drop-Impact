@@ -337,7 +337,11 @@
   </script>
 </head>
 <body id="top">
-<script>window.repoName = "Drop-Impact";</script>
+<script>
+window.repoName = "Drop-Impact";
+window.githubOrg = "comphy-lab";
+window.baseDomain = "https://comphy-lab.org/Drop-Impact";
+</script>
 
 
     <!-- Preloader with theme variables applied -->
@@ -388,6 +392,7 @@
                             </svg>
                         </div>
                     </li>
+                    <!-- NOTE: The following links are organization-specific. Customize for your organization. -->
                     <li style="background: none;"><a href="https://scholar.google.com/citations?user=tHb_qZoAAAAJ&hl=en" style="background: none; padding: 0;" aria-label="Google Scholar Profile"><i class="ai ai-google-scholar" style="font-size: 1.75em;"></i></a></li>
                     <li style="background: none;"><a href="https://github.com/comphy-lab" style="background: none; padding: 0;" aria-label="GitHub Organization"><i class="fa-brands fa-github" style="font-size: 1.75em"></i></a></li>
                     <li><a href="https://comphy-lab.org/#about" class="smoothscroll">About</a></li>
@@ -418,108 +423,6 @@
 
                                 <h1 class="page-title">simulationCases/1000/dropImpact.c</h1>
 
-                                <nav class="table-of-contents" id="TOC">
-                    <ul>
-                    <li><a href="#drop-impact-on-solid-surface"
-                    id="toc-drop-impact-on-solid-surface">Drop Impact on
-                    Solid Surface</a>
-                    <ul>
-                    <li><a href="#physical-problem"
-                    id="toc-physical-problem">Physical Problem</a></li>
-                    <li><a href="#coordinate-system"
-                    id="toc-coordinate-system">Coordinate
-                    System</a></li>
-                    <li><a href="#governing-equations"
-                    id="toc-governing-equations">Governing
-                    Equations</a></li>
-                    <li><a href="#dimensionless-numbers"
-                    id="toc-dimensionless-numbers">Dimensionless
-                    Numbers</a></li>
-                    <li><a href="#numerical-method"
-                    id="toc-numerical-method">Numerical Method</a></li>
-                    <li><a href="#usage" id="toc-usage">Usage</a>
-                    <ul>
-                    <li><a href="#from-parameter-file"
-                    id="toc-from-parameter-file">From parameter
-                    file:</a></li>
-                    <li><a href="#from-command-line-legacy-mode"
-                    id="toc-from-command-line-legacy-mode">From command
-                    line (legacy mode):</a></li>
-                    </ul></li>
-                    <li><a href="#references"
-                    id="toc-references">References</a></li>
-                    <li><a href="#see-also" id="toc-see-also">See
-                    Also</a></li>
-                    <li><a href="#compile-time-constants"
-                    id="toc-compile-time-constants">Compile-Time
-                    Constants</a></li>
-                    <li><a href="#geometry-helper-macros"
-                    id="toc-geometry-helper-macros">Geometry Helper
-                    Macros</a></li>
-                    <li><a href="#global-configuration"
-                    id="toc-global-configuration">Global
-                    Configuration</a></li>
-                    <li><a href="#boundary-conditions"
-                    id="toc-boundary-conditions">Boundary
-                    Conditions</a></li>
-                    <li><a href="#main-function"
-                    id="toc-main-function">Main Function</a>
-                    <ul>
-                    <li><a href="#parameter-parsing"
-                    id="toc-parameter-parsing">Parameter
-                    Parsing</a></li>
-                    <li><a href="#parameter-validation"
-                    id="toc-parameter-validation">Parameter
-                    Validation</a></li>
-                    <li><a href="#domain-setup"
-                    id="toc-domain-setup">Domain Setup</a></li>
-                    <li><a href="#material-properties"
-                    id="toc-material-properties">Material
-                    Properties</a></li>
-                    <li><a href="#output-setup"
-                    id="toc-output-setup">Output Setup</a></li>
-                    <li><a href="#print-configuration"
-                    id="toc-print-configuration">Print
-                    Configuration</a></li>
-                    <li><a href="#launch-simulation"
-                    id="toc-launch-simulation">Launch
-                    Simulation</a></li>
-                    </ul></li>
-                    <li><a href="#event-initialization"
-                    id="toc-event-initialization">Event:
-                    Initialization</a>
-                    <ul>
-                    <li><a href="#grid-refinement"
-                    id="toc-grid-refinement">Grid Refinement</a></li>
-                    <li><a href="#drop-initialization"
-                    id="toc-drop-initialization">Drop
-                    Initialization</a></li>
-                    </ul></li>
-                    <li><a href="#event-adaptive-mesh-refinement"
-                    id="toc-event-adaptive-mesh-refinement">Event:
-                    Adaptive Mesh Refinement</a>
-                    <ul>
-                    <li><a href="#curvature-calculation"
-                    id="toc-curvature-calculation">Curvature
-                    Calculation</a></li>
-                    <li><a href="#wavelet-based-adaptation"
-                    id="toc-wavelet-based-adaptation">Wavelet-based
-                    Adaptation</a></li>
-                    <li><a href="#outflow-region-un-refinement"
-                    id="toc-outflow-region-un-refinement">Outflow Region
-                    Un-refinement</a></li>
-                    </ul></li>
-                    <li><a href="#event-statistics-output"
-                    id="toc-event-statistics-output">Event: Statistics
-                    Output</a></li>
-                    <li><a href="#event-snapshot-output"
-                    id="toc-event-snapshot-output">Event: Snapshot
-                    Output</a></li>
-                    <li><a href="#event-cleanup"
-                    id="toc-event-cleanup">Event: Cleanup</a></li>
-                    </ul></li>
-                    </ul>
-                </nav>
 
                                 <div class="raw-file-button-container">
                     <a href="https://github.com/comphy-lab/Drop-Impact/raw/main/simulationCases/1000/dropImpact.c" class="raw-file-button" target="_blank" rel="noopener noreferrer">
@@ -724,96 +627,102 @@
 <span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>        fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;See examples/default.params for template</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
 <span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">1</span><span class="op">;</span></span>
 <span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span></code></pre></div></div>
+                <h3 id="physics-based-parameter-scaling">Physics-Based
+                Parameter Scaling</h3>
+                <p>Convert tmax from convective time units to simulation
+                time: tmax_sim = tmax * sqrt(We)</p>
+                <div class="code-block-container"><div class="code-block-container"><pre
+                class="sourceCode c"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>    apply_physics_scaling<span class="op">(&amp;</span>params<span class="op">);</span></span></code></pre></div></div>
                 <h3 id="parameter-validation">Parameter Validation</h3>
                 <p>Check physical constraints and consistency before
                 starting simulation.</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
-                class="sourceCode c"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(!</span>validate_params<span class="op">(&amp;</span>params<span class="op">))</span> <span class="op">{</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>        fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;ERROR: Parameter validation failed. Exiting.</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">1</span><span class="op">;</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span></code></pre></div></div>
+                class="sourceCode c"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(!</span>validate_params<span class="op">(&amp;</span>params<span class="op">))</span> <span class="op">{</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>        fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;ERROR: Parameter validation failed. Exiting.</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span></code></pre></div></div>
                 <h3 id="domain-setup">Domain Setup</h3>
                 <p>Initialize computational domain with specified size
                 and initial grid.</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
-                class="sourceCode c"><code class="sourceCode c"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>    L0 <span class="op">=</span> params<span class="op">.</span>Ldomain<span class="op">;</span>          <span class="co">// Domain size</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    X0 <span class="op">=</span> <span class="fl">0.</span><span class="op">;</span>                       <span class="co">// Origin at axis</span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    Y0 <span class="op">=</span> <span class="fl">0.</span><span class="op">;</span>                       <span class="co">// Origin at surface</span></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    init_grid<span class="op">(</span><span class="dv">1</span> <span class="op">&lt;&lt;</span> params<span class="op">.</span>init_grid_level<span class="op">);</span>  <span class="co">// Initial grid: 2^init_grid_level</span></span></code></pre></div></div>
+                class="sourceCode c"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>    L0 <span class="op">=</span> params<span class="op">.</span>Ldomain<span class="op">;</span>          <span class="co">// Domain size</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    X0 <span class="op">=</span> <span class="fl">0.</span><span class="op">;</span>                       <span class="co">// Origin at axis</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    Y0 <span class="op">=</span> <span class="fl">0.</span><span class="op">;</span>                       <span class="co">// Origin at surface</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    init_grid<span class="op">(</span><span class="dv">1</span> <span class="op">&lt;&lt;</span> params<span class="op">.</span>init_grid_level<span class="op">);</span>  <span class="co">// Initial grid: 2^init_grid_level</span></span></code></pre></div></div>
                 <h3 id="material-properties">Material Properties</h3>
                 <p>Set phase properties from dimensionless numbers: -
                 Phase 1 (f=1): Drop (liquid, typically water) - Phase 2
                 (f=0): Surrounding (gas, typically air)</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
-                class="sourceCode c"><code class="sourceCode c"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>    rho1 <span class="op">=</span> <span class="fl">1.0</span><span class="op">;</span>                            <span class="co">// Drop density (normalized)</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    mu1 <span class="op">=</span> params<span class="op">.</span>Ohd <span class="op">/</span> sqrt<span class="op">(</span>params<span class="op">.</span>We<span class="op">);</span>    <span class="co">// Drop viscosity from Oh and We</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    rho2 <span class="op">=</span> params<span class="op">.</span>rho_ratio<span class="op">;</span>               <span class="co">// Gas density</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    mu2 <span class="op">=</span> params<span class="op">.</span>Ohs <span class="op">/</span> sqrt<span class="op">(</span>params<span class="op">.</span>We<span class="op">);</span>    <span class="co">// Gas viscosity</span></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    f<span class="op">.</span>sigma <span class="op">=</span> <span class="fl">1.0</span> <span class="op">/</span> params<span class="op">.</span>We<span class="op">;</span>             <span class="co">// Surface tension from We</span></span></code></pre></div></div>
+                class="sourceCode c"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>    rho1 <span class="op">=</span> <span class="fl">1.0</span><span class="op">;</span>                            <span class="co">// Drop density (normalized)</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    mu1 <span class="op">=</span> params<span class="op">.</span>Ohd <span class="op">/</span> sqrt<span class="op">(</span>params<span class="op">.</span>We<span class="op">);</span>    <span class="co">// Drop viscosity from Oh and We</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    rho2 <span class="op">=</span> params<span class="op">.</span>rho_ratio<span class="op">;</span>               <span class="co">// Gas density</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    mu2 <span class="op">=</span> params<span class="op">.</span>Ohs <span class="op">/</span> sqrt<span class="op">(</span>params<span class="op">.</span>We<span class="op">);</span>    <span class="co">// Gas viscosity</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    f<span class="op">.</span>sigma <span class="op">=</span> <span class="fl">1.0</span> <span class="op">/</span> params<span class="op">.</span>We<span class="op">;</span>             <span class="co">// Surface tension from We</span></span></code></pre></div></div>
                 <h3 id="output-setup">Output Setup</h3>
                 <p>Create output directory and open log files. File
                 handles remain open for performance (avoids repeated
                 open/close).</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
-                class="sourceCode c"><code class="sourceCode c"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>    create_output_directory<span class="op">(</span>params<span class="op">.</span>output_dir<span class="op">);</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    open_log_files<span class="op">(&amp;</span>params<span class="op">);</span></span></code></pre></div></div>
+                class="sourceCode c"><code class="sourceCode c"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>    create_output_directory<span class="op">(</span>params<span class="op">.</span>output_dir<span class="op">);</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    open_log_files<span class="op">(&amp;</span>params<span class="op">);</span></span></code></pre></div></div>
                 <h3 id="print-configuration">Print Configuration</h3>
                 <p>Write complete parameter summary to stderr for
                 verification.</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
-                class="sourceCode c"><code class="sourceCode c"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>    print_params<span class="op">(&amp;</span>params<span class="op">,</span> stderr<span class="op">);</span></span></code></pre></div></div>
+                class="sourceCode c"><code class="sourceCode c"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>    print_params<span class="op">(&amp;</span>params<span class="op">,</span> stderr<span class="op">);</span></span></code></pre></div></div>
                 <h3 id="launch-simulation">Launch Simulation</h3>
                 <p>Start time-stepping loop (controlled by Basilisk
                 event system).</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
-                class="sourceCode c"><code class="sourceCode c"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>    run<span class="op">();</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></div>
+                class="sourceCode c"><code class="sourceCode c"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>    run<span class="op">();</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></div>
                 <h2 id="event-initialization">Event: Initialization</h2>
                 <p>Sets up initial conditions: drop shape, velocity
                 field, and refined mesh.</p>
                 <p>Attempts to restore from restart file if available;
                 otherwise initializes from scratch.</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
-                class="sourceCode c"><code class="sourceCode c"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>event init<span class="op">(</span>t <span class="op">=</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">char</span> restart_path<span class="op">[</span><span class="dv">512</span><span class="op">];</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    snprintf<span class="op">(</span>restart_path<span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span>restart_path<span class="op">),</span> <span class="st">&quot;%s/restart&quot;</span><span class="op">,</span> params<span class="op">.</span>output_dir<span class="op">);</span></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(!</span>restore<span class="op">(</span>file <span class="op">=</span> restart_path<span class="op">))</span> <span class="op">{</span></span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>        <span class="co">// No restart file found - initialize from scratch</span></span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>        fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">Initializing simulation from initial conditions...</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span></code></pre></div></div>
+                class="sourceCode c"><code class="sourceCode c"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>event init<span class="op">(</span>t <span class="op">=</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">char</span> restart_path<span class="op">[</span><span class="dv">512</span><span class="op">];</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    snprintf<span class="op">(</span>restart_path<span class="op">,</span> <span class="kw">sizeof</span><span class="op">(</span>restart_path<span class="op">),</span> <span class="st">&quot;%s/restart&quot;</span><span class="op">,</span> params<span class="op">.</span>output_dir<span class="op">);</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(!</span>restore<span class="op">(</span>file <span class="op">=</span> restart_path<span class="op">))</span> <span class="op">{</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>        <span class="co">// No restart file found - initialize from scratch</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>        fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">Initializing simulation from initial conditions...</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span></code></pre></div></div>
                 <h3 id="grid-refinement">Grid Refinement</h3>
                 <p>Refine grid around drop for accurate interface
                 resolution. Uses 5% margin beyond drop radius.</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
-                class="sourceCode c"><code class="sourceCode c"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>        <span class="dt">const</span> <span class="dt">double</span> refine_margin <span class="op">=</span> <span class="fl">1.05</span><span class="op">;</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>        <span class="dt">const</span> <span class="dt">double</span> refine_r_sq <span class="op">=</span> refine_margin <span class="op">*</span> refine_margin <span class="op">*</span></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>                                   params<span class="op">.</span>drop_radius <span class="op">*</span> params<span class="op">.</span>drop_radius<span class="op">;</span></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>        refine<span class="op">(</span>drop_distance_squared<span class="op">(</span>x<span class="op">,</span> y<span class="op">,</span> <span class="op">&amp;</span>params<span class="op">)</span> <span class="op">&lt;</span> refine_r_sq <span class="op">&amp;&amp;</span></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>               level <span class="op">&lt;</span> params<span class="op">.</span>MAXlevel<span class="op">);</span></span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>        fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;Initial grid refinement complete (MAXlevel = %d)</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> params<span class="op">.</span>MAXlevel<span class="op">);</span></span></code></pre></div></div>
+                class="sourceCode c"><code class="sourceCode c"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>        <span class="dt">const</span> <span class="dt">double</span> refine_margin <span class="op">=</span> <span class="fl">1.05</span><span class="op">;</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>        <span class="dt">const</span> <span class="dt">double</span> refine_r_sq <span class="op">=</span> refine_margin <span class="op">*</span> refine_margin <span class="op">*</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>                                   params<span class="op">.</span>drop_radius <span class="op">*</span> params<span class="op">.</span>drop_radius<span class="op">;</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>        refine<span class="op">(</span>drop_distance_squared<span class="op">(</span>x<span class="op">,</span> y<span class="op">,</span> <span class="op">&amp;</span>params<span class="op">)</span> <span class="op">&lt;</span> refine_r_sq <span class="op">&amp;&amp;</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>               level <span class="op">&lt;</span> params<span class="op">.</span>MAXlevel<span class="op">);</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>        fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;Initial grid refinement complete (MAXlevel = %d)</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> params<span class="op">.</span>MAXlevel<span class="op">);</span></span></code></pre></div></div>
                 <h3 id="drop-initialization">Drop Initialization</h3>
                 <p>Initialize VOF field and velocity field.</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
-                class="sourceCode c"><code class="sourceCode c"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>        fraction<span class="op">(</span>f<span class="op">,</span> params<span class="op">.</span>drop_radius <span class="op">*</span> params<span class="op">.</span>drop_radius <span class="op">-</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>                    drop_distance_squared<span class="op">(</span>x<span class="op">,</span> y<span class="op">,</span> <span class="op">&amp;</span>params<span class="op">));</span></span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>        foreach<span class="op">()</span> <span class="op">{</span></span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>            u<span class="op">.</span>x<span class="op">[]</span> <span class="op">=</span> params<span class="op">.</span>impact_velocity <span class="op">*</span> f<span class="op">[];</span></span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>            u<span class="op">.</span>y<span class="op">[]</span> <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>        fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;Initial drop setup complete:</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>        fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;  Drop center: (%g, %g)</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> params<span class="op">.</span>drop_x<span class="op">,</span> params<span class="op">.</span>drop_y<span class="op">);</span></span>
-<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>        fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;  Drop radius: %g</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> params<span class="op">.</span>drop_radius<span class="op">);</span></span>
-<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>        fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;  Impact velocity: %g</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> params<span class="op">.</span>impact_velocity<span class="op">);</span></span>
-<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>        fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;Initialization complete.</span><span class="sc">\n\n</span><span class="st">&quot;</span><span class="op">);</span></span>
-<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
-<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>        fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">Simulation restored from restart file.</span><span class="sc">\n\n</span><span class="st">&quot;</span><span class="op">);</span></span>
-<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></div>
+                class="sourceCode c"><code class="sourceCode c"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>        fraction<span class="op">(</span>f<span class="op">,</span> params<span class="op">.</span>drop_radius <span class="op">*</span> params<span class="op">.</span>drop_radius <span class="op">-</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>                    drop_distance_squared<span class="op">(</span>x<span class="op">,</span> y<span class="op">,</span> <span class="op">&amp;</span>params<span class="op">));</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>        foreach<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>            u<span class="op">.</span>x<span class="op">[]</span> <span class="op">=</span> params<span class="op">.</span>impact_velocity <span class="op">*</span> f<span class="op">[];</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>            u<span class="op">.</span>y<span class="op">[]</span> <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>        fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;Initial drop setup complete:</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>        fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;  Drop center: (%g, %g)</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> params<span class="op">.</span>drop_x<span class="op">,</span> params<span class="op">.</span>drop_y<span class="op">);</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>        fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;  Drop radius: %g</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> params<span class="op">.</span>drop_radius<span class="op">);</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>        fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;  Impact velocity: %g</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> params<span class="op">.</span>impact_velocity<span class="op">);</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>        fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;Initialization complete.</span><span class="sc">\n\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span></span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>        fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">Simulation restored from restart file.</span><span class="sc">\n\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></div>
                 <h2 id="event-adaptive-mesh-refinement">Event: Adaptive
                 Mesh Refinement</h2>
                 <p>Dynamically adapts the mesh based on interface
@@ -824,32 +733,32 @@
                 <p>Un-refinement near outflow boundaries prevents
                 unnecessary resolution in far-field regions.</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
-                class="sourceCode c"><code class="sourceCode c"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>event adapt<span class="op">(</span>i<span class="op">++)</span> <span class="op">{</span></span></code></pre></div></div>
+                class="sourceCode c"><code class="sourceCode c"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>event adapt<span class="op">(</span>i<span class="op">++)</span> <span class="op">{</span></span></code></pre></div></div>
                 <h3 id="curvature-calculation">Curvature
                 Calculation</h3>
                 <p>Interface curvature needed for surface tension and
                 adaptation criterion.</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
-                class="sourceCode c"><code class="sourceCode c"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>    scalar KAPPA<span class="op">[];</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    curvature<span class="op">(</span>f<span class="op">,</span> KAPPA<span class="op">);</span></span></code></pre></div></div>
+                class="sourceCode c"><code class="sourceCode c"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>    scalar KAPPA<span class="op">[];</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    curvature<span class="op">(</span>f<span class="op">,</span> KAPPA<span class="op">);</span></span></code></pre></div></div>
                 <h3 id="wavelet-based-adaptation">Wavelet-based
                 Adaptation</h3>
                 <p>Adapt mesh based on multi-scale wavelet decomposition
                 of fields.</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
-                class="sourceCode c"><code class="sourceCode c"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>    adapt_wavelet<span class="op">((</span>scalar <span class="op">*){</span>f<span class="op">,</span> KAPPA<span class="op">,</span> u<span class="op">.</span>x<span class="op">,</span> u<span class="op">.</span>y<span class="op">},</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>                  <span class="op">(</span><span class="dt">double</span><span class="op">[]){</span>params<span class="op">.</span>fErr<span class="op">,</span> params<span class="op">.</span>KErr<span class="op">,</span> params<span class="op">.</span>VelErr<span class="op">,</span> params<span class="op">.</span>VelErr<span class="op">},</span></span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>                  params<span class="op">.</span>MAXlevel<span class="op">,</span></span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>                  params<span class="op">.</span>MINlevel<span class="op">);</span></span></code></pre></div></div>
+                class="sourceCode c"><code class="sourceCode c"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>    adapt_wavelet<span class="op">((</span>scalar <span class="op">*){</span>f<span class="op">,</span> KAPPA<span class="op">,</span> u<span class="op">.</span>x<span class="op">,</span> u<span class="op">.</span>y<span class="op">},</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>                  <span class="op">(</span><span class="dt">double</span><span class="op">[]){</span>params<span class="op">.</span>fErr<span class="op">,</span> params<span class="op">.</span>KErr<span class="op">,</span> params<span class="op">.</span>VelErr<span class="op">,</span> params<span class="op">.</span>VelErr<span class="op">},</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>                  params<span class="op">.</span>MAXlevel<span class="op">,</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>                  params<span class="op">.</span>MINlevel<span class="op">);</span></span></code></pre></div></div>
                 <h3 id="outflow-region-un-refinement">Outflow Region
                 Un-refinement</h3>
                 <p>Prevent spurious refinement near outflow boundaries
                 where solution should be smooth (no drop, low
                 velocities).</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
-                class="sourceCode c"><code class="sourceCode c"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>    unrefine<span class="op">(</span>x <span class="op">&gt;</span> params<span class="op">.</span>outflow_x_frac <span class="op">*</span> params<span class="op">.</span>Ldomain <span class="op">||</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>             y <span class="op">&gt;</span> params<span class="op">.</span>outflow_y_max<span class="op">);</span></span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></div>
+                class="sourceCode c"><code class="sourceCode c"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>    unrefine<span class="op">(</span>x <span class="op">&gt;</span> params<span class="op">.</span>outflow_x_frac <span class="op">*</span> params<span class="op">.</span>Ldomain <span class="op">||</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>             y <span class="op">&gt;</span> params<span class="op">.</span>outflow_y_max<span class="op">);</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></div>
                 <h2 id="event-statistics-output">Event: Statistics
                 Output</h2>
                 <p>Calculates and logs flow statistics at regular
@@ -858,12 +767,12 @@
                 file open throughout simulation - Writing buffered
                 output - Flushing periodically</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
-                class="sourceCode c"><code class="sourceCode c"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>event statistics<span class="op">(</span>i<span class="op">++)</span> <span class="op">{</span></span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Write statistics at specified interval</span></span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>i <span class="op">%</span> params<span class="op">.</span>log_interval <span class="op">==</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>        write_statistics<span class="op">(</span>i<span class="op">,</span> t<span class="op">,</span> dt<span class="op">,</span> <span class="op">&amp;</span>params<span class="op">);</span></span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></div>
+                class="sourceCode c"><code class="sourceCode c"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>event statistics<span class="op">(</span>i<span class="op">++)</span> <span class="op">{</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Write statistics at specified interval</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>i <span class="op">%</span> params<span class="op">.</span>log_interval <span class="op">==</span> <span class="dv">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>        write_statistics<span class="op">(</span>i<span class="op">,</span> t<span class="op">,</span> dt<span class="op">,</span> <span class="op">&amp;</span>params<span class="op">);</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></div>
                 <h2 id="event-snapshot-output">Event: Snapshot
                 Output</h2>
                 <p>Saves complete simulation state for: - Restart
@@ -873,16 +782,16 @@
                 compile-time constant for Basilisk. The end time
                 (params.tmax) can be a runtime variable.</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
-                class="sourceCode c"><code class="sourceCode c"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>event snapshots<span class="op">(</span>t <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> t <span class="op">+=</span> TSNAP<span class="op">;</span> t <span class="op">&lt;=</span> params<span class="op">.</span>tmax<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    save_snapshot<span class="op">(</span>t<span class="op">,</span> <span class="op">&amp;</span>params<span class="op">);</span></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></div>
+                class="sourceCode c"><code class="sourceCode c"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>event snapshots<span class="op">(</span>t <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> t <span class="op">+=</span> TSNAP<span class="op">;</span> t <span class="op">&lt;=</span> params<span class="op">.</span>tmax<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    save_snapshot<span class="op">(</span>t<span class="op">,</span> <span class="op">&amp;</span>params<span class="op">);</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></div>
                 <h2 id="event-cleanup">Event: Cleanup</h2>
                 <p>Properly close all files at simulation end.</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
-                class="sourceCode c"><code class="sourceCode c"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>event cleanup<span class="op">(</span>t <span class="op">=</span> end<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    close_log_files<span class="op">();</span></span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">Simulation completed successfully.</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></div>
+                class="sourceCode c"><code class="sourceCode c"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>event cleanup<span class="op">(</span>t <span class="op">=</span> end<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>    close_log_files<span class="op">();</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>    fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">Simulation completed successfully.</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></div>
             </div>
         </main>
 
@@ -908,6 +817,7 @@
               </p>
             </div>
             <div class="footer-right">
+              <!-- NOTE: Social media links below are organization-specific. Customize for your organization. -->
               <a href="https://scholar.google.com/citations?user=tHb_qZoAAAAJ&hl=en" target="_blank" rel="noopener noreferrer" aria-label="Google Scholar Profile">
                 <i class="ai ai-google-scholar" style="font-size: 2.5em; color: white;"></i>
               </a>
@@ -923,7 +833,7 @@
               <a href="https://bsky.app/profile/comphy-lab.org" target="_blank" rel="noopener noreferrer" aria-label="Bluesky Profile">
                 <i class="fa-brands fa-bluesky" style="font-size: 2.5em; color: white;"></i>
               </a>
-              <a href="https://github.com/comphy-lab/Drop-Impact" class="edit-link" aria-label="Edit this page on GitHub">
+              <a href="https://github.com/comphy-lab/Drop-Impact/edit/main/simulationCases/1000/dropImpact.c" class="edit-link" aria-label="Edit this page on GitHub">
                 <i class="fa-brands fa-github"></i> Edit this page
               </a>
             </div>

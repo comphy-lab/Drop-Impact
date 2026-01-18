@@ -21,14 +21,46 @@ jobs:
         with:
           fetch-depth: 0  # Fetch all history for proper git operations
 
-      - name: Clone comphy-search repository
+      - name: Clone search database repository
         run: |
-          git clone https://github.com/comphy-lab/comphy-search.git
-          mkdir -p docs/assets/js
+          # Extract GitHub organization from GITHUB_REPOSITORY (format: org/repo)
+          GITHUB_ORG="${GITHUB_REPOSITORY%%/*}"
+          SEARCH_REPO="${SEARCH_REPO:-comphy-search}"
+          echo "Attempting to clone search database from ${GITHUB_ORG}/${SEARCH_REPO}..."
+
+          # Try to clone search repository (may not exist for all organizations)
+          if git clone "https://github.com/${GITHUB_ORG}/${SEARCH_REPO}.git"; then
+            mkdir -p docs/assets/js
+            echo "Search database repository cloned successfully"
+          else
+            echo "Warning: Could not clone ${GITHUB_ORG}/${SEARCH_REPO}"
+            echo "Search functionality may be limited. This is expected if the search repository doesn't exist."
+            exit 0
+          fi
       
       - name: Copy search database
+        if: success()
         run: |
-          cp comphy-search/search_db.json docs/assets/js/search_db.json
+          SEARCH_REPO="${SEARCH_REPO:-comphy-search}"
+
+          # Check if search repository directory exists
+          if [ ! -d "${SEARCH_REPO}" ]; then
+            echo "Warning: ${SEARCH_REPO} directory not found (clone may have failed)"
+            echo "Search functionality will be limited"
+            exit 0
+          fi
+
+          # Ensure target directory exists
+          mkdir -p docs/assets/js
+
+          if [ -f "${SEARCH_REPO}/search_db.json" ]; then
+            cp "${SEARCH_REPO}/search_db.json" docs/assets/js/search_db.json
+            echo "Search database copied successfully"
+          else
+            echo "Warning: search_db.json not found in ${SEARCH_REPO}"
+            echo "Search functionality will be limited"
+            exit 0
+          fi
       
       - name: Commit and push changes directly
         run: |

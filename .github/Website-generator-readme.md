@@ -33,7 +33,7 @@
 
 ## Overview
 
-This directory contains all the necessary files and scripts for generating and deploying the documentation of codes develped by CoMPhy Lab. The website is generated from source code files in the repository and is deployed at [comphy-lab.org/Drop-Impact](https://comphy-lab.org/Drop-Impact).
+This directory contains all the necessary files and scripts for generating and deploying the documentation of codes developed by CoMPhy Lab. The website is generated from source code files in the repository and is automatically deployed based on the repository configuration (domain from CNAME file, repository name auto-detected from git).
 
 ## Website Generation Process
 
@@ -105,8 +105,11 @@ This HTML template is used by Pandoc to generate the HTML pages:
 
 ## Deployment
 
-The website is deployed at [comphy-lab.org](https://comphy-lab.org) using GitHub Pages. The deployment process involves:
+The website is deployed using GitHub Pages. The deployment URL is automatically determined from:
+- **Domain**: Read from the `CNAME` file in the repository root
+- **Path**: Auto-detected from the repository name via git remote
 
+The deployment process involves:
 1. Generating the documentation using `build.sh`.
 2. Pushing the generated documentation to the `gh-pages` branch.
 3. GitHub Pages serves the content from the `gh-pages` branch.
@@ -134,4 +137,4 @@ If the documentation generation fails:
 - The website uses a custom template based on the Basilisk documentation.
 - The documentation generation process is designed to handle C/C++, Python, Shell, and Markdown files.
 - The website includes features like code highlighting, navigation, and search.
-- SEO optimization is included to improve search engine visibility. 
+- SEO is included to improve search engine visibility. 
