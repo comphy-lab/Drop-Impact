@@ -202,7 +202,7 @@
   </style>
 
   <!-- Critical Meta Tags -->
-  <meta name="description" content="static inline int isinsidedrop(double x, double y, const struct SimulationParams p) { 40 double rsq = dropdistancesquared(x, y, p); 41 double radiussq = p->d...">
+  <meta name="description" content="Geometry helpers and initialization macros for drop impact simulations.">
   <meta name="author" content="CoMPhy Lab">
   <meta name="robots" content="index, follow">
   <meta name="keywords" content="double, enable_custom_shapes, geometry, geometry_h, params.h">
@@ -430,77 +430,50 @@ window.baseDomain = "https://comphy-lab.org/Drop-Impact";
                     </a>
                 </div>
 
+                <h1 id="geometry.h">geometry.h</h1>
+                <p>Geometry helpers and initialization macros for drop
+                impact simulations.</p>
+                <h2 id="provides">Provides</h2>
                 <ul>
-                <li><span class="citation"
-                data-cites="file">@file</span> geometry.h</li>
-                <li><span class="citation"
-                data-cites="brief">@brief</span> Geometry and
-                initialization functions for drop impact
-                simulations</li>
-                <li><span class="citation"
-                data-cites="author">@author</span> Vatsal Sanjay
-                (vatsal.sanjay@comphy-lab.org)</li>
-                <li>CoMPhy Lab, Durham University</li>
-                <li></li>
-                <li>This header provides modular functions for:</li>
-                <li><ul>
                 <li>Drop geometry calculations</li>
-                </ul></li>
-                <li><ul>
                 <li>Initial grid refinement</li>
-                </ul></li>
-                <li><ul>
                 <li>Initial condition setup</li>
-                </ul></li>
-                <li><ul>
-                <li>Extensible for complex geometries</li>
-                </ul></li>
+                <li>Hooks for custom shapes</li>
                 </ul>
+                <h2 id="author">Author</h2>
+                <p>Vatsal Sanjay (vatsal.sanjay@comphy-lab.org) CoMPhy
+                Lab, Durham University</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
                 class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#ifndef GEOMETRY_H</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#define GEOMETRY_H</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><a href="../src-local/params.h.html" title="Link to local documentation for params.h"><span class="im">"params.h"</span></a><span class="pp"></span></span></code></pre></div></div>
+                <h3
+                id="drop_distance_squared">drop_distance_squared()</h3>
+                <p>Squared distance from the drop center in axisymmetric
+                coordinates.</p>
+                <h4 id="parameters">Parameters</h4>
                 <ul>
-                <li><span class="citation"
-                data-cites="brief">@brief</span> Calculate squared
-                distance from drop center</li>
-                <li><span class="citation"
-                data-cites="param">@param</span> x Radial
-                coordinate</li>
-                <li><span class="citation"
-                data-cites="param">@param</span> y Axial coordinate</li>
-                <li><span class="citation"
-                data-cites="param">@param</span> p Parameter structure
-                containing drop position</li>
-                <li><span class="citation"
-                data-cites="return">@return</span> Squared distance from
-                drop center</li>
-                <li></li>
-                <li>For axisymmetric coordinates, distance from drop
-                center at (drop_x, drop_y)</li>
-                <li></li>
-                <li>Implemented as macro for compatibility with
-                Basilisk’s qcc preprocessor.</li>
+                <li><code>x</code>: radial coordinate</li>
+                <li><code>y</code>: axial coordinate</li>
+                <li><code>p</code>: parameter structure containing
+                <code>drop_x</code>, <code>drop_y</code></li>
                 </ul>
+                <h4 id="returns">Returns</h4>
+                <p>Squared distance from the drop center.</p>
+                <p>Implemented as a macro for compatibility with
+                Basilisk’s <code>qcc</code> preprocessor.</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
                 class="sourceCode c"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define drop_distance_squared(x, y, p) \</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">((</span>x <span class="op">-</span> <span class="op">(</span>p<span class="op">)-&gt;</span>drop_x<span class="op">)</span> <span class="op">*</span> <span class="op">(</span>x <span class="op">-</span> <span class="op">(</span>p<span class="op">)-&gt;</span>drop_x<span class="op">)</span> <span class="op">+</span> <span class="op">(</span>y <span class="op">-</span> <span class="op">(</span>p<span class="op">)-&gt;</span>drop_y<span class="op">)</span> <span class="op">*</span> <span class="op">(</span>y <span class="op">-</span> <span class="op">(</span>p<span class="op">)-&gt;</span>drop_y<span class="op">))</span></span></code></pre></div></div>
+                <h3 id="is_inside_drop">is_inside_drop()</h3>
+                <p>Return 1 if a point is inside the drop, 0
+                otherwise.</p>
+                <h4 id="parameters-1">Parameters</h4>
                 <ul>
-                <li><span class="citation"
-                data-cites="brief">@brief</span> Check if point is
-                inside drop</li>
-                <li><span class="citation"
-                data-cites="param">@param</span> x Radial
-                coordinate</li>
-                <li><span class="citation"
-                data-cites="param">@param</span> y Axial coordinate</li>
-                <li><span class="citation"
-                data-cites="param">@param</span> p Parameter
-                structure</li>
-                <li><span class="citation"
-                data-cites="return">@return</span> 1 if inside drop, 0
-                otherwise</li>
+                <li><code>x</code>: radial coordinate</li>
+                <li><code>y</code>: axial coordinate</li>
+                <li><code>p</code>: parameter structure</li>
                 </ul>
                 <div class="code-block-container"><div class="code-block-container"><pre
                 class="sourceCode c"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="kw">inline</span> <span class="dt">int</span> is_inside_drop<span class="op">(</span><span class="dt">double</span> x<span class="op">,</span> <span class="dt">double</span> y<span class="op">,</span> <span class="dt">const</span> <span class="kw">struct</span> SimulationParams <span class="op">*</span>p<span class="op">)</span> <span class="op">{</span></span>
@@ -508,109 +481,67 @@ window.baseDomain = "https://comphy-lab.org/Drop-Impact";
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">double</span> radius_sq <span class="op">=</span> p<span class="op">-&gt;</span>drop_radius <span class="op">*</span> p<span class="op">-&gt;</span>drop_radius<span class="op">;</span></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="op">(</span>r_sq <span class="op">&lt;</span> radius_sq<span class="op">)</span> <span class="op">?</span> <span class="dv">1</span> <span class="op">:</span> <span class="dv">0</span><span class="op">;</span></span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></div>
-                <ul>
-                <li><p>Macros for initialization (must be macros to work
-                with Basilisk grid context)</p></li>
-                <li></li>
-                <li><p>These are defined as macros rather than functions
-                because they use Basilisk’s</p></li>
-                <li><p>grid traversal macros (refine, fraction, foreach)
-                which must be expanded</p></li>
-                <li><p>in the correct context.</p></li>
-                <li><p><span class="citation"
-                data-cites="brief">@brief</span> Refine initial grid
-                around drop</p></li>
-                <li></li>
-                <li><p>Creates adaptive initial grid with fine
-                resolution near drop interface.</p></li>
-                <li><p>Refinement region extends slightly beyond drop
-                radius for smoother interface.</p></li>
-                <li></li>
-                <li><p>Usage: REFINE_INITIAL_GRID(¶ms);</p></li>
-                </ul>
+                <h2 id="initialization-macros">Initialization
+                Macros</h2>
+                <p>These are macros rather than functions because they
+                use Basilisk grid traversal constructs
+                (<code>refine</code>, <code>fraction</code>,
+                <code>foreach</code>) that must be expanded in the
+                calling context.</p>
+                <h3 id="refine_initial_grid">REFINE_INITIAL_GRID()</h3>
+                <p>Refine the initial grid around the drop interface.
+                The refinement region extends slightly beyond the drop
+                radius for a smoother interface.</p>
+                <h4 id="usage">Usage</h4>
+                <div class="code-block-container"><pre><code>REFINE_INITIAL_GRID(params);</code></pre></div>
                 <div class="code-block-container"><div class="code-block-container"><pre
-                class="sourceCode c"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define REFINE_INITIAL_GRID(p) do { \</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">const</span> <span class="dt">double</span> _margin <span class="op">=</span> <span class="fl">1.05</span><span class="op">;</span> \</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">const</span> <span class="dt">double</span> _refine_r_sq <span class="op">=</span> _margin <span class="op">*</span> _margin <span class="op">*</span> <span class="op">(</span>p<span class="op">)-&gt;</span>drop_radius <span class="op">*</span> <span class="op">(</span>p<span class="op">)-&gt;</span>drop_radius<span class="op">;</span> \</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    refine<span class="op">(</span>drop_distance_squared<span class="op">(</span>x<span class="op">,</span> y<span class="op">,</span> <span class="op">(</span>p<span class="op">))</span> <span class="op">&lt;</span> _refine_r_sq <span class="op">&amp;&amp;</span> level <span class="op">&lt;</span> <span class="op">(</span>p<span class="op">)-&gt;</span>MAXlevel<span class="op">);</span> \</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;Initial grid refinement complete (MAXlevel = %d)</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> <span class="op">(</span>p<span class="op">)-&gt;</span>MAXlevel<span class="op">);</span> \</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> <span class="cf">while</span><span class="op">(</span><span class="dv">0</span><span class="op">)</span></span></code></pre></div></div>
-                <ul>
-                <li><span class="citation"
-                data-cites="brief">@brief</span> Setup initial drop
-                shape and velocity field</li>
-                <li></li>
-                <li>Initializes:</li>
-                <li><ul>
-                <li>VOF field f (1 inside drop, 0 outside)</li>
-                </ul></li>
-                <li><ul>
-                <li>Velocity field (impact velocity inside drop, zero
-                outside)</li>
-                </ul></li>
-                <li></li>
-                <li>Extensible for:</li>
-                <li><ul>
-                <li>Different drop shapes (ellipsoids, etc.)</li>
-                </ul></li>
-                <li><ul>
-                <li>Variable velocity profiles</li>
-                </ul></li>
-                <li><ul>
-                <li>Multiple drops</li>
-                </ul></li>
-                <li></li>
-                <li>Usage: SETUP_INITIAL_DROP(¶ms);</li>
-                </ul>
+                class="sourceCode c"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define REFINE_INITIAL_GRID(p) do { \</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">const</span> <span class="dt">double</span> _margin <span class="op">=</span> <span class="fl">1.05</span><span class="op">;</span> \</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="dt">const</span> <span class="dt">double</span> _refine_r_sq <span class="op">=</span> _margin <span class="op">*</span> _margin <span class="op">*</span> <span class="op">(</span>p<span class="op">)-&gt;</span>drop_radius <span class="op">*</span> <span class="op">(</span>p<span class="op">)-&gt;</span>drop_radius<span class="op">;</span> \</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    refine<span class="op">(</span>drop_distance_squared<span class="op">(</span>x<span class="op">,</span> y<span class="op">,</span> <span class="op">(</span>p<span class="op">))</span> <span class="op">&lt;</span> _refine_r_sq <span class="op">&amp;&amp;</span> level <span class="op">&lt;</span> <span class="op">(</span>p<span class="op">)-&gt;</span>MAXlevel<span class="op">);</span> \</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;Initial grid refinement complete (MAXlevel = %d)</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> <span class="op">(</span>p<span class="op">)-&gt;</span>MAXlevel<span class="op">);</span> \</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> <span class="cf">while</span><span class="op">(</span><span class="dv">0</span><span class="op">)</span></span></code></pre></div></div>
+                <h3 id="setup_initial_drop">SETUP_INITIAL_DROP()</h3>
+                <p>Initialize the VOF field and velocity field for the
+                drop: - <code>f = 1</code> inside the drop,
+                <code>0</code> outside - <code>u.x</code> set to the
+                impact velocity inside the drop - <code>u.y</code> set
+                to zero everywhere</p>
+                <h4 id="usage-1">Usage</h4>
+                <div class="code-block-container"><pre><code>SETUP_INITIAL_DROP(params);</code></pre></div>
                 <div class="code-block-container"><div class="code-block-container"><pre
-                class="sourceCode c"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define SETUP_INITIAL_DROP(p) do { \</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    fraction<span class="op">(</span>f<span class="op">,</span> <span class="op">(</span>p<span class="op">)-&gt;</span>drop_radius <span class="op">*</span> <span class="op">(</span>p<span class="op">)-&gt;</span>drop_radius <span class="op">-</span> drop_distance_squared<span class="op">(</span>x<span class="op">,</span> y<span class="op">,</span> <span class="op">(</span>p<span class="op">)));</span> \</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    foreach<span class="op">()</span> <span class="op">{</span> \</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>        u<span class="op">.</span>x<span class="op">[]</span> <span class="op">=</span> <span class="op">(</span>p<span class="op">)-&gt;</span>impact_velocity <span class="op">*</span> f<span class="op">[];</span> \</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>        u<span class="op">.</span>y<span class="op">[]</span> <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span> \</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span> \</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;Initial drop setup complete:</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span> \</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;  Drop center: (%g, %g)</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> <span class="op">(</span>p<span class="op">)-&gt;</span>drop_x<span class="op">,</span> <span class="op">(</span>p<span class="op">)-&gt;</span>drop_y<span class="op">);</span> \</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;  Drop radius: %g</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> <span class="op">(</span>p<span class="op">)-&gt;</span>drop_radius<span class="op">);</span> \</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;  Impact velocity: %g</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> <span class="op">(</span>p<span class="op">)-&gt;</span>impact_velocity<span class="op">);</span> \</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> <span class="cf">while</span><span class="op">(</span><span class="dv">0</span><span class="op">)</span></span></code></pre></div></div>
-                <ul>
-                <li><span class="citation"
-                data-cites="brief">@brief</span> Alternative: Setup drop
-                with custom shape function</li>
-                <li><span class="citation"
-                data-cites="param">@param</span> shape_func Function
-                pointer defining drop shape</li>
-                <li><span class="citation"
-                data-cites="param">@param</span> p Parameter
-                structure</li>
-                <li></li>
-                <li>Example for future extensibility:</li>
-                <li><ul>
-                <li>Ellipsoidal drops</li>
-                </ul></li>
-                <li><ul>
-                <li>Deformed drops</li>
-                </ul></li>
-                <li><ul>
-                <li>Multiple drops</li>
-                </ul></li>
-                </ul>
+                class="sourceCode c"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#define SETUP_INITIAL_DROP(p) do { \</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    fraction<span class="op">(</span>f<span class="op">,</span> <span class="op">(</span>p<span class="op">)-&gt;</span>drop_radius <span class="op">*</span> <span class="op">(</span>p<span class="op">)-&gt;</span>drop_radius <span class="op">-</span> drop_distance_squared<span class="op">(</span>x<span class="op">,</span> y<span class="op">,</span> <span class="op">(</span>p<span class="op">)));</span> \</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    foreach<span class="op">()</span> <span class="op">{</span> \</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>        u<span class="op">.</span>x<span class="op">[]</span> <span class="op">=</span> <span class="op">(</span>p<span class="op">)-&gt;</span>impact_velocity <span class="op">*</span> f<span class="op">[];</span> \</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>        u<span class="op">.</span>y<span class="op">[]</span> <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span> \</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span> \</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;Initial drop setup complete:</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span> \</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;  Drop center: (%g, %g)</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> <span class="op">(</span>p<span class="op">)-&gt;</span>drop_x<span class="op">,</span> <span class="op">(</span>p<span class="op">)-&gt;</span>drop_y<span class="op">);</span> \</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;  Drop radius: %g</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> <span class="op">(</span>p<span class="op">)-&gt;</span>drop_radius<span class="op">);</span> \</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;  Impact velocity: %g</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> <span class="op">(</span>p<span class="op">)-&gt;</span>impact_velocity<span class="op">);</span> \</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> <span class="cf">while</span><span class="op">(</span><span class="dv">0</span><span class="op">)</span></span></code></pre></div></div>
+                <h3 id="custom-shapes-optional">Custom Shapes
+                (optional)</h3>
+                <p>Enable <code>ENABLE_CUSTOM_SHAPES</code> to supply a
+                custom shape function for the drop. Potential extensions
+                include ellipsoids, deformed drops, or multiple
+                drops.</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
-                class="sourceCode c"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#ifdef ENABLE_CUSTOM_SHAPES</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="dt">double</span> <span class="op">(*</span>ShapeFunction<span class="op">)(</span><span class="dt">double</span> x<span class="op">,</span> <span class="dt">double</span> y<span class="op">,</span> <span class="dt">const</span> <span class="kw">struct</span> SimulationParams <span class="op">*</span>p<span class="op">);</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="kw">inline</span> <span class="dt">void</span> setup_custom_drop<span class="op">(</span>ShapeFunction shape_func<span class="op">,</span> <span class="dt">const</span> <span class="kw">struct</span> SimulationParams <span class="op">*</span>p<span class="op">)</span> <span class="op">{</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    fraction<span class="op">(</span>f<span class="op">,</span> shape_func<span class="op">(</span>x<span class="op">,</span> y<span class="op">,</span> p<span class="op">));</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    foreach<span class="op">()</span> <span class="op">{</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>        u<span class="op">.</span>x<span class="op">[]</span> <span class="op">=</span> p<span class="op">-&gt;</span>impact_velocity <span class="op">*</span> f<span class="op">[];</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>        u<span class="op">.</span>y<span class="op">[]</span> <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="pp">#endif</span></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="pp">#endif </span><span class="co">// GEOMETRY_H</span></span></code></pre></div></div>
+                class="sourceCode c"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#ifdef ENABLE_CUSTOM_SHAPES</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">typedef</span> <span class="dt">double</span> <span class="op">(*</span>ShapeFunction<span class="op">)(</span><span class="dt">double</span> x<span class="op">,</span> <span class="dt">double</span> y<span class="op">,</span> <span class="dt">const</span> <span class="kw">struct</span> SimulationParams <span class="op">*</span>p<span class="op">);</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="kw">inline</span> <span class="dt">void</span> setup_custom_drop<span class="op">(</span>ShapeFunction shape_func<span class="op">,</span> <span class="dt">const</span> <span class="kw">struct</span> SimulationParams <span class="op">*</span>p<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    fraction<span class="op">(</span>f<span class="op">,</span> shape_func<span class="op">(</span>x<span class="op">,</span> y<span class="op">,</span> p<span class="op">));</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    foreach<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>        u<span class="op">.</span>x<span class="op">[]</span> <span class="op">=</span> p<span class="op">-&gt;</span>impact_velocity <span class="op">*</span> f<span class="op">[];</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>        u<span class="op">.</span>y<span class="op">[]</span> <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="pp">#endif</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="pp">#endif </span><span class="co">// GEOMETRY_H</span></span></code></pre></div></div>
             </div>
         </main>
 

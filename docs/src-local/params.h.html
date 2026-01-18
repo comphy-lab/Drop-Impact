@@ -202,7 +202,7 @@
   </style>
 
   <!-- Critical Meta Tags -->
-  <meta name="description" content="struct SimulationParams { 30 // Case identification 31 int CaseNo; ~~~ < Case number for folder naming (4-digit: 1000-9999) ~~~c // Physical parameters (dime...">
+  <meta name="description" content="Parameter management for drop impact simulations. Defines the configuration structure plus helpers to parse, validate, scale, and print parameters.">
   <meta name="author" content="CoMPhy Lab">
   <meta name="robots" content="index, follow">
   <meta name="keywords" content="ctype.h, errno.h, params, params_h, sys/stat.h">
@@ -430,21 +430,13 @@ window.baseDomain = "https://comphy-lab.org/Drop-Impact";
                     </a>
                 </div>
 
-                <ul>
-                <li><span class="citation"
-                data-cites="file">@file</span> params.h</li>
-                <li><span class="citation"
-                data-cites="brief">@brief</span> Parameter management
-                for drop impact simulations</li>
-                <li><span class="citation"
-                data-cites="author">@author</span> Vatsal Sanjay
-                (vatsal.sanjay@comphy-lab.org)</li>
-                <li>CoMPhy Lab, Durham University</li>
-                <li></li>
-                <li>This header defines configuration structures and
-                parameter handling functions</li>
-                <li>for modular, maintainable simulations.</li>
-                </ul>
+                <h1 id="params.h">params.h</h1>
+                <p>Parameter management for drop impact simulations.</p>
+                <p>Defines the configuration structure plus helpers to
+                parse, validate, scale, and print parameters.</p>
+                <h2 id="author">Author</h2>
+                <p>Vatsal Sanjay (vatsal.sanjay@comphy-lab.org) CoMPhy
+                Lab, Durham University</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
                 class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#ifndef PARAMS_H</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#define PARAMS_H</span></span>
@@ -454,28 +446,11 @@ window.baseDomain = "https://comphy-lab.org/Drop-Impact";
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;ctype.h&gt;</span><span class="pp">      </span><span class="co">// For isspace()</span></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;sys/stat.h&gt;</span><span class="pp">   </span><span class="co">// For mkdir()</span></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;errno.h&gt;</span><span class="pp">      </span><span class="co">// For errno</span></span></code></pre></div></div>
-                <ul>
-                <li><span class="citation"
-                data-cites="struct">@struct</span> SimulationParams</li>
-                <li><span class="citation"
-                data-cites="brief">@brief</span> Complete simulation
-                configuration</li>
-                <li></li>
-                <li>Consolidates all simulation parameters in one
-                structure for:</li>
-                <li><ul>
-                <li>Easy parameter passing</li>
-                </ul></li>
-                <li><ul>
-                <li>Configuration file I/O</li>
-                </ul></li>
-                <li><ul>
-                <li>Parameter validation</li>
-                </ul></li>
-                <li><ul>
-                <li>Self-documenting code</li>
-                </ul></li>
-                </ul>
+                <h2 id="simulationparams">SimulationParams</h2>
+                <p>Consolidates all simulation parameters in one
+                structure for: - Easy parameter passing - Configuration
+                file I/O - Parameter validation - Self-documenting
+                code</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
                 class="sourceCode c"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> SimulationParams <span class="op">{</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Case identification</span></span>
@@ -555,15 +530,10 @@ window.baseDomain = "https://comphy-lab.org/Drop-Impact";
                 <p>&lt; Unrefine if y &gt; this value</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
                 class="sourceCode c"><code class="sourceCode c"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="op">};</span></span></code></pre></div></div>
-                <ul>
-                <li><span class="citation"
-                data-cites="brief">@brief</span> Default parameter
-                values</li>
-                <li></li>
-                <li>Provides sensible defaults for typical drop impact
-                simulations</li>
-                <li>(water drop impacting solid surface in air)</li>
-                </ul>
+                <h3 id="set_default_params">set_default_params()</h3>
+                <p>Populate the parameter structure with default values
+                representative of a water drop impacting a solid surface
+                in air.</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
                 class="sourceCode c"><code class="sourceCode c"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="kw">inline</span> <span class="dt">void</span> set_default_params<span class="op">(</span><span class="kw">struct</span> SimulationParams <span class="op">*</span>p<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Case identification</span></span>
@@ -602,22 +572,19 @@ window.baseDomain = "https://comphy-lab.org/Drop-Impact";
 <span id="cb25-35"><a href="#cb25-35" aria-hidden="true" tabindex="-1"></a>    p<span class="op">-&gt;</span>outflow_x_frac <span class="op">=</span> <span class="fl">0.95</span><span class="op">;</span></span>
 <span id="cb25-36"><a href="#cb25-36" aria-hidden="true" tabindex="-1"></a>    p<span class="op">-&gt;</span>outflow_y_max <span class="op">=</span> <span class="fl">4.0</span><span class="op">;</span></span>
 <span id="cb25-37"><a href="#cb25-37" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></div>
+                <h3
+                id="parse_params_from_file">parse_params_from_file()</h3>
+                <p>Parse parameters from a key=value configuration
+                file.</p>
+                <h4 id="parameters">Parameters</h4>
                 <ul>
-                <li><span class="citation"
-                data-cites="brief">@brief</span> Parse parameters from
-                configuration file</li>
-                <li><span class="citation"
-                data-cites="param">@param</span> filename Path to
-                parameter file (key=value format)</li>
-                <li><span class="citation"
-                data-cites="param">@param</span> p Pointer to parameter
-                structure to populate</li>
-                <li><span class="citation"
-                data-cites="return">@return</span> 0 on success, -1 on
-                error</li>
-                <li></li>
-                <li>File format: key=value (one per line, # for
-                comments)</li>
+                <li><code>filename</code>: path to parameter file</li>
+                <li><code>p</code>: parameter structure to populate</li>
+                </ul>
+                <h4 id="returns">Returns</h4>
+                <ul>
+                <li><code>0</code> on success</li>
+                <li><code>-1</code> on error</li>
                 </ul>
                 <div class="code-block-container"><div class="code-block-container"><pre
                 class="sourceCode c"><code class="sourceCode c"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="kw">inline</span> <span class="dt">int</span> parse_params_from_file<span class="op">(</span><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>filename<span class="op">,</span> <span class="kw">struct</span> SimulationParams <span class="op">*</span>p<span class="op">)</span> <span class="op">{</span></span>
@@ -693,26 +660,22 @@ window.baseDomain = "https://comphy-lab.org/Drop-Impact";
 <span id="cb26-71"><a href="#cb26-71" aria-hidden="true" tabindex="-1"></a>    fclose<span class="op">(</span>fp<span class="op">);</span></span>
 <span id="cb26-72"><a href="#cb26-72" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
 <span id="cb26-73"><a href="#cb26-73" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></div>
+                <h3
+                id="parse_params_from_cli">parse_params_from_cli()</h3>
+                <p>Parse parameters from legacy CLI arguments.</p>
+                <h4 id="parameters-1">Parameters</h4>
                 <ul>
-                <li><span class="citation"
-                data-cites="brief">@brief</span> Parse parameters from
-                command line arguments (legacy mode)</li>
-                <li><span class="citation"
-                data-cites="param">@param</span> argc Argument
-                count</li>
-                <li><span class="citation"
-                data-cites="param">@param</span> argv Argument
-                values</li>
-                <li><span class="citation"
-                data-cites="param">@param</span> p Pointer to parameter
-                structure to populate</li>
-                <li><span class="citation"
-                data-cites="return">@return</span> 0 on success, -1 on
-                error</li>
-                <li></li>
-                <li>Legacy format: MAXlevel tmax We Ohd Ohs Ldomain
-                [drop_x] [drop_y] [impact_vel]</li>
+                <li><code>argc</code>: argument count</li>
+                <li><code>argv</code>: argument values</li>
+                <li><code>p</code>: parameter structure to populate</li>
                 </ul>
+                <h4 id="returns-1">Returns</h4>
+                <ul>
+                <li><code>0</code> on success</li>
+                <li><code>-1</code> on error</li>
+                </ul>
+                <p>Legacy format:
+                <code>MAXlevel tmax We Ohd Ohs Ldomain [drop_x] [drop_y] [impact_vel]</code></p>
                 <div class="code-block-container"><div class="code-block-container"><pre
                 class="sourceCode c"><code class="sourceCode c"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="kw">inline</span> <span class="dt">int</span> parse_params_from_cli<span class="op">(</span><span class="dt">int</span> argc<span class="op">,</span> <span class="dt">char</span> <span class="op">**</span>argv<span class="op">,</span> <span class="kw">struct</span> SimulationParams <span class="op">*</span>p<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Start with defaults</span></span>
@@ -740,18 +703,16 @@ window.baseDomain = "https://comphy-lab.org/Drop-Impact";
 <span id="cb27-24"><a href="#cb27-24" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb27-25"><a href="#cb27-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
 <span id="cb27-26"><a href="#cb27-26" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></div>
+                <h3 id="validate_params">validate_params()</h3>
+                <p>Check physical constraints and consistency.</p>
+                <h4 id="parameters-2">Parameters</h4>
                 <ul>
-                <li><span class="citation"
-                data-cites="brief">@brief</span> Validate parameter
-                values</li>
-                <li><span class="citation"
-                data-cites="param">@param</span> p Pointer to parameter
-                structure</li>
-                <li><span class="citation"
-                data-cites="return">@return</span> 1 if valid, 0 if
-                invalid</li>
-                <li></li>
-                <li>Checks physical constraints and consistency</li>
+                <li><code>p</code>: parameter structure</li>
+                </ul>
+                <h4 id="returns-2">Returns</h4>
+                <ul>
+                <li><code>1</code> if valid</li>
+                <li><code>0</code> if invalid</li>
                 </ul>
                 <div class="code-block-container"><div class="code-block-container"><pre
                 class="sourceCode c"><code class="sourceCode c"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="kw">inline</span> <span class="dt">int</span> validate_params<span class="op">(</span><span class="dt">const</span> <span class="kw">struct</span> SimulationParams <span class="op">*</span>p<span class="op">)</span> <span class="op">{</span></span>
@@ -822,22 +783,15 @@ window.baseDomain = "https://comphy-lab.org/Drop-Impact";
 <span id="cb28-66"><a href="#cb28-66" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb28-67"><a href="#cb28-67" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> valid<span class="op">;</span></span>
 <span id="cb28-68"><a href="#cb28-68" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></div>
-                <ul>
-                <li><span class="citation"
-                data-cites="brief">@brief</span> Apply physics-based
-                scaling to parameters</li>
-                <li></li>
-                <li>Scales tmax by sqrt(We) to convert from convective
-                time units</li>
-                <li>(user-specified) to simulation time units.</li>
-                <li></li>
-                <li>Physical basis: The convective/inertial timescale is
-                τ_c = R/U.</li>
-                <li>With We = ρU²R/σ, we have τ_c ~ sqrt(We) in the
-                normalized units.</li>
-                <li>User specifies time in units of τ_c; this converts
-                to simulation time.</li>
-                </ul>
+                <h3
+                id="apply_physics_scaling">apply_physics_scaling()</h3>
+                <p>Scale <code>tmax</code> by <code>sqrt(We)</code> to
+                convert from convective time units to the simulation
+                time units.</p>
+                <p>Physical basis: the convective timescale is
+                <code>tau_c = R/U</code>, which corresponds to
+                <code>sqrt(We)</code> in the normalized units used
+                here.</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
                 class="sourceCode c"><code class="sourceCode c"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="kw">inline</span> <span class="dt">void</span> apply_physics_scaling<span class="op">(</span><span class="kw">struct</span> SimulationParams <span class="op">*</span>p<span class="op">)</span> <span class="op">{</span></span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">double</span> tmax_input <span class="op">=</span> p<span class="op">-&gt;</span>tmax<span class="op">;</span></span>
@@ -846,19 +800,14 @@ window.baseDomain = "https://comphy-lab.org/Drop-Impact";
 <span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>    fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;INFO: tmax scaled: %.4g * sqrt(We=%.3g) = %.4g</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span></span>
 <span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>            tmax_input<span class="op">,</span> p<span class="op">-&gt;</span>We<span class="op">,</span> p<span class="op">-&gt;</span>tmax<span class="op">);</span></span>
 <span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></div>
+                <h3 id="print_params">print_params()</h3>
+                <p>Print a formatted parameter summary for logging and
+                verification.</p>
+                <h4 id="parameters-3">Parameters</h4>
                 <ul>
-                <li><span class="citation"
-                data-cites="brief">@brief</span> Print parameter
-                summary</li>
-                <li><span class="citation"
-                data-cites="param">@param</span> p Pointer to parameter
-                structure</li>
-                <li><span class="citation"
-                data-cites="param">@param</span> fp File pointer for
-                output (e.g., stderr or log file)</li>
-                <li></li>
-                <li>Prints formatted parameter summary for logging and
-                verification</li>
+                <li><code>p</code>: parameter structure</li>
+                <li><code>fp</code>: file pointer for output (stderr or
+                log file)</li>
                 </ul>
                 <div class="code-block-container"><div class="code-block-container"><pre
                 class="sourceCode c"><code class="sourceCode c"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="kw">inline</span> <span class="dt">void</span> print_params<span class="op">(</span><span class="dt">const</span> <span class="kw">struct</span> SimulationParams <span class="op">*</span>p<span class="op">,</span> <span class="dt">FILE</span> <span class="op">*</span>fp<span class="op">)</span> <span class="op">{</span></span>
@@ -904,16 +853,17 @@ window.baseDomain = "https://comphy-lab.org/Drop-Impact";
 <span id="cb30-41"><a href="#cb30-41" aria-hidden="true" tabindex="-1"></a>    fprintf<span class="op">(</span>fp<span class="op">,</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
 <span id="cb30-42"><a href="#cb30-42" aria-hidden="true" tabindex="-1"></a>    fflush<span class="op">(</span>fp<span class="op">);</span></span>
 <span id="cb30-43"><a href="#cb30-43" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></div>
+                <h3
+                id="create_output_directory">create_output_directory()</h3>
+                <p>Create an output directory if it does not exist.</p>
+                <h4 id="parameters-4">Parameters</h4>
                 <ul>
-                <li><span class="citation"
-                data-cites="brief">@brief</span> Create output directory
-                if it doesn’t exist</li>
-                <li><span class="citation"
-                data-cites="param">@param</span> dirname Directory
-                path</li>
-                <li><span class="citation"
-                data-cites="return">@return</span> 0 on success, -1 on
-                error</li>
+                <li><code>dirname</code>: directory path</li>
+                </ul>
+                <h4 id="returns-3">Returns</h4>
+                <ul>
+                <li><code>0</code> on success</li>
+                <li><code>-1</code> on error</li>
                 </ul>
                 <div class="code-block-container"><div class="code-block-container"><pre
                 class="sourceCode c"><code class="sourceCode c"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="kw">inline</span> <span class="dt">int</span> create_output_directory<span class="op">(</span><span class="dt">const</span> <span class="dt">char</span> <span class="op">*</span>dirname<span class="op">)</span> <span class="op">{</span></span>

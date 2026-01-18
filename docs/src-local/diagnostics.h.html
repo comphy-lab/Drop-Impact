@@ -202,7 +202,7 @@
   </style>
 
   <!-- Critical Meta Tags -->
-  <meta name="description" content="static FILE logfp = NULL; 20 21 ~~~ @brief Open log files and write headers @param p Parameter structure @return 0 on success, -1 on error Opens log file onc...">
+  <meta name="description" content="Statistics and output helpers for drop impact simulations.">
   <meta name="author" content="CoMPhy Lab">
   <meta name="robots" content="index, follow">
   <meta name="keywords" content="diagnostics, diagnostics_h, enable_advanced_diagnostics, params.h">
@@ -430,31 +430,19 @@ window.baseDomain = "https://comphy-lab.org/Drop-Impact";
                     </a>
                 </div>
 
+                <h1 id="diagnostics.h">diagnostics.h</h1>
+                <p>Statistics and output helpers for drop impact
+                simulations.</p>
+                <h2 id="provides">Provides</h2>
                 <ul>
-                <li><span class="citation"
-                data-cites="file">@file</span> diagnostics.h</li>
-                <li><span class="citation"
-                data-cites="brief">@brief</span> Statistics and output
-                functions for drop impact simulations</li>
-                <li><span class="citation"
-                data-cites="author">@author</span> Vatsal Sanjay
-                (vatsal.sanjay@comphy-lab.org)</li>
-                <li>CoMPhy Lab, Durham University</li>
-                <li></li>
-                <li>This header provides modular output handling:</li>
-                <li><ul>
-                <li>File handle management (no repeated open/close)</li>
-                </ul></li>
-                <li><ul>
+                <li>File handle management (open once, write many)</li>
                 <li>Statistics calculations (kinetic energy, etc.)</li>
-                </ul></li>
-                <li><ul>
                 <li>Snapshot management</li>
-                </ul></li>
-                <li><ul>
-                <li>Extensible for additional diagnostics</li>
-                </ul></li>
+                <li>Extension hooks for additional diagnostics</li>
                 </ul>
+                <h2 id="author">Author</h2>
+                <p>Vatsal Sanjay (vatsal.sanjay@comphy-lab.org) CoMPhy
+                Lab, Durham University</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
                 class="sourceCode c"><code class="sourceCode c"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#ifndef DIAGNOSTICS_H</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#define DIAGNOSTICS_H</span></span>
@@ -463,21 +451,18 @@ window.baseDomain = "https://comphy-lab.org/Drop-Impact";
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">// Global file handles (kept open for performance)</span></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="dt">FILE</span> <span class="op">*</span>log_fp <span class="op">=</span> NULL<span class="op">;</span></span></code></pre></div></div>
+                <h3 id="open_log_files">open_log_files()</h3>
+                <p>Open log files and write headers. The log file stays
+                open for the entire simulation to avoid repeated
+                open/close overhead.</p>
+                <h4 id="parameters">Parameters</h4>
                 <ul>
-                <li><span class="citation"
-                data-cites="brief">@brief</span> Open log files and
-                write headers</li>
-                <li><span class="citation"
-                data-cites="param">@param</span> p Parameter
-                structure</li>
-                <li><span class="citation"
-                data-cites="return">@return</span> 0 on success, -1 on
-                error</li>
-                <li></li>
-                <li>Opens log file once and keeps handle open for entire
-                simulation.</li>
-                <li>This fixes the performance bug in original
-                code.</li>
+                <li><code>p</code>: parameter structure</li>
+                </ul>
+                <h4 id="returns">Returns</h4>
+                <ul>
+                <li><code>0</code> on success</li>
+                <li><code>-1</code> on error</li>
                 </ul>
                 <div class="code-block-container"><div class="code-block-container"><pre
                 class="sourceCode c"><code class="sourceCode c"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="kw">inline</span> <span class="dt">int</span> open_log_files<span class="op">(</span><span class="dt">const</span> <span class="kw">struct</span> SimulationParams <span class="op">*</span>p<span class="op">)</span> <span class="op">{</span></span>
@@ -512,17 +497,12 @@ window.baseDomain = "https://comphy-lab.org/Drop-Impact";
 <span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>    fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;Log file opened: %s</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> log_path<span class="op">);</span></span>
 <span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="dv">0</span><span class="op">;</span></span>
 <span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></div>
-                <ul>
-                <li><span class="citation"
-                data-cites="brief">@brief</span> Calculate total kinetic
-                energy in the system</li>
-                <li><span class="citation"
-                data-cites="return">@return</span> Total kinetic energy
-                (integrated over domain)</li>
-                <li></li>
-                <li>For axisymmetric flow: KE = ∫ 2πy *
-                0.5<em>ρ</em>(u_x² + u_y²) dV</li>
-                </ul>
+                <h3
+                id="calculate_kinetic_energy">calculate_kinetic_energy()</h3>
+                <p>Return total kinetic energy integrated over the
+                domain.</p>
+                <p>For axisymmetric flow:
+                <code>KE = ∫ 2πy * 0.5 ρ (u_x^2 + u_y^2) dV</code></p>
                 <div class="code-block-container"><div class="code-block-container"><pre
                 class="sourceCode c"><code class="sourceCode c"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="kw">inline</span> <span class="dt">double</span> calculate_kinetic_energy<span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">double</span> ke <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
@@ -537,25 +517,16 @@ window.baseDomain = "https://comphy-lab.org/Drop-Impact";
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> ke<span class="op">;</span></span>
 <span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></div>
+                <h3 id="write_statistics">write_statistics()</h3>
+                <p>Write iteration, timestep, time, and kinetic energy
+                to the log file. The file handle stays open for
+                performance.</p>
+                <h4 id="parameters-1">Parameters</h4>
                 <ul>
-                <li><span class="citation"
-                data-cites="brief">@brief</span> Write statistics to log
-                file</li>
-                <li><span class="citation"
-                data-cites="param">@param</span> iter Current iteration
-                number</li>
-                <li><span class="citation"
-                data-cites="param">@param</span> time Current simulation
-                time</li>
-                <li><span class="citation"
-                data-cites="param">@param</span> timestep Current
-                timestep size</li>
-                <li><span class="citation"
-                data-cites="param">@param</span> p Parameter
-                structure</li>
-                <li></li>
-                <li>Writes: iteration, dt, time, kinetic_energy</li>
-                <li>File handle stays open - no performance penalty</li>
+                <li><code>iter</code>: current iteration number</li>
+                <li><code>time</code>: current simulation time</li>
+                <li><code>timestep</code>: current timestep size</li>
+                <li><code>p</code>: parameter structure</li>
                 </ul>
                 <div class="code-block-container"><div class="code-block-container"><pre
                 class="sourceCode c"><code class="sourceCode c"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="kw">inline</span> <span class="dt">void</span> write_statistics<span class="op">(</span><span class="dt">int</span> iter<span class="op">,</span> <span class="dt">double</span> time<span class="op">,</span> <span class="dt">double</span> timestep<span class="op">,</span></span>
@@ -577,19 +548,13 @@ window.baseDomain = "https://comphy-lab.org/Drop-Impact";
 <span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>        fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;i=%d  t=%g  dt=%g  KE=%g</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> iter<span class="op">,</span> time<span class="op">,</span> timestep<span class="op">,</span> ke<span class="op">);</span></span>
 <span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
 <span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></div>
+                <h3 id="save_snapshot">save_snapshot()</h3>
+                <p>Save simulation snapshots for restart and
+                post-processing.</p>
+                <h4 id="parameters-2">Parameters</h4>
                 <ul>
-                <li><span class="citation"
-                data-cites="brief">@brief</span> Save simulation
-                snapshot (dump file)</li>
-                <li><span class="citation"
-                data-cites="param">@param</span> time Current simulation
-                time</li>
-                <li><span class="citation"
-                data-cites="param">@param</span> p Parameter
-                structure</li>
-                <li></li>
-                <li>Creates dump files for restart and
-                post-processing</li>
+                <li><code>time</code>: current simulation time</li>
+                <li><code>p</code>: parameter structure</li>
                 </ul>
                 <div class="code-block-container"><div class="code-block-container"><pre
                 class="sourceCode c"><code class="sourceCode c"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="kw">inline</span> <span class="dt">void</span> save_snapshot<span class="op">(</span><span class="dt">double</span> time<span class="op">,</span> <span class="dt">const</span> <span class="kw">struct</span> SimulationParams <span class="op">*</span>p<span class="op">)</span> <span class="op">{</span></span>
@@ -605,14 +570,9 @@ window.baseDomain = "https://comphy-lab.org/Drop-Impact";
 <span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;Snapshot saved at t = %g</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">,</span> time<span class="op">);</span></span>
 <span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></div>
-                <ul>
-                <li><span class="citation"
-                data-cites="brief">@brief</span> Close all log
-                files</li>
-                <li></li>
-                <li>Called at end of simulation to properly close
-                files</li>
-                </ul>
+                <h3 id="close_log_files">close_log_files()</h3>
+                <p>Close any open log files at the end of the
+                simulation.</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
                 class="sourceCode c"><code class="sourceCode c"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="kw">inline</span> <span class="dt">void</span> close_log_files<span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">(</span>log_fp<span class="op">)</span> <span class="op">{</span></span>
@@ -621,39 +581,17 @@ window.baseDomain = "https://comphy-lab.org/Drop-Impact";
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>        fprintf<span class="op">(</span>stderr<span class="op">,</span> <span class="st">&quot;Log file closed</span><span class="sc">\n</span><span class="st">&quot;</span><span class="op">);</span></span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></div>
-                <ul>
-                <li><span class="citation"
-                data-cites="brief">@brief</span> Additional diagnostics
-                for future extensibility</li>
-                <li></li>
-                <li>Placeholder functions for future diagnostic
-                capabilities:</li>
-                <li><ul>
-                <li>Drop spreading radius</li>
-                </ul></li>
-                <li><ul>
-                <li>Contact line position</li>
-                </ul></li>
-                <li><ul>
-                <li>Interface area</li>
-                </ul></li>
-                <li><ul>
-                <li>Pressure forces</li>
-                </ul></li>
-                <li><ul>
-                <li>Energy dissipation</li>
-                </ul></li>
-                </ul>
+                <h2
+                id="optional-diagnostics-enable_advanced_diagnostics">Optional
+                Diagnostics (ENABLE_ADVANCED_DIAGNOSTICS)</h2>
+                <p>Placeholder routines for future extensions: - Drop
+                spreading radius - Contact line position - Interface
+                area - Pressure forces - Energy dissipation</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
                 class="sourceCode c"><code class="sourceCode c"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="pp">#ifdef ENABLE_ADVANCED_DIAGNOSTICS</span></span></code></pre></div></div>
-                <ul>
-                <li><span class="citation"
-                data-cites="brief">@brief</span> Calculate drop
-                spreading radius</li>
-                <li><span class="citation"
-                data-cites="return">@return</span> Maximum radial extent
-                of drop</li>
-                </ul>
+                <h3
+                id="calculate_spreading_radius">calculate_spreading_radius()</h3>
+                <p>Return the maximum radial extent of the drop.</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
                 class="sourceCode c"><code class="sourceCode c"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="kw">inline</span> <span class="dt">double</span> calculate_spreading_radius<span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">double</span> r_max <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
@@ -666,14 +604,10 @@ window.baseDomain = "https://comphy-lab.org/Drop-Impact";
 <span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> r_max<span class="op">;</span></span>
 <span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></div>
-                <ul>
-                <li><span class="citation"
-                data-cites="brief">@brief</span> Calculate contact line
-                position (y-coordinate where drop meets surface)</li>
-                <li><span class="citation"
-                data-cites="return">@return</span> Contact line
-                y-position</li>
-                </ul>
+                <h3
+                id="calculate_contact_line_y">calculate_contact_line_y()</h3>
+                <p>Return the contact line y-position (placeholder
+                implementation).</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
                 class="sourceCode c"><code class="sourceCode c"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="kw">inline</span> <span class="dt">double</span> calculate_contact_line_y<span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">double</span> y_contact <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
@@ -681,14 +615,10 @@ window.baseDomain = "https://comphy-lab.org/Drop-Impact";
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Placeholder for future development</span></span>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> y_contact<span class="op">;</span></span>
 <span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div></div>
-                <ul>
-                <li><span class="citation"
-                data-cites="brief">@brief</span> Calculate total
-                interface area</li>
-                <li><span class="citation"
-                data-cites="return">@return</span> Interface area (2D:
-                length, 3D: area)</li>
-                </ul>
+                <h3
+                id="calculate_interface_area">calculate_interface_area()</h3>
+                <p>Return total interface area (2D: length, 3D:
+                area).</p>
                 <div class="code-block-container"><div class="code-block-container"><pre
                 class="sourceCode c"><code class="sourceCode c"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="dt">static</span> <span class="kw">inline</span> <span class="dt">double</span> calculate_interface_area<span class="op">(</span><span class="dt">void</span><span class="op">)</span> <span class="op">{</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="dt">double</span> area <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span></span>
