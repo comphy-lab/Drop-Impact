@@ -12,12 +12,12 @@ BASE_CONFIG=default.params
 # ============================================================
 # Starting case number (4-digit: 1000-9999)
 # Each parameter combination gets auto-incremented CaseNo
-CASE_START=1000
+CASE_START=1306
 
 # Ending case number (inclusive)
 # Number of combinations should equal CASE_END - CASE_START + 1
-# For this sweep: 4 We × 3 Oh = 12 combinations, so CASE_END = 1011
-CASE_END=1041
+# For this sweep: 16 We × 16 Oh = 256 combinations, so CASE_END = 1561
+CASE_END=1561
 
 # ============================================================
 # Sweep Variables
@@ -26,10 +26,10 @@ CASE_END=1041
 # The sweep will generate all combinations (cartesian product)
 
 # Sweep Weber number (vary impact velocity / surface tension)
-SWEEP_We=1.0,4.0,10.0,20.0,40.0,50.0
+SWEEP_We=50,60,70,80,90,100,126,158,200,251,316,398,501,631,794,1000
 
 # Sweep Ohnesorge number (vary viscosity)
-SWEEP_Ohd=1.0e-3,3e-3,1.0e-2,3e-2,1.0e-1,3e-1,1e0
+SWEEP_Ohd=1e-3,3e-3,1e-2,1.7e-2,2.9e-2,4.9e-2,8.4e-2,1.43e-1,2.43e-1,4.13e-1,7.02e-1,1.19,2.03,3.45,5.87,1e1
 
 # Optional: sweep other parameters
 # SWEEP_MAXlevel=9,10,11
