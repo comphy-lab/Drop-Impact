@@ -103,3 +103,6 @@ reset_install_*.sh
 
 # Timestamped CSS backups
 **/custom_styles_backup_*.css
+
+# Local CLAUDE.md (references AGENTS.md)
+CLAUDE.md

@@ -1,6 +1,6 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to AI agents (Claude Code, Gemini, Codex) when working with code in this repository.
 
 ## Repository Overview
 
@@ -35,7 +35,8 @@ The code has been completely reorganized with case-based folder management and r
 ```text
 Drop-Impact/
 ├── .project_config          # Basilisk environment setup
-├── CLAUDE.md               # This file
+├── AGENTS.md               # This file (authoritative guidance)
+├── CLAUDE.md               # Local pointer to AGENTS.md (not tracked)
 ├── basilisk/               # Basilisk framework (local-only; ignored by git)
 │
 ├── src-local/              # Modular header files
@@ -95,7 +96,7 @@ Drop-Impact/
 6. **Documentation**:
    - Literate programming style (markdown in code)
    - Self-documenting parameter files
-   - Complete documentation in CLAUDE.md
+   - Complete documentation in AGENTS.md
    - Correct Reynolds number formula: Re = √We/Oh
 
 ### Quick Start
