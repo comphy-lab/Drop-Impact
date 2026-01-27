@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       APP_BOT_USER_ID: 256885647
-    
+
     steps:
       - name: Generate GitHub App token
         id: app-token
