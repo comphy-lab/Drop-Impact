@@ -1,6 +1,9 @@
 # AGENTS.md
 
-This file provides guidance to AI agents (Claude Code, Gemini, Codex) when working with code in this repository.
+This file provides guidance to AI agents (Claude Code, Gemini, Codex) when
+working with code in this repository.
+
+For user-facing overview and usage, see README.md.
 
 ## Repository Overview
 
@@ -34,32 +37,45 @@ The code has been completely reorganized with case-based folder management and r
 
 ```text
 Drop-Impact/
-├── .project_config          # Basilisk environment setup
+├── .github/                # Docs pipeline and issue templates
+├── .project_config         # Basilisk environment setup
 ├── AGENTS.md               # This file (authoritative guidance)
 ├── CLAUDE.md               # Local pointer to AGENTS.md (not tracked)
-├── basilisk/               # Basilisk framework (local-only; ignored by git)
+├── basilisk/               # Basilisk framework (local-only; ignored)
 │
 ├── src-local/              # Modular header files
-│   ├── params.h           # Parameter structures and parsing with CaseNo
-│   ├── geometry.h         # Drop geometry and initialization
-│   ├── diagnostics.h      # Statistics and output handling
-│   └── parse_params.sh    # Shell parameter parsing library
+│   ├── params.h            # Parameter structures and parsing with CaseNo
+│   ├── geometry.h          # Drop geometry and initialization
+│   ├── diagnostics.h       # Statistics and output handling
+│   └── parse_params.sh     # Shell parameter parsing library
+│
+├── postProcess/            # Analysis and visualization tools
+│   ├── getData-generic.c   # Field extraction on structured grids
+│   ├── getFacet.c          # Interface geometry extraction
+│   ├── getFootPrint.c      # Footprint height analysis
+│   ├── getFootPrint.py     # Multi-cutoff footprint time-series
+│   ├── plotFootPrint.py    # Publication-quality footprint plots
+│   └── Video-generic.py    # Frame-by-frame visualization
 │
 ├── runSimulation.sh        # Single case runner (from root)
 ├── runParameterSweep.sh    # Parameter sweep runner (from root)
+├── runPostProcess-Ncases.sh  # Post-process cases
+├── runSweepHamilton.sbatch # Cluster batch script (Hamilton)
+├── runSweepSnellius.sbatch # Cluster batch script (Snellius)
 ├── default.params          # Single-case configuration (edit this)
 ├── sweep.params            # Sweep configuration (edit this)
 │
 └── simulationCases/
-    ├── dropImpact.c       # Main simulation (refactored with markdown docs)
+    ├── dropImpact.c        # Main simulation (refactored with docs)
     ├── dropImpact_legacy.c # Original version (archived)
-    └── 1000/              # Case folders created by scripts
-        ├── dropImpact     # Compiled executable
-        ├── dropImpact.c   # Source copy
-        ├── case.params    # Parameter copy
-        ├── log            # Time series data
-        ├── restart        # Restart checkpoint
-        └── intermediate/  # Snapshot files
+    ├── runSnellius_legacy.sbatch  # Legacy batch script
+    └── 1000/               # Case folders created by scripts
+        ├── dropImpact      # Compiled executable
+        ├── dropImpact.c    # Source copy
+        ├── case.params     # Parameter copy
+        ├── log             # Time series data
+        ├── restart         # Restart checkpoint
+        └── intermediate/   # Snapshot files
 ```
 
 ### Key Improvements
@@ -255,19 +271,15 @@ vim sweep.params           # Set CASE_START, CASE_END, sweep variables
 - Significant speedup for large simulations
 - Default: 4 cores (configurable with `--cores N`)
 
-### Legacy Command-Line Mode (Still Supported)
+### Parameter File Mode (Current)
 
-For backward compatibility, you can still pass parameters directly:
+The single-case runner expects a parameter file. Use the default or
+pass a custom file path:
 
-1. **Run using old script**:
-   ```bash
-   ./runCases.sh dropImpact
-   ```
-
-2. **Command-line arguments** (legacy mode):
-   ```bash
-   ./runSimulation.sh 10 4.0 10.0 1e-3 1e-5 8.0
-   ```
+```bash
+./runSimulation.sh default.params
+./runSimulation.sh my_case.params
+```
 
 ### Compilation Details
 
@@ -310,15 +322,8 @@ Parameters:
 - `Ohs`: Ohnesorge number for surrounding phase (e.g., 1e-5)
 - `Ldomain`: Domain size in drop radii (e.g., 8e0)
 
-Default values are set in `runCases.sh`:
-```bash
-LEVEL="10"
-tmax="4e0"
-We="1e1"
-Ohd="1e-3"
-Ohs="1e-5"
-Ldomain="8e0"
-```
+Default values are set in `default.params` (single runs) and
+`sweep.params` (sweeps).
 
 ## Simulation Code Structure
 
@@ -362,12 +367,8 @@ Each simulation run produces:
 
 ## Cleanup
 
-Remove a simulation directory:
-```bash
-./cleanup.sh dropImpact
-```
-
-This removes the entire simulation output directory.
+Remove a simulation directory by deleting its case folder under
+`simulationCases/<CaseNo>/`.
 
 ## Common Modifications
 

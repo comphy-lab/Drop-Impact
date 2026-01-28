@@ -65,6 +65,18 @@ vim sweep.params        # Set CASE_START, CASE_END, sweep variables
 ./runParameterSweep.sh --mpi
 ```
 
+### Post-processing
+
+```bash
+# Run post-processing on one or more cases
+./runPostProcess-Ncases.sh 1000 1001
+```
+
+```bash
+# Show available options
+./runPostProcess-Ncases.sh --help
+```
+
 ## Repository Structure
 
 ```
@@ -80,9 +92,14 @@ vim sweep.params        # Set CASE_START, CASE_END, sweep variables
 │   ├── plotFootPrint.py  Publication-quality footprint plots
 │   └── Video-generic.py  Frame-by-frame visualization pipeline
 ├── simulationCases/       Case-based simulation outputs
-│   └── dropImpact.c      Main simulation case
+│   ├── dropImpact.c      Main simulation case
+│   ├── dropImpact_legacy.c  Legacy simulation source
+│   └── runSnellius_legacy.sbatch  Legacy batch script
 ├── runSimulation.sh       Single case runner
 ├── runParameterSweep.sh   Parameter sweep runner
+├── runPostProcess-Ncases.sh Post-process multiple cases
+├── runSweepHamilton.sbatch Hamilton batch script
+├── runSweepSnellius.sbatch Snellius batch script
 ├── default.params         Single-case configuration
 └── sweep.params           Sweep configuration
 ```
@@ -117,12 +134,10 @@ vim sweep.params        # Set CASE_START, CASE_END, sweep variables
 
 ## Documentation
 
-Comprehensive documentation is available in [CLAUDE.md](CLAUDE.md), including:
-- Coding standards and best practices
-- Build and compilation instructions
-- Simulation physics and numerical methods
-- Parameter descriptions and typical values
-- Output file formats and visualization
+This README provides the user-facing overview and usage. Additional
+details live in the runnable scripts (`runSimulation.sh`,
+`runParameterSweep.sh`) and in the simulation source
+(`simulationCases/dropImpact.c`) and headers in `src-local/`.
 
 ## License
 
@@ -130,11 +145,8 @@ See [LICENSE](LICENSE) file for details.
 
 ## Contributing
 
-This repository follows the CoMPhy Lab coding standards. See [CLAUDE.md](CLAUDE.md) for detailed guidelines on:
-- Code style (2-space indentation, 80-character lines)
-- Naming conventions (snake_case for variables, camelCase for functions)
-- Documentation requirements
-- Testing procedures
+Follow the existing code style and keep changes consistent with the
+repository's structure and scripts.
 
 ## Contact
 

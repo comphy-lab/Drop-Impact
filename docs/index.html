@@ -487,6 +487,13 @@ window.baseDomain = "https://comphy-lab.org/Drop-Impact";
                 <div class="code-block-container"><div class="code-block-container"><pre
                 class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Run sweep with MPI (4 cores per case)</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./runParameterSweep.sh</span> <span class="at">--mpi</span></span></code></pre></div></div>
+                <h3 id="post-processing">Post-processing</h3>
+                <div class="code-block-container"><div class="code-block-container"><pre
+                class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Run post-processing on one or more cases</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./runPostProcess-Ncases.sh</span> 1000 1001</span></code></pre></div></div>
+                <div class="code-block-container"><div class="code-block-container"><pre
+                class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Show available options</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="ex">./runPostProcess-Ncases.sh</span> <span class="at">--help</span></span></code></pre></div></div>
                 <h2 id="repository-structure">Repository Structure</h2>
                 <div class="repository-structure">
                 <ul>
@@ -533,6 +540,12 @@ window.baseDomain = "https://comphy-lab.org/Drop-Impact";
                 <li><strong><a
                 href="simulationCases/dropImpact.c.html">dropImpact.c</a></strong>
                 - Main simulation case</li>
+                <li><strong><a
+                href="simulationCases/dropImpact_legacy.c.html">dropImpact_legacy.c</a></strong>
+                - Legacy simulation source</li>
+                <li><strong><a
+                href="simulationCases/runSnellius_legacy.sbatch.html">runSnellius_legacy.sbatch</a></strong>
+                - Legacy batch script</li>
                 </ul></li>
                 <li><strong><a
                 href="runSimulation.sh.html">runSimulation.sh</a></strong>
@@ -540,6 +553,15 @@ window.baseDomain = "https://comphy-lab.org/Drop-Impact";
                 <li><strong><a
                 href="runParameterSweep.sh.html">runParameterSweep.sh</a></strong>
                 - Parameter sweep runner</li>
+                <li><strong><a
+                href="runPostProcess-Ncases.sh.html">runPostProcess-Ncases.sh</a></strong>
+                - Post-process multiple cases</li>
+                <li><strong><a
+                href="runSweepHamilton.sbatch.html">runSweepHamilton.sbatch</a></strong>
+                - Hamilton batch script</li>
+                <li><strong><a
+                href="runSweepSnellius.sbatch.html">runSweepSnellius.sbatch</a></strong>
+                - Snellius batch script</li>
                 <li><strong><a
                 href="default.params.html">default.params</a></strong> -
                 Single-case configuration</li>
@@ -604,22 +626,19 @@ window.baseDomain = "https://comphy-lab.org/Drop-Impact";
                 </ul></li>
                 </ul>
                 <h2 id="documentation">Documentation</h2>
-                <p>Comprehensive documentation is available in <a
-                href="CLAUDE.md.html">CLAUDE.md</a>, including: - Coding
-                standards and best practices - Build and compilation
-                instructions - Simulation physics and numerical methods
-                - Parameter descriptions and typical values - Output
-                file formats and visualization</p>
+                <p>This README provides the user-facing overview and
+                usage. Additional details live in the runnable scripts
+                (<code>runSimulation.sh</code>,
+                <code>runParameterSweep.sh</code>) and in the simulation
+                source (<code>simulationCases/dropImpact.c</code>) and
+                headers in <code>src-local/</code>.</p>
                 <h2 id="license">License</h2>
                 <p>See <a href="LICENSE">LICENSE</a> file for
                 details.</p>
                 <h2 id="contributing">Contributing</h2>
-                <p>This repository follows the CoMPhy Lab coding
-                standards. See <a href="CLAUDE.md.html">CLAUDE.md</a> for
-                detailed guidelines on: - Code style (2-space
-                indentation, 80-character lines) - Naming conventions
-                (snake_case for variables, camelCase for functions) -
-                Documentation requirements - Testing procedures</p>
+                <p>Follow the existing code style and keep changes
+                consistent with the repository’s structure and
+                scripts.</p>
                 <h2 id="contact">Contact</h2>
                 <p>For questions or collaboration inquiries, please
                 contact the <a href="https://comphy-lab.org">CoMPhy
